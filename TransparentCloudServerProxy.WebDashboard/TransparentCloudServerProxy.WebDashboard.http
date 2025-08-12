@@ -1,0 +1,6 @@
+@TransparentCloudServerProxy.WebDashboard_HostAddress = http://localhost:5230
+
+GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
