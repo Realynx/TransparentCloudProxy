@@ -1,4 +1,7 @@
 
+using TransparentCloudServerProxy.WebDashboard.Models;
+using TransparentCloudServerProxy.WebDashboard.Services;
+
 namespace TransparentCloudServerProxy.WebDashboard {
     public class Program {
         public static void Main(string[] args) {
@@ -6,6 +9,14 @@ namespace TransparentCloudServerProxy.WebDashboard {
 
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
+
+            builder.Services
+                .AddSingleton<IConfigurationRoot>(builder.Configuration)
+                .AddSingleton<ProxyConfig>()
+                .AddSingleton<DashboardConfig>();
+
+            builder.Services
+                .AddSingleton<IProxyService, ProxyService>();
 
             var app = builder.Build();
 

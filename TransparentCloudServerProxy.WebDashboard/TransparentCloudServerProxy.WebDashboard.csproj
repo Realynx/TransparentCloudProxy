@@ -14,4 +14,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.Managed.csproj" />
+  </ItemGroup>
+
 </Project>

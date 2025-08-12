@@ -18,7 +18,8 @@ namespace TransparentCloudServerProxy.Cli {
 
             var proxyService = new ManagedProxyService();
             foreach (var entry in proxyConfig.ManagedProxyEntry) {
-                await AddEntry(proxyService, entry);
+                proxyService.AddProxyEntry(entry);
+                await Console.Out.WriteLineAsync(entry.ToString());
             }
 
             proxyService.StartAllProxies();
@@ -27,11 +28,6 @@ namespace TransparentCloudServerProxy.Cli {
             while (true) {
                 Console.ReadLine();
             }
-        }
-
-        private static async Task AddEntry(ManagedProxyService proxyService, ManagedProxyEntry managedProxyEntry) {
-            await Console.Out.WriteLineAsync(managedProxyEntry.ToString());
-            proxyService.AddProxyEntry(managedProxyEntry);
         }
     }
 }
