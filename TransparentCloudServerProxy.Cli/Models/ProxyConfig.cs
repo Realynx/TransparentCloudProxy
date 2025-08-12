@@ -1,4 +1,4 @@
-﻿using TransparentCloudServerProxy.Bindings.ManagedProxy;
+﻿using TransparentCloudServerProxy.Managed;
 
 namespace TransparentCloudServerProxy.Cli.Models {
     public class ProxyConfig {
