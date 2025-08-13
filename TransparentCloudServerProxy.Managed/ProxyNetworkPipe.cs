@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 
 namespace TransparentCloudServerProxy.Managed {
     internal class ProxyNetworkPipe : IDisposable {
@@ -28,25 +29,32 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         public void ProxyBidirectional() {
-            ForwardTraffic(_clientSocket, _targetSocket, _cancellationTokenSource.Token);
-            ForwardTraffic(_targetSocket, _clientSocket, _cancellationTokenSource.Token);
+            Task.Factory.StartNew(
+                () => ForwardTraffic(_clientSocket, _targetSocket, _cancellationTokenSource.Token),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            );
+            Task.Factory.StartNew(
+                () => ForwardTraffic(_targetSocket, _clientSocket, _cancellationTokenSource.Token),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            );
         }
 
-        private static async Task ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
-            var buffer = new byte[65536];
+        private static void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
+            Span<byte> buffer = new byte[65536];
 
             var stopWatch = new Stopwatch();
             while (!cancellationToken.IsCancellationRequested) {
-                stopWatch.Start();
+                stopWatch.Restart();
 
-                var memory = buffer.AsMemory();
-                var bytesRead = await source.ReceiveAsync(memory, SocketFlags.None, cancellationToken);
-                await destination.SendAsync(memory[..bytesRead], SocketFlags.None, cancellationToken);
+                var bytesRead = source.Receive(buffer, SocketFlags.None);
+                destination.Send(buffer[..bytesRead], SocketFlags.None);
 
                 stopWatch.Stop();
                 Console.WriteLine($"Delay: {stopWatch.Elapsed.TotalMilliseconds}");
-
-                stopWatch.Reset();
             }
         }
     }
