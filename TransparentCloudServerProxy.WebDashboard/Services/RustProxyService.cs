@@ -17,7 +17,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             throw new NotImplementedException();
         }
 
-        public void RestartAllProxies() {
+        public ManagedProxyEntry[] GetProxies() {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveProxyEntry(ManagedProxyEntry managedProxyEntry) {
             throw new NotImplementedException();
         }
 

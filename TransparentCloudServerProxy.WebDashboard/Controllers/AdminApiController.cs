@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
+using Newtonsoft.Json;
+
 using TransparentCloudServerProxy.Managed;
 using TransparentCloudServerProxy.WebDashboard.Services;
 
@@ -15,12 +17,18 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             _proxyService = proxyService;
         }
 
-        [HttpPost]
-        public string CreateOrUpdate(object proxyEndpoint) {
-            return "";
+        [HttpGet(nameof(GetProxies))]
+        public ManagedProxyEntry[] GetProxies() {
+            try {
+                return _proxyService.GetProxies();
+            }
+            catch (Exception e) {
+            }
+
+            return null;
         }
 
-        [HttpPost]
+        [HttpPost(nameof(StartAllProxies))]
         public string StartAllProxies() {
             try {
                 _proxyService.StartAllProxies();
@@ -32,10 +40,9 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             return string.Empty;
         }
 
-        [HttpPost]
-        public string StartProxy(ManagedProxyEntry managedProxyEntry) {
+        [HttpPost(nameof(StartProxy))]
+        public string StartProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
             try {
-
                 _proxyService.StartProxy(managedProxyEntry);
             }
             catch (Exception e) {
@@ -45,10 +52,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             return string.Empty;
         }
 
-        [HttpPost]
-        public string StopProxy(ManagedProxyEntry managedProxyEntry) {
-            try {
+        [HttpPost(nameof(StopProxy))]
+        public string StopProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
+            Console.WriteLine(managedProxyEntry);
 
+            try {
                 _proxyService.StopProxy(managedProxyEntry);
             }
             catch (Exception e) {
@@ -58,10 +66,9 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             return string.Empty;
         }
 
-        [HttpPost]
-        public string AddProxy(ManagedProxyEntry managedProxyEntry) {
+        [HttpPost(nameof(AddProxy))]
+        public string AddProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
             try {
-
                 _proxyService.AddProxyEntry(managedProxyEntry);
             }
             catch (Exception e) {
@@ -71,11 +78,10 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             return string.Empty;
         }
 
-        [HttpPost]
-        public string RemoveProxy(ManagedProxyEntry managedProxyEntry) {
+        [HttpPost(nameof(RemoveProxy))]
+        public string RemoveProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
             try {
-
-                _proxyService.StopProxy(managedProxyEntry);
+                _proxyService.RemoveProxyEntry(managedProxyEntry);
             }
             catch (Exception e) {
                 return e.ToString();

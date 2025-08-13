@@ -1,6 +1,10 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
-@proxyEntry = "{\"ListenAddress\":\"0.0.0.0\",\"ListenPort\":25565,\"TargetAddress\":\"10.0.1.222\",\"TargetPort\":25565}"
 @sslVerify = false
+
+
+### Get proxies
+GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/GetProxies
+Accept: application/json
 
 ### Start all proxies
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartAllProxies
@@ -9,22 +13,42 @@ POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartAllP
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartProxy
 Content-Type: application/json
 
-{{proxyEntry}}
+{
+  "listenAddress": "0.0.0.0",
+  "listenPort": 25565,
+  "targetAddress": "10.0.1.222",
+  "targetPort": 25565
+}
 
 ### Stop proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StopProxy
 Content-Type: application/json
 
-{{proxyEntry}}
+{
+  "listenAddress": "0.0.0.0",
+  "listenPort": 25565,
+  "targetAddress": "10.0.1.222",
+  "targetPort": 25565
+}
 
 ### Add proxy entry
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/AddProxyEntry
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/AddProxy
 Content-Type: application/json
 
-{{proxyEntry}}
+{
+  "listenAddress": "0.0.0.0",
+  "listenPort": 25565,
+  "targetAddress": "10.0.1.222",
+  "targetPort": 25565
+}
 
 ### Remove proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/RemoveProxy
 Content-Type: application/json
 
-{{proxyEntry}}
+{
+  "listenAddress": "0.0.0.0",
+  "listenPort": 25565,
+  "targetAddress": "10.0.1.222",
+  "targetPort": 25565
+}

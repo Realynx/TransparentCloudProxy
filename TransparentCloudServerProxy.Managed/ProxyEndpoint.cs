@@ -18,7 +18,7 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         public void Dispose() {
-            throw new NotImplementedException();
+            _listenSocket.Dispose();
         }
 
         public void Start() {
@@ -26,6 +26,8 @@ namespace TransparentCloudServerProxy.Managed {
             BindSocket();
 
             Listen();
+
+            ManagedProxyEntry.Enabled = true;
         }
 
         public void Stop() {
@@ -36,8 +38,8 @@ namespace TransparentCloudServerProxy.Managed {
             }
             _proxyNetworkPipes.Clear();
 
-            _listenSocket.Shutdown(SocketShutdown.Send);
             _listenSocket.Close();
+            ManagedProxyEntry.Enabled = false;
         }
 
         private void BindSocket() {

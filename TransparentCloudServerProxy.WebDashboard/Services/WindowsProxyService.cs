@@ -13,6 +13,8 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             foreach (var entry in _proxyConfig.ManagedProxyEntry) {
                 _managedProxyService.AddProxyEntry(entry);
             }
+
+            _managedProxyService.StartAllProxies();
         }
 
         public void StartAllProxies() {
@@ -35,6 +37,10 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         public void RemoveProxyEntry(ManagedProxyEntry managedProxyEntry) {
             _managedProxyService.StopProxy(managedProxyEntry);
             _managedProxyService.RemoveProxyEntry(managedProxyEntry);
+        }
+
+        public ManagedProxyEntry[] GetProxies() {
+            return _managedProxyService.GetProxies();
         }
     }
 }

@@ -10,6 +10,9 @@ namespace TransparentCloudServerProxy.Managed {
             TargetPort = targetPort;
         }
 
+        public Guid Id { get; set; }
+        public bool Enabled { get; set; }
+
         public string ListenAddress { get; set; }
         public int ListenPort { get; set; }
 

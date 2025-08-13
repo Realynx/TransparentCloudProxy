@@ -8,7 +8,7 @@
         }
 
         public void RemoveProxyEntry(ManagedProxyEntry managedProxyEntry) {
-            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry.Equals(managedProxyEntry));
             if (proxyEndpoint is null) {
                 return;
             }
@@ -25,7 +25,7 @@
         }
 
         public void StartProxy(ManagedProxyEntry managedProxyEntry) {
-            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry.Equals(managedProxyEntry));
             if (proxyEndpoint is null) {
                 return;
             }
@@ -34,12 +34,16 @@
         }
 
         public void StopProxy(ManagedProxyEntry managedProxyEntry) {
-            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+            var proxyEndpoint = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry.Equals(managedProxyEntry));
             if (proxyEndpoint is null) {
                 return;
             }
 
             proxyEndpoint.Stop();
+        }
+
+        public ManagedProxyEntry[] GetProxies() {
+            return _proxyEndpoints.Select(i => i.ManagedProxyEntry).ToArray();
         }
     }
 }

@@ -6,6 +6,6 @@ namespace TransparentCloudServerProxy.WebDashboard.Models {
             configurationRoot.GetSection(nameof(ProxyConfig)).Bind(this);
         }
 
-        public ManagedProxyEntry[] ManagedProxyEntry { get; set; } = Array.Empty<ManagedProxyEntry>();
+        public ManagedProxyEntry[] ManagedProxyEntry { get; set; }
     }
 }
