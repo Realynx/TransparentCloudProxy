@@ -49,26 +49,26 @@ namespace TransparentCloudServerProxy.Managed {
         private static void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
             Span<byte> buffer = new byte[(int)(65536 * .4)];
 
-            var stopWatch = new Stopwatch();
+            //var stopWatch = new Stopwatch();
 
-            var index = 0;
+            //var index = 0;
             while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {
-                index++;
-                stopWatch.Restart();
+                //index++;
+                //stopWatch.Restart();
 
                 var bytesRead = source.Receive(buffer, SocketFlags.None);
                 destination.Send(buffer[..bytesRead], SocketFlags.None);
 
-                stopWatch.Stop();
+                //stopWatch.Stop();
 
-                var extraEntires = delays.Count() - 50;
-                delays.RemoveRange(0, extraEntires < 0 ? 0 : extraEntires);
-                delays.Add(stopWatch.Elapsed.TotalMilliseconds);
+                //var extraEntires = delays.Count() - 50;
+                //delays.RemoveRange(0, extraEntires < 0 ? 0 : extraEntires);
+                //delays.Add(stopWatch.Elapsed.TotalMilliseconds);
 
-                if (index % 5 == 0) {
-                    Console.CursorLeft = 0;
-                    Console.Write(delays.Average());
-                }
+                //if (index % 5 == 0) {
+                //    //Console.CursorLeft = 0;
+                //    //Console.Write(delays.Average());
+                //}
             }
         }
     }
