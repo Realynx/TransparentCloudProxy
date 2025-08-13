@@ -1,9 +1,11 @@
-import { Button } from "./components/ui/button";
+import { Navigate, Route, Routes } from "react-router-dom";
+import ProxiesPage from "./pages/Proxies";
 
 export default function App() {
   return (
-    <div>
-      <Button>Test</Button>
-    </div>
+    <Routes>
+      <Route index element={<Navigate to="/proxies" />} />
+      <Route path="/proxies" element={<ProxiesPage />} />
+    </Routes>
   );
 }
