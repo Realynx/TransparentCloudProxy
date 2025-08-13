@@ -86,7 +86,8 @@ namespace TransparentCloudServerProxy.Managed {
 
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
                 var bytesRead = source.Receive(buffer.AsSpan(), SocketFlags.None);
-                while (!channel.Writer.TryWrite(new ReadOnlyMemory<byte>(buffer, 0, bytesRead))) { }
+                var newBuf = buffer.AsSpan(0, bytesRead).ToArray();
+                while (!channel.Writer.TryWrite(newBuf)) { }
             }
         }
 
