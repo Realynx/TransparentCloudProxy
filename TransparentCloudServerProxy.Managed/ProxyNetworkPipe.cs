@@ -105,11 +105,12 @@ namespace TransparentCloudServerProxy.Managed {
             var buffer = new byte[BUFFER_SIZE];
 
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
+                var timestamp = Stopwatch.GetTimestamp();
                 var bytesRead = source.Receive(buffer.AsSpan(), SocketFlags.None);
 
                 var newBuff = ArrayPool<byte>.Shared.Rent(bytesRead);
                 buffer.AsSpan(0, bytesRead).CopyTo(newBuff);
-                while (!channel.Writer.TryWrite(new Payload(newBuff, bytesRead, Stopwatch.GetTimestamp()))) { }
+                while (!channel.Writer.TryWrite(new Payload(newBuff, bytesRead, timestamp))) { }
             }
         }
 
