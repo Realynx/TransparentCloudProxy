@@ -1,4 +1,5 @@
-﻿using TransparentCloudServerProxy.WebDashboard.Models;
+﻿using TransparentCloudServerProxy.Managed;
+using TransparentCloudServerProxy.WebDashboard.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class RustProxyService : IProxyService {
@@ -12,11 +13,23 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             }
         }
 
+        public void AddProxyEntry(ManagedProxyEntry managedProxyEntry) {
+            throw new NotImplementedException();
+        }
+
         public void RestartAllProxies() {
             throw new NotImplementedException();
         }
 
         public void StartAllProxies() {
+            throw new NotImplementedException();
+        }
+
+        public void StartProxy(ManagedProxyEntry managedProxyEntry) {
+            throw new NotImplementedException();
+        }
+
+        public void StopProxy(ManagedProxyEntry managedProxyEntry) {
             throw new NotImplementedException();
         }
     }

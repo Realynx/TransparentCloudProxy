@@ -1,9 +1,30 @@
-@TransparentCloudServerProxy.WebDashboard_HostAddress = http://localhost:5230
+@TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
+@proxyEntry = "{\"ListenAddress\":\"0.0.0.0\",\"ListenPort\":25565,\"TargetAddress\":\"10.0.1.222\",\"TargetPort\":25565}"
+@sslVerify = false
 
+### Start all proxies
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartAllProxies
 
+### Start proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartProxy
+Content-Type: application/json
 
+{{proxyEntry}}
+
+### Stop proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StopProxy
+Content-Type: application/json
 
+{{proxyEntry}}
+
+### Add proxy entry
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/AddProxyEntry
+Content-Type: application/json
+
+{{proxyEntry}}
+
+### Remove proxy
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/RemoveProxy
+Content-Type: application/json
+
+{{proxyEntry}}
