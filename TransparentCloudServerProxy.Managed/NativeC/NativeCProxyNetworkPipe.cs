@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using TransparentCloudServerProxy.Managed.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.NativeC {
-    public class NativeCProxyNetworkPipe : IDisposable, IProxyNetworkPipe {
+    public partial class NativeCProxyNetworkPipe : IProxyNetworkPipe {
         // Windows: "proxypipe.dll"; Linux: "libproxypipe.so"
         private const string LIB_NAME =
 #if WINDOWS
@@ -13,47 +13,52 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
                     "TransparentCloudServerProxy.CNative";
 #endif
 
-        private IntPtr _native;
+        private nint _handle;
         private readonly Socket _client;
         private readonly Socket _target;
 
-        [DllImport(LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr ProxyPipe_Create(IntPtr clientHandle, IntPtr targetHandle);
+        [LibraryImport(LIB_NAME)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+        private static partial nint ProxyPipe_Create(nint hClient, nint hTarget);
 
-        [DllImport(LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void ProxyPipe_Start(IntPtr p);
+        [LibraryImport(LIB_NAME)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+        private static partial void ProxyPipe_Start(nint hPipe);
 
-        [DllImport(LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void ProxyPipe_Stop(IntPtr p);
+        [LibraryImport(LIB_NAME)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+        private static partial void ProxyPipe_Stop(nint hPipe);
 
-        [DllImport(LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void ProxyPipe_Destroy(IntPtr p);
+        [LibraryImport(LIB_NAME)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+        private static partial void ProxyPipe_Destroy(nint hPipe);
 
-        [DllImport(LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern ulong ProxyPipe_GetAverageLatencyNs(IntPtr p);
+        [LibraryImport(LIB_NAME)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+        private static partial ulong ProxyPipe_GetAverageLatencyNs(nint hPipe);
 
         public NativeCProxyNetworkPipe(Socket client, Socket target) {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _target = target ?? throw new ArgumentNullException(nameof(target));
 
             // Ensure sockets stay alive for the duration
-            var ch = _client.SafeHandle.DangerousGetHandle();
-            var th = _target.SafeHandle.DangerousGetHandle();
+            var hClient = _client.SafeHandle.DangerousGetHandle();
+            var hTarget = _target.SafeHandle.DangerousGetHandle();
 
-            _native = ProxyPipe_Create(ch, th);
-            if (_native == IntPtr.Zero) {
+            _handle = ProxyPipe_Create(hClient, hTarget);
+            if (_handle == nint.Zero) {
                 throw new InvalidOperationException("ProxyPipe_Create failed.");
             }
         }
 
-        public void Start() => ProxyPipe_Start(_native);
+        public void Start() => ProxyPipe_Start(_handle);
 
-        public void Stop() => ProxyPipe_Stop(_native);
+        public void Stop() => ProxyPipe_Stop(_handle);
 
         public TimeSpan Latency {
             get {
-                var ns = ProxyPipe_GetAverageLatencyNs(_native);
-                checked { return TimeSpan.FromTicks((long)(ns / 100)); } // 1 tick = 100 ns
+                var ns = ProxyPipe_GetAverageLatencyNs(_handle);
+                checked { return TimeSpan.FromTicks((long)(ns / TimeSpan.NanosecondsPerTick)); }
             }
         }
 
@@ -64,13 +69,16 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
         public void Dispose() {
             try { Stop(); }
             catch { }
-            if (_native != IntPtr.Zero) {
-                ProxyPipe_Destroy(_native);
-                _native = IntPtr.Zero;
+
+            if (_handle != nint.Zero) {
+                ProxyPipe_Destroy(_handle);
+                _handle = nint.Zero;
             }
 
             _client.Dispose();
             _target.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

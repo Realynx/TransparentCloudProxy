@@ -20,10 +20,6 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             _targetEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.TargetAddress), ManagedProxyEntry.TargetPort);
         }
 
-        public void Dispose() {
-            _listenSocket.Dispose();
-        }
-
         public override string ToString() {
             return ManagedProxyEntry.ToString();
         }
@@ -94,9 +90,14 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
         public double GetAverageDelayNanoSecond() {
             if (_proxyNetworkPipes.Count <= 0) {
                 return 0;
-
             }
             return _proxyNetworkPipes.Average(i => i.Latency.TotalNanoseconds);
+        }
+
+        public void Dispose() {
+            _listenSocket.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

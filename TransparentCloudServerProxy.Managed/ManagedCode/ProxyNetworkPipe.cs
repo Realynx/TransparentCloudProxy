@@ -5,15 +5,14 @@ using System.Threading.Channels;
 using TransparentCloudServerProxy.Managed.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.ManagedCode {
-    internal class ProxyNetworkPipe : IDisposable, IProxyNetworkPipe {
+    internal class ProxyNetworkPipe : IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
-
-        private static readonly long[] _latencies = new long[50];
-        private static long _latencyIndex;
 
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly Socket _clientSocket;
         private readonly Socket _targetSocket;
+        private readonly long[] _latencies = new long[50];
+        private long _latencyIndex;
 
         public TimeSpan Latency {
             get {
@@ -72,7 +71,12 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             );
         }
 
-        private static void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
+        private void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
+            cancellationToken.UnsafeRegister(static state => {
+                var socket = (Socket)state!;
+                socket.Disconnect(false);
+            }, source);
+
             Span<byte> buffer = new byte[BUFFER_SIZE];
 
             var sw = new Stopwatch();
@@ -104,7 +108,7 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             }
         }
 
-        private static void SendTraffic(Socket destination, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
+        private void SendTraffic(Socket destination, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && destination.Connected) {
                 if (payloadChannel.Reader.TryRead(out var payload)) {
                     var bytesSent = 0;
@@ -114,9 +118,9 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
 
                     while (!bufferChannel.Writer.TryWrite(payload.Buffer)) { }
 
-                    // var latency = Stopwatch.GetTimestamp() - payload.Timestamp;
-                    // var idx = Interlocked.Increment(ref _latencyIndex);
-                    // _latencies[idx % _latencies.Length] = (long)((double)TimeSpan.TicksPerSecond / Stopwatch.Frequency * latency);
+                    var latency = Stopwatch.GetTimestamp() - payload.Timestamp;
+                    var idx = Interlocked.Increment(ref _latencyIndex);
+                    _latencies[idx % _latencies.Length] = (long)((double)TimeSpan.TicksPerSecond / Stopwatch.Frequency * latency);
                 }
             }
         }
