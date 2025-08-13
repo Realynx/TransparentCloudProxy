@@ -3,14 +3,14 @@
 
 
 ### Get proxies
-GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/GetProxies
+GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/GetProxies
 Accept: application/json
 
 ### Start all proxies
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartAllProxies
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StartAllProxies
 
 ### Start proxy
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartProxy
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StartProxy
 Content-Type: application/json
 
 {
@@ -21,7 +21,7 @@ Content-Type: application/json
 }
 
 ### Stop proxy
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StopProxy
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StopProxy
 Content-Type: application/json
 
 {
@@ -32,7 +32,7 @@ Content-Type: application/json
 }
 
 ### Add proxy entry
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/AddProxy
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/AddProxy
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Content-Type: application/json
 }
 
 ### Remove proxy
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/RemoveProxy
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/RemoveProxy
 Content-Type: application/json
 
 {
