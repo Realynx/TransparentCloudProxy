@@ -45,8 +45,8 @@ extern "C" {
 		socket_t client;
 		socket_t target;
 		std::atomic<bool> running{ false };
-		std::thread t1;
-		std::thread t2;
+		std::thread sendDataThread;
+		std::thread receiveDataThread;
 
 		// latency ring buffer (nanoseconds)
 		static constexpr size_t LAT_CAP = 50;
@@ -58,14 +58,14 @@ extern "C" {
 		}
 	};
 
-	static void forward_loop(ProxyPipe* p, socket_t src, socket_t dst) {
+	static void forward_loop(ProxyPipe* proxyPipe, socket_t source, socket_t target) {
 		// 4 KiB buffer per thread (stack)
 		std::vector<uint8_t> buf(4096);
-		while (p->running.load(std::memory_order_acquire)) {
+		while (proxyPipe->running.load(std::memory_order_acquire)) {
 			auto start = std::chrono::high_resolution_clock::now();
 
 			// recv
-			int receivedBytes = ::recv(src, reinterpret_cast<char*>(buf.data()), (int)buf.size(), 0);
+			int receivedBytes = ::recv(source, reinterpret_cast<char*>(buf.data()), (int)buf.size(), 0);
 			if (receivedBytes == 0) { // orderly shutdown
 				break;
 			}
@@ -79,7 +79,7 @@ extern "C" {
 			// send all
 			int sent_total = 0;
 			while (sent_total < receivedBytes) {
-				int bytesSent = ::send(dst, reinterpret_cast<const char*>(buf.data()) + sent_total, receivedBytes - sent_total, 0);
+				int bytesSent = ::send(target, reinterpret_cast<const char*>(buf.data()) + sent_total, receivedBytes - sent_total, 0);
 				if (bytesSent <= 0) {
 					// error or remote closed
 					sent_total = -1;
@@ -91,8 +91,8 @@ extern "C" {
 
 			auto end = std::chrono::high_resolution_clock::now();
 			uint64_t ns = (uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-			uint64_t idx = p->lat_index.fetch_add(1, std::memory_order_acq_rel);
-			p->latencies[idx % ProxyPipe::LAT_CAP].store(ns, std::memory_order_release);
+			uint64_t idx = proxyPipe->lat_index.fetch_add(1, std::memory_order_acq_rel);
+			proxyPipe->latencies[idx % ProxyPipe::LAT_CAP].store(ns, std::memory_order_release);
 		}
 	}
 
@@ -109,26 +109,26 @@ extern "C" {
 		return new ProxyPipe(client, target);
 	}
 
-	EXPORT void ProxyPipe_Start(ProxyPipe* p) {
-		if (!p || p->running.exchange(true)) return; // already running
-		p->t1 = std::thread([p] { forward_loop(p, p->client, p->target); });
-		p->t2 = std::thread([p] { forward_loop(p, p->target, p->client); });
+	EXPORT void ProxyPipe_Start(ProxyPipe* proxyPipe) {
+		if (!proxyPipe || proxyPipe->running.exchange(true)) return; // already running
+		proxyPipe->sendDataThread = std::thread([proxyPipe] { forward_loop(proxyPipe, proxyPipe->client, proxyPipe->target); });
+		proxyPipe->receiveDataThread = std::thread([proxyPipe] { forward_loop(proxyPipe, proxyPipe->target, proxyPipe->client); });
 	}
 
-	EXPORT void ProxyPipe_Stop(ProxyPipe* p) {
-		if (!p) return;
-		bool was = p->running.exchange(false);
+	EXPORT void ProxyPipe_Stop(ProxyPipe* proxyPipe) {
+		if (!proxyPipe) return;
+		bool was = proxyPipe->running.exchange(false);
 		// Proactively shut down to unblock any blocking recv/send
 #if defined(_WIN32)
-		::shutdown(p->client, SD_BOTH);
-		::shutdown(p->target, SD_BOTH);
+		::shutdown(proxyPipe->client, SD_BOTH);
+		::shutdown(proxyPipe->target, SD_BOTH);
 #else
 		::shutdown(p->client, SHUT_RDWR);
 		::shutdown(p->target, SHUT_RDWR);
 #endif
 		if (was) {
-			if (p->t1.joinable()) p->t1.join();
-			if (p->t2.joinable()) p->t2.join();
+			if (proxyPipe->sendDataThread.joinable()) proxyPipe->sendDataThread.join();
+			if (proxyPipe->receiveDataThread.joinable()) proxyPipe->receiveDataThread.join();
 		}
 	}
 
