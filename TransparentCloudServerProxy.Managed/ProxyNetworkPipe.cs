@@ -1,7 +1,5 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
+﻿using System.Net.Sockets;
+using System.Threading.Channels;
 
 namespace TransparentCloudServerProxy.Managed {
     internal class ProxyNetworkPipe : IDisposable {
@@ -30,14 +28,20 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         public void ProxyBidirectional() {
+            ForwardTraffic(_clientSocket, _targetSocket);
+            ForwardTraffic(_targetSocket, _clientSocket);
+        }
+
+        private void ForwardTraffic(Socket source, Socket destination) {
+            var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();
             Task.Factory.StartNew(
-                () => ForwardTraffic(_clientSocket, _targetSocket, 0, _cancellationTokenSource.Token),
+                () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
             Task.Factory.StartNew(
-                () => ForwardTraffic(_targetSocket, _clientSocket, 1, _cancellationTokenSource.Token),
+                () => SendTraffic(destination, channel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
@@ -51,34 +55,45 @@ namespace TransparentCloudServerProxy.Managed {
 
         private static readonly Lock DelayLogLock = new();
 
+        private const int BUFFER_SIZE = (int)(65536 * .4);
+
         private static void ForwardTraffic(Socket source, Socket destination, int threadId, CancellationToken cancellationToken) {
             _delays = new double[50];
+            Span<byte> buffer = new byte[BUFFER_SIZE];
 
-            Span<byte> buffer = new byte[(int)(65536 * .4)];
-
-            var stopWatch = new Stopwatch();
-
+            // var stopWatch = new Stopwatch();
             while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {
-                stopWatch.Restart();
+                // stopWatch.Restart();
 
                 var bytesRead = source.Receive(buffer, SocketFlags.None);
                 destination.Send(buffer[..bytesRead], SocketFlags.None);
 
-                stopWatch.Stop();
+                // stopWatch.Stop();
+                // _delays[_delayIndex] = stopWatch.Elapsed.TotalMilliseconds;
+                // _delayIndex = (_delayIndex + 1) % _delays.Length;
+                // if (_delayIndex % 5 == 0) {
+                //     var log = $"T{threadId:0}: Min: {_delays.Min():000.000} Max: {_delays.Max():000.000} Avg: {_delays.Average():000.000}  ";
+                //     lock (DelayLogLock) {
+                //         Console.CursorLeft = log.Length * threadId;
+                //         Console.Write(log);
+                //     }
+                // }
+            }
+        }
 
-                _delays[_delayIndex] = stopWatch.Elapsed.TotalMilliseconds;
-                _delayIndex = (_delayIndex + 1) % _delays.Length;
-                if (_delayIndex % 5 == 0)
-                {
-                    var min = _delays.Min();
-                    var max = _delays.Max();
-                    var avg = _delays.Average();
-                    lock (DelayLogLock)
-                    {
-                        var log = $"T{threadId:0}: Min: {min:000.000} Max: {max:000.000} Avg: {avg:000.000}  ";
-                        Console.CursorLeft = log.Length * threadId;
-                        Console.Write(log);
-                    }
+        private static void ReceiveTraffic(Socket source, Channel<ReadOnlyMemory<byte>> channel, CancellationToken cancellationToken) {
+            var buffer = new byte[BUFFER_SIZE];
+
+            while (!cancellationToken.IsCancellationRequested && source.Connected) {
+                var bytesRead = source.Receive(buffer.AsSpan(), SocketFlags.None);
+                while (!channel.Writer.TryWrite(new ReadOnlyMemory<byte>(buffer, 0, bytesRead))) { }
+            }
+        }
+
+        private static void SendTraffic(Socket destination, Channel<ReadOnlyMemory<byte>> channel, CancellationToken cancellationToken) {
+            while (!cancellationToken.IsCancellationRequested && destination.Connected) {
+                if (channel.Reader.TryRead(out var memory)) {
+                    destination.Send(memory.Span, SocketFlags.None);
                 }
             }
         }
