@@ -53,7 +53,7 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         private void ForwardTraffic(Socket source, Socket destination, ConcurrentQueue<long> timestampQueue) {
-            var channel = Channel.CreateUnbounded<Payload>();
+            var channel = Channel.CreateBounded<Payload>(16);
             Task.Factory.StartNew(
                 () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
