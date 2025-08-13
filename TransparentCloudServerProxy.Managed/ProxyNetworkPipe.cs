@@ -48,7 +48,7 @@ namespace TransparentCloudServerProxy.Managed {
                 }
 
                 var log = $"\r Min: {delays.Min():000.000} Max: {delays.Max():000.000} Avg: {delays.Average():000.000}";
-                Console.Write(log);
+                // Console.Write(log);
             }, null, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
         }
 
@@ -75,7 +75,7 @@ namespace TransparentCloudServerProxy.Managed {
         //
         // private static readonly Lock DelayLogLock = new();
 
-        private const int BUFFER_SIZE = (int)(65536 * .4);
+        private const int BUFFER_SIZE = (int)(512);
 
         private static void ForwardTraffic(Socket source, Socket destination, int threadId, CancellationToken cancellationToken) {
             // _delays = new double[50];
