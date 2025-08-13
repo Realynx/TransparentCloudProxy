@@ -44,31 +44,27 @@ namespace TransparentCloudServerProxy.Managed {
             );
         }
 
-        private static List<double> delays = new();
+        private static readonly double[] Delays = new double[50];
+        private static int _delayIndex = 0;
 
         private static void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
             Span<byte> buffer = new byte[(int)(65536 * .4)];
 
-            //var stopWatch = new Stopwatch();
+            // var stopWatch = new Stopwatch();
 
-            //var index = 0;
             while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {
-                //index++;
-                //stopWatch.Restart();
+                // stopWatch.Restart();
 
                 var bytesRead = source.Receive(buffer, SocketFlags.None);
                 destination.Send(buffer[..bytesRead], SocketFlags.None);
 
-                //stopWatch.Stop();
+                // stopWatch.Stop();
 
-                //var extraEntires = delays.Count() - 50;
-                //delays.RemoveRange(0, extraEntires < 0 ? 0 : extraEntires);
-                //delays.Add(stopWatch.Elapsed.TotalMilliseconds);
-
-                //if (index % 5 == 0) {
-                //    //Console.CursorLeft = 0;
-                //    //Console.Write(delays.Average());
-                //}
+                // Delays[_delayIndex] = stopWatch.Elapsed.TotalMilliseconds;
+                // _delayIndex = (_delayIndex + 1) % Delays.Length;
+                // if (_delayIndex % 5 == 0) {
+                //     Console.Write($"\rMin: {Delays.Min():N5} Max: {Delays.Max():N5} Avg: {Delays.Average():N5}");
+                // }
             }
         }
     }
