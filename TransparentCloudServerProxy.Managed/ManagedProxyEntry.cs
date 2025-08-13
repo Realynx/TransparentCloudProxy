@@ -3,6 +3,8 @@
 namespace TransparentCloudServerProxy.Managed {
     public class ManagedProxyEntry {
         public ManagedProxyEntry(string listenAddress, int listenPort, string targetAddress, int targetPort) {
+            Id = Guid.NewGuid();
+
             ListenAddress = listenAddress;
             ListenPort = listenPort;
 
@@ -10,6 +12,7 @@ namespace TransparentCloudServerProxy.Managed {
             TargetPort = targetPort;
         }
 
+        public Guid Id;
         public string ListenAddress { get; set; }
         public int ListenPort { get; set; }
 

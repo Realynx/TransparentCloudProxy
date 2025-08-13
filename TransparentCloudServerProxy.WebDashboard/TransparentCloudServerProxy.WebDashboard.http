@@ -1,3 +1,9 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = http://localhost:5230
 
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartAllProxies
+
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StartProxy
+
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/StopProxy
+
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/AdminApi/AddProxyEntry

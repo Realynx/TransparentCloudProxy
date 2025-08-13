@@ -1,4 +1,3 @@
-
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 
@@ -15,8 +14,16 @@ namespace TransparentCloudServerProxy.WebDashboard {
                 .AddSingleton<ProxyConfig>()
                 .AddSingleton<DashboardConfig>();
 
-            builder.Services
-                .AddSingleton<IProxyService, ProxyService>();
+            switch (Environment.OSVersion.Platform) {
+                case PlatformID.Unix:
+                    builder.Services
+                        .AddSingleton<IProxyService, RustProxyService>();
+                    break;
+                default:
+                    builder.Services
+                        .AddSingleton<IProxyService, WindowsProxyService>();
+                    break;
+            }
 
             var app = builder.Build();
 

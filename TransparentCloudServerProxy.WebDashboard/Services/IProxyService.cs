@@ -1,6 +1,10 @@
-﻿namespace TransparentCloudServerProxy.WebDashboard.Services {
+﻿using TransparentCloudServerProxy.Managed;
+
+namespace TransparentCloudServerProxy.WebDashboard.Services {
     public interface IProxyService {
-        void RestartAllProxies();
+        void AddProxyEntry(ManagedProxyEntry managedProxyEntry);
         void StartAllProxies();
+        void StartProxy(ManagedProxyEntry managedProxyEntry);
+        void StopProxy(ManagedProxyEntry managedProxyEntry);
     }
 }
