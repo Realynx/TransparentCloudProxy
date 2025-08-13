@@ -11,6 +11,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             _proxyConfig = proxyConfig;
 
             foreach (var entry in _proxyConfig.ManagedProxyEntry) {
+                entry.Id = Guid.NewGuid();
                 _managedProxyService.AddProxyEntry(entry);
             }
 

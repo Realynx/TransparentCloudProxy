@@ -1,18 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 
-using Newtonsoft.Json;
-
 using TransparentCloudServerProxy.Managed;
 using TransparentCloudServerProxy.WebDashboard.Services;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     [ApiController]
     [Route("[controller]")]
-    public class AdminApiController : ControllerBase {
-        private readonly ILogger<AdminApiController> _logger;
+    public class ProxyApiController : ControllerBase {
+        private readonly ILogger<ProxyApiController> _logger;
         private readonly IProxyService _proxyService;
 
-        public AdminApiController(ILogger<AdminApiController> logger, IProxyService proxyService) {
+        public ProxyApiController(ILogger<ProxyApiController> logger, IProxyService proxyService) {
             _logger = logger;
             _proxyService = proxyService;
         }

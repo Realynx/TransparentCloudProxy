@@ -1,11 +1,10 @@
-﻿using System.Buffers;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading.Channels;
 
 namespace TransparentCloudServerProxy.Managed {
     internal class ProxyNetworkPipe : IDisposable {
-        private const int BUFFER_SIZE = 512;
+        private const int BUFFER_SIZE = 4096;
 
         private static readonly long[] _latencies = new long[50];
         private static long _latencyIndex;
@@ -82,7 +81,7 @@ namespace TransparentCloudServerProxy.Managed {
 
                 var bytesSent = 0;
                 while (bytesSent < bytesRead) {
-                    bytesSent = destination.Send(buffer[bytesSent..bytesRead], SocketFlags.None);
+                    bytesSent += destination.Send(buffer[bytesSent..bytesRead], SocketFlags.None);
                 }
 
                 sw.Stop();
