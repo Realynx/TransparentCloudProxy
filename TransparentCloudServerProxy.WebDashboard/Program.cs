@@ -38,7 +38,7 @@ namespace TransparentCloudServerProxy.WebDashboard {
 
             app.UseAuthorization();
 
-            app.UseDefaultFiles();
+            app.MapFallbackToFile("index.html");
 
             app.MapControllers();
             app.UseStaticFiles();
