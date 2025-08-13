@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace TransparentCloudServerProxy.Managed.Models {
+﻿namespace TransparentCloudServerProxy.Managed.Models {
     public class ManagedProxyEntry {
         public ManagedProxyEntry(string listenAddress, int listenPort, string targetAddress, int targetPort) {
             ListenAddress = listenAddress;
@@ -12,7 +10,7 @@ namespace TransparentCloudServerProxy.Managed.Models {
 
         public Guid Id { get; set; }
         public bool Enabled { get; set; }
-        public double MeasuredDelaynNanoSeconds { get; set; }
+        public double MeasuredDelayNanoSeconds { get; set; }
 
         public string ListenAddress { get; set; }
         public int ListenPort { get; set; }
@@ -25,11 +23,15 @@ namespace TransparentCloudServerProxy.Managed.Models {
         }
 
         public override bool Equals(object? obj) {
-            if (obj is null) {
+            if (obj is not ManagedProxyEntry other) {
                 return false;
             }
 
-            return obj.ToString() == ToString();
+            return this == other;
+        }
+
+        public override int GetHashCode() {
+            return ToString().GetHashCode();
         }
 
         public static bool operator ==(ManagedProxyEntry left, ManagedProxyEntry right) {
@@ -37,7 +39,7 @@ namespace TransparentCloudServerProxy.Managed.Models {
         }
 
         public static bool operator !=(ManagedProxyEntry left, ManagedProxyEntry right) {
-            return !left.ToString().Equals(right.ToString(), StringComparison.OrdinalIgnoreCase);
+            return !(left == right);
         }
     }
 }

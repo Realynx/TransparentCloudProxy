@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,9 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="TransparentCloudServerProxy.CNative.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Update="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

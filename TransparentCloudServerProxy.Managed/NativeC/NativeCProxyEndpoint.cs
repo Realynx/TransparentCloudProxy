@@ -24,10 +24,6 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
             return ManagedProxyEntry.ToString();
         }
 
-        public void Dispose() {
-            _listenSocket.Dispose();
-        }
-
         public double GetAverageDelayNanoSecond() {
             if (_proxyNetworkPipes.Count <= 0) {
                 return 0;
@@ -40,7 +36,9 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
             _cancellationTokenSource = new();
             BindSocket();
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             Listen();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             ManagedProxyEntry.Enabled = true;
         }
@@ -97,6 +95,12 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
             }
 
             return proxyNetworkPipe;
+        }
+
+        public void Dispose() {
+            _listenSocket.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

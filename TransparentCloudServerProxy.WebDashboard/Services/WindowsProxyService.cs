@@ -82,7 +82,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
 
         public ManagedProxyEntry[] GetProxies() {
             foreach (var proxy in _proxyEndpoints) {
-                proxy.ManagedProxyEntry.MeasuredDelaynNanoSeconds = proxy.GetAverageDelayNanoSecond();
+                proxy.ManagedProxyEntry.MeasuredDelayNanoSeconds = proxy.GetAverageDelayNanoSecond();
             }
 
             return _proxyEndpoints.Select(i => i.ManagedProxyEntry).ToArray();
