@@ -55,6 +55,10 @@ namespace TransparentCloudServerProxy.Bindings.NatveCLibProxy {
             }
         }
 
+        public override string ToString() {
+            return $"{_client.RemoteEndPoint} <-> {_target.RemoteEndPoint}";
+        }
+
         public void Dispose() {
             try { Stop(); }
             catch { }
@@ -62,6 +66,9 @@ namespace TransparentCloudServerProxy.Bindings.NatveCLibProxy {
                 ProxyPipe_Destroy(_native);
                 _native = IntPtr.Zero;
             }
+
+            _client.Dispose();
+            _target.Dispose();
         }
     }
 }

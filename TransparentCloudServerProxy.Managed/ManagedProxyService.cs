@@ -1,9 +1,9 @@
 ﻿namespace TransparentCloudServerProxy.Managed {
     public class ManagedProxyService {
-        private readonly List<ProxyEndpoint> _proxyEndpoints = new();
+        private readonly List<NativeCProxyEndpoint> _proxyEndpoints = new();
 
         public void AddProxyEntry(ManagedProxyEntry managedProxyEntry) {
-            var proxyEndpoint = new ProxyEndpoint(managedProxyEntry);
+            var proxyEndpoint = new NativeCProxyEndpoint(managedProxyEntry);
             _proxyEndpoints.Add(proxyEndpoint);
         }
 
