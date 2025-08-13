@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 using TransparentCloudServerProxy.Cli.Models;
 using TransparentCloudServerProxy.Managed;
@@ -7,24 +7,29 @@ namespace TransparentCloudServerProxy.Cli {
     internal class Program {
         static async Task Main(string[] args) {
             ProxyConfig proxyConfig = new();
-            await Console.Out.WriteLineAsync("Welcome to Cloud Proxy.");
+            Console.WriteLine("Welcome to Cloud Proxy.");
 
-            if (File.Exists("appsettings.json")) {
-                var appSettings = JsonConvert.DeserializeObject<ProxyConfig>(File.ReadAllText("appsettings.json"));
-                if (appSettings is not null) {
-                    proxyConfig = appSettings;
-                }
+            if (File.Exists(Path.GetFullPath("appsettings.json"))) {
+                var jsonConfig = File.ReadAllText(Path.GetFullPath("appsettings.json"));
+
+                Console.WriteLine(Path.GetFullPath("appsettings.json"));
+                Console.WriteLine(jsonConfig);
+
+                proxyConfig = JsonSerializer.Deserialize<ProxyConfig>(jsonConfig);
             }
 
             var proxyService = new ManagedProxyService();
+            Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
+
             foreach (var entry in proxyConfig.ManagedProxyEntry) {
+                Console.WriteLine(entry.ToString());
                 proxyService.AddProxyEntry(entry);
-                await Console.Out.WriteLineAsync(entry.ToString());
             }
 
             proxyService.StartAllProxies();
 
-            await Console.Out.WriteLineAsync($"Proxy is running...");
+            Console.WriteLine($"Proxy is running...");
+
             while (true) {
                 Console.ReadLine();
             }
