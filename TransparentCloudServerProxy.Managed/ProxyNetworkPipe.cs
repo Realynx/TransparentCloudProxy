@@ -43,7 +43,7 @@ namespace TransparentCloudServerProxy.Managed {
             _latencyTimer?.Dispose();
             _latencyTimer = new Timer(_ => {
                 while (timestampQueue.TryDequeue(out var timestamp)) {
-                    delays[delayIndex] = Stopwatch.GetElapsedTime(timestamp).TotalMilliseconds;
+                    delays[delayIndex] = new TimeSpan(TimeSpan.TicksPerSecond / Stopwatch.Frequency * timestamp).TotalMilliseconds;
                     delayIndex = (delayIndex + 1) % delays.Length;
                 }
 
