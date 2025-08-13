@@ -39,7 +39,7 @@ public readonly record struct IpAddress : IEnumerable<byte>
         for (var i = 0; i < sizeof(ulong); i++)
         {
             yield return (byte)local;
-            local >>= 1;
+            local >>= 8;
         }
     }
 
