@@ -1,4 +1,6 @@
 ﻿using System.Buffers;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading.Channels;
 
@@ -7,6 +9,7 @@ namespace TransparentCloudServerProxy.Managed {
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly Socket _clientSocket;
         private readonly Socket _targetSocket;
+        private Timer? _latencyTimer;
 
         public ProxyNetworkPipe(Socket clientSocket, Socket targetSocket) {
             _clientSocket = clientSocket;
@@ -22,6 +25,7 @@ namespace TransparentCloudServerProxy.Managed {
 
             _clientSocket.Dispose();
             _targetSocket.Dispose();
+            _latencyTimer?.Dispose();
         }
 
         public void Stop() {
@@ -29,12 +33,27 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         public void ProxyBidirectional() {
-            ForwardTraffic(_clientSocket, _targetSocket);
-            ForwardTraffic(_targetSocket, _clientSocket);
+            var timestampQueue = new ConcurrentQueue<long>();
+            ForwardTraffic(_clientSocket, _targetSocket, timestampQueue);
+            ForwardTraffic(_targetSocket, _clientSocket, timestampQueue);
+
+            var delays = new double[50];
+            var delayIndex = 0;
+
+            _latencyTimer?.Dispose();
+            _latencyTimer = new Timer(_ => {
+                while (timestampQueue.TryDequeue(out var timestamp)) {
+                    delays[delayIndex] = timestamp;
+                    delayIndex = (delayIndex + 1) % delays.Length;
+                }
+
+                var log = $"\r Min: {delays.Min():000.000} Max: {delays.Max():000.000} Avg: {delays.Average():000.000}";
+                Console.Write(log);
+            }, null, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
         }
 
-        private void ForwardTraffic(Socket source, Socket destination) {
-            var channel = Channel.CreateUnbounded<(byte[], int)>();
+        private void ForwardTraffic(Socket source, Socket destination, ConcurrentQueue<long> timestampQueue) {
+            var channel = Channel.CreateUnbounded<Payload>();
             Task.Factory.StartNew(
                 () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
@@ -42,24 +61,24 @@ namespace TransparentCloudServerProxy.Managed {
                 TaskScheduler.Default
             );
             Task.Factory.StartNew(
-                () => SendTraffic(destination, channel, _cancellationTokenSource.Token),
+                () => SendTraffic(destination, channel, timestampQueue, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
         }
 
-        [ThreadStatic]
-        private static double[]? _delays;
-        [ThreadStatic]
-        private static int _delayIndex;
-
-        private static readonly Lock DelayLogLock = new();
+        // [ThreadStatic]
+        // private static double[]? _delays;
+        // [ThreadStatic]
+        // private static int _delayIndex;
+        //
+        // private static readonly Lock DelayLogLock = new();
 
         private const int BUFFER_SIZE = (int)(65536 * .4);
 
         private static void ForwardTraffic(Socket source, Socket destination, int threadId, CancellationToken cancellationToken) {
-            _delays = new double[50];
+            // _delays = new double[50];
             Span<byte> buffer = new byte[BUFFER_SIZE];
 
             // var stopWatch = new Stopwatch();
@@ -82,7 +101,7 @@ namespace TransparentCloudServerProxy.Managed {
             }
         }
 
-        private static void ReceiveTraffic(Socket source, Channel<(byte[], int)> channel, CancellationToken cancellationToken) {
+        private static void ReceiveTraffic(Socket source, Channel<Payload> channel, CancellationToken cancellationToken) {
             var buffer = new byte[BUFFER_SIZE];
 
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
@@ -90,23 +109,28 @@ namespace TransparentCloudServerProxy.Managed {
 
                 var newBuff = ArrayPool<byte>.Shared.Rent(bytesRead);
                 buffer.AsSpan(0, bytesRead).CopyTo(newBuff);
-                while (!channel.Writer.TryWrite((newBuff, bytesRead))) { }
+                while (!channel.Writer.TryWrite(new Payload(newBuff, bytesRead, Stopwatch.GetTimestamp()))) { }
             }
         }
 
-        private static void SendTraffic(Socket destination, Channel<(byte[], int)> channel, CancellationToken cancellationToken) {
+        private static void SendTraffic(Socket destination, Channel<Payload> channel, ConcurrentQueue<long> timestampQueue, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && destination.Connected) {
-                if (channel.Reader.TryRead(out var tuple)) {
-                    var (buff, len) = tuple;
+                if (channel.Reader.TryRead(out var payload)) {
 
                     var bytesSent = 0;
-                    while (bytesSent < len) {
-                        bytesSent = destination.Send(buff.AsSpan()[bytesSent..len], SocketFlags.None);
+                    while (bytesSent < payload.Length) {
+                        bytesSent = destination.Send(payload.Buffer.AsSpan()[bytesSent..payload.Length], SocketFlags.None);
                     }
 
-                    ArrayPool<byte>.Shared.Return(buff);
+                    ArrayPool<byte>.Shared.Return(payload.Buffer);
+
+                    // Profiling
+                    var latency = Stopwatch.GetTimestamp() - payload.Timestamp;
+                    timestampQueue.Enqueue(latency);
                 }
             }
         }
+
+        private readonly record struct Payload(byte[] Buffer, int Length, long Timestamp);
     }
 }
