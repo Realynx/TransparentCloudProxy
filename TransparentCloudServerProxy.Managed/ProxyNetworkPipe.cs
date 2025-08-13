@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Buffers;
+using System.Net.Sockets;
 using System.Threading.Channels;
 
 namespace TransparentCloudServerProxy.Managed {
@@ -33,7 +34,7 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         private void ForwardTraffic(Socket source, Socket destination) {
-            var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();
+            var channel = Channel.CreateUnbounded<(byte[], int)>();
             Task.Factory.StartNew(
                 () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
@@ -81,20 +82,29 @@ namespace TransparentCloudServerProxy.Managed {
             }
         }
 
-        private static void ReceiveTraffic(Socket source, Channel<ReadOnlyMemory<byte>> channel, CancellationToken cancellationToken) {
+        private static void ReceiveTraffic(Socket source, Channel<(byte[], int)> channel, CancellationToken cancellationToken) {
             var buffer = new byte[BUFFER_SIZE];
 
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
                 var bytesRead = source.Receive(buffer.AsSpan(), SocketFlags.None);
-                var newBuf = buffer.AsSpan(0, bytesRead).ToArray();
-                while (!channel.Writer.TryWrite(newBuf)) { }
+
+                var newBuff = ArrayPool<byte>.Shared.Rent(bytesRead);
+                buffer.AsSpan(0, bytesRead).CopyTo(newBuff);
+                while (!channel.Writer.TryWrite((newBuff, bytesRead))) { }
             }
         }
 
-        private static void SendTraffic(Socket destination, Channel<ReadOnlyMemory<byte>> channel, CancellationToken cancellationToken) {
+        private static void SendTraffic(Socket destination, Channel<(byte[], int)> channel, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && destination.Connected) {
-                if (channel.Reader.TryRead(out var memory)) {
-                    destination.Send(memory.Span, SocketFlags.None);
+                if (channel.Reader.TryRead(out var tuple)) {
+                    var (buff, len) = tuple;
+
+                    var bytesSent = 0;
+                    while (bytesSent < len) {
+                        bytesSent = destination.Send(buff.AsSpan()[bytesSent..len], SocketFlags.None);
+                    }
+
+                    ArrayPool<byte>.Shared.Return(buff);
                 }
             }
         }
