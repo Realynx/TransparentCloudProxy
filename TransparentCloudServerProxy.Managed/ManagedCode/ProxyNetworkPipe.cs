@@ -77,7 +77,7 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
                 socket.Disconnect(false);
             }, source);
 
-            Span<byte> buffer = new byte[BUFFER_SIZE];
+            Span<byte> buffer = stackalloc byte[BUFFER_SIZE];
 
             var sw = new Stopwatch();
             while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {

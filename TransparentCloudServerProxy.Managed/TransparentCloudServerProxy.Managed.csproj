@@ -16,9 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>
