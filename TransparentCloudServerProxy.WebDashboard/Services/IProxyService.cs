@@ -1,4 +1,4 @@
-﻿using TransparentCloudServerProxy.Managed;
+﻿using TransparentCloudServerProxy.Managed.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public interface IProxyService {

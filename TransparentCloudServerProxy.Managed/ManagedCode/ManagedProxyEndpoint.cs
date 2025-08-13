@@ -1,19 +1,20 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-using TransparentCloudServerProxy.Bindings.NatveCLibProxy;
+using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Managed.Models;
 
-namespace TransparentCloudServerProxy.Managed {
-    internal class NativeCProxyEndpoint : IDisposable, IProxyEndpoint {
+namespace TransparentCloudServerProxy.Managed.ManagedCode {
+    public class ManagedProxyEndpoint : IDisposable, IProxyEndpoint {
         public ManagedProxyEntry ManagedProxyEntry { get; }
 
         private readonly IPEndPoint _targetEndpoint;
-        private readonly List<NativeCProxyNetworkPipe> _proxyNetworkPipes = new();
+        private readonly List<ProxyNetworkPipe> _proxyNetworkPipes = new();
 
         private Socket _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private CancellationTokenSource _cancellationTokenSource = new();
 
-        public NativeCProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
+        public ManagedProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
             ManagedProxyEntry = managedProxyEntry;
 
             _targetEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.TargetAddress), ManagedProxyEntry.TargetPort);
@@ -21,6 +22,10 @@ namespace TransparentCloudServerProxy.Managed {
 
         public void Dispose() {
             _listenSocket.Dispose();
+        }
+
+        public override string ToString() {
+            return ManagedProxyEntry.ToString();
         }
 
         public void Start() {
@@ -68,14 +73,14 @@ namespace TransparentCloudServerProxy.Managed {
             }
         }
 
-        private async Task<NativeCProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
-            NativeCProxyNetworkPipe? proxyNetworkPipe = null;
+        private async Task<ProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
+            ProxyNetworkPipe? proxyNetworkPipe = null;
 
             try {
                 var targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 await targetSocket.ConnectAsync(_targetEndpoint);
 
-                proxyNetworkPipe = new NativeCProxyNetworkPipe(clientSocket, targetSocket);
+                proxyNetworkPipe = new ProxyNetworkPipe(clientSocket, targetSocket);
                 await Console.Out.WriteLineAsync($"Setup Network Pipe: {proxyNetworkPipe}");
             }
             catch (Exception e) {
@@ -84,6 +89,14 @@ namespace TransparentCloudServerProxy.Managed {
             }
 
             return proxyNetworkPipe;
+        }
+
+        public double GetAverageDelayNanoSecond() {
+            if (_proxyNetworkPipes.Count <= 0) {
+                return 0;
+
+            }
+            return _proxyNetworkPipes.Average(i => i.Latency.TotalNanoseconds);
         }
     }
 }

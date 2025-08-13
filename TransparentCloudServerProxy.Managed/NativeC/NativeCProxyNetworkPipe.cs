@@ -1,14 +1,16 @@
 ﻿using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
-namespace TransparentCloudServerProxy.Bindings.NatveCLibProxy {
-    public class NativeCProxyNetworkPipe : IDisposable {
+using TransparentCloudServerProxy.Managed.Interfaces;
+
+namespace TransparentCloudServerProxy.Managed.NativeC {
+    public class NativeCProxyNetworkPipe : IDisposable, IProxyNetworkPipe {
         // Windows: "proxypipe.dll"; Linux: "libproxypipe.so"
         private const string LIB_NAME =
 #if WINDOWS
-                "TransparentCloudServerProxy.CNative.dll";
+                "TransparentCloudServerProxy.CNative";
 #else
-                    "TransparentCloudServerProxy.CNative.so";
+                    "TransparentCloudServerProxy.CNative";
 #endif
 
         private IntPtr _native;

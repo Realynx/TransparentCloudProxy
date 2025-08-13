@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-using TransparentCloudServerProxy.Managed;
+using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {

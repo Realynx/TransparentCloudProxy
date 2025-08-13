@@ -1,24 +1,39 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace TransparentCloudServerProxy.Managed {
-    internal class ManagedProxyEndpoint : IDisposable, IProxyEndpoint {
+using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Managed.Models;
+
+namespace TransparentCloudServerProxy.Managed.NativeC {
+    public class NativeCProxyEndpoint : IDisposable, IProxyEndpoint {
         public ManagedProxyEntry ManagedProxyEntry { get; }
 
         private readonly IPEndPoint _targetEndpoint;
-        private readonly List<ProxyNetworkPipe> _proxyNetworkPipes = new();
+        private readonly List<NativeCProxyNetworkPipe> _proxyNetworkPipes = new();
 
         private Socket _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private CancellationTokenSource _cancellationTokenSource = new();
 
-        public ManagedProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
+        public NativeCProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
             ManagedProxyEntry = managedProxyEntry;
 
             _targetEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.TargetAddress), ManagedProxyEntry.TargetPort);
         }
 
+        public override string ToString() {
+            return ManagedProxyEntry.ToString();
+        }
+
         public void Dispose() {
             _listenSocket.Dispose();
+        }
+
+        public double GetAverageDelayNanoSecond() {
+            if (_proxyNetworkPipes.Count <= 0) {
+                return 0;
+            }
+
+            return _proxyNetworkPipes.Average(i => i.Latency.Nanoseconds);
         }
 
         public void Start() {
@@ -60,20 +75,20 @@ namespace TransparentCloudServerProxy.Managed {
 
                 var proxyNetworkPipe = await ConnectNetworkPipe(clientSocket);
                 if (proxyNetworkPipe is not null) {
-                    proxyNetworkPipe.ProxyBidirectional();
+                    proxyNetworkPipe.Start();
                     _proxyNetworkPipes.Add(proxyNetworkPipe);
                 }
             }
         }
 
-        private async Task<ProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
-            ProxyNetworkPipe? proxyNetworkPipe = null;
+        private async Task<NativeCProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
+            NativeCProxyNetworkPipe? proxyNetworkPipe = null;
 
             try {
                 var targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 await targetSocket.ConnectAsync(_targetEndpoint);
 
-                proxyNetworkPipe = new ProxyNetworkPipe(clientSocket, targetSocket);
+                proxyNetworkPipe = new NativeCProxyNetworkPipe(clientSocket, targetSocket);
                 await Console.Out.WriteLineAsync($"Setup Network Pipe: {proxyNetworkPipe}");
             }
             catch (Exception e) {

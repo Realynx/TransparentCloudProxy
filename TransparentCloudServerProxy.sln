@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Cli", "TransparentCloudServerProxy.Cli\TransparentCloudServerProxy.Cli.csproj", "{9B5939E2-1E58-4CFA-867E-460E25259CEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Bindings", "TransparentCloudServerProxy.Bindings\TransparentCloudServerProxy.Bindings.csproj", "{56F365D2-E23A-4F7F-B595-B2C87767B73B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.WebDashboard", "TransparentCloudServerProxy.WebDashboard\TransparentCloudServerProxy.WebDashboard.csproj", "{6AC53BF3-6366-4187-8527-9256D5CD1448}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransparentCloudServerProxy.CNative", "TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj", "{B5A0D367-FB4E-49A5-85F1-029D5C63E367}"
@@ -47,18 +45,6 @@ Global
 		{9B5939E2-1E58-4CFA-867E-460E25259CEC}.Release|x64.Build.0 = Release|Any CPU
 		{9B5939E2-1E58-4CFA-867E-460E25259CEC}.Release|x86.ActiveCfg = Release|Any CPU
 		{9B5939E2-1E58-4CFA-867E-460E25259CEC}.Release|x86.Build.0 = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|x64.Build.0 = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Debug|x86.Build.0 = Debug|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|x64.ActiveCfg = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|x64.Build.0 = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|x86.ActiveCfg = Release|Any CPU
-		{56F365D2-E23A-4F7F-B595-B2C87767B73B}.Release|x86.Build.0 = Release|Any CPU
 		{6AC53BF3-6366-4187-8527-9256D5CD1448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6AC53BF3-6366-4187-8527-9256D5CD1448}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AC53BF3-6366-4187-8527-9256D5CD1448}.Debug|x64.ActiveCfg = Debug|Any CPU

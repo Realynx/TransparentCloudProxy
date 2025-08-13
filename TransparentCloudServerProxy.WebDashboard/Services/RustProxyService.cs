@@ -1,4 +1,4 @@
-﻿using TransparentCloudServerProxy.Managed;
+﻿using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {

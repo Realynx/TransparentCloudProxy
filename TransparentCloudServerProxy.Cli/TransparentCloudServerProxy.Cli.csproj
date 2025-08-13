@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TransparentCloudServerProxy.Bindings\TransparentCloudServerProxy.Bindings.csproj" />
     <ProjectReference Include="..\TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.Managed.csproj" />
   </ItemGroup>
 

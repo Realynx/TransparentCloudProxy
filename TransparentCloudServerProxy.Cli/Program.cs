@@ -1,7 +1,9 @@
 ﻿using System.Text.Json;
 
 using TransparentCloudServerProxy.Cli.Models;
-using TransparentCloudServerProxy.Managed;
+using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Managed.ManagedCode;
+using TransparentCloudServerProxy.Managed.NativeC;
 
 namespace TransparentCloudServerProxy.Cli {
     internal class Program {
@@ -16,22 +18,48 @@ namespace TransparentCloudServerProxy.Cli {
                 Console.WriteLine(jsonConfig);
 
                 proxyConfig = JsonSerializer.Deserialize<ProxyConfig>(jsonConfig);
+                if (string.IsNullOrWhiteSpace(proxyConfig.PacketEngine)) {
+                    proxyConfig.PacketEngine = "Managed";
+                }
             }
 
-            var proxyService = new ManagedProxyService();
-            Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
+            var proxyEndpoints = new List<IProxyEndpoint>();
 
+            Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
             foreach (var entry in proxyConfig.ManagedProxyEntry) {
                 Console.WriteLine(entry.ToString());
-                proxyService.AddProxyEntry(entry);
+
+                switch (proxyConfig.PacketEngine) {
+                    case "NativeC":
+                        var nativeProxyEndpoint = new NativeCProxyEndpoint(entry);
+                        proxyEndpoints.Add(nativeProxyEndpoint);
+                        nativeProxyEndpoint.Start();
+                        break;
+                    case "NativeR":
+
+                        break;
+                    default:
+                        var managedProxyEndpoint = new ManagedProxyEndpoint(entry);
+                        proxyEndpoints.Add(managedProxyEndpoint);
+                        managedProxyEndpoint.Start();
+                        break;
+                }
             }
 
-            proxyService.StartAllProxies();
-
             Console.WriteLine($"Proxy is running...");
+            Console.Clear();
 
             while (true) {
-                Console.ReadLine();
+                Console.CursorTop = 0;
+                Console.CursorLeft = 0;
+
+                Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
+                foreach (var endpoint in proxyEndpoints) {
+                    Console.WriteLine($"[{endpoint.GetAverageDelayNanoSecond() / 1000000:F4} Ms] {endpoint}");
+                }
+
+                Console.WriteLine("\n\r\n\r\n\r\n\r");
+                await Task.Delay(TimeSpan.FromSeconds(1));
             }
         }
     }

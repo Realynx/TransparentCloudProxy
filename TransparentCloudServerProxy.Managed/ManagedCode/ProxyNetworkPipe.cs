@@ -2,8 +2,10 @@
 using System.Net.Sockets;
 using System.Threading.Channels;
 
-namespace TransparentCloudServerProxy.Managed {
-    internal class ProxyNetworkPipe : IDisposable {
+using TransparentCloudServerProxy.Managed.Interfaces;
+
+namespace TransparentCloudServerProxy.Managed.ManagedCode {
+    internal class ProxyNetworkPipe : IDisposable, IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
 
         private static readonly long[] _latencies = new long[50];
@@ -39,7 +41,7 @@ namespace TransparentCloudServerProxy.Managed {
             _cancellationTokenSource.Cancel();
         }
 
-        public void ProxyBidirectional() {
+        public void Start() {
             ForwardTraffic(_clientSocket, _targetSocket);
             ForwardTraffic(_targetSocket, _clientSocket);
         }
