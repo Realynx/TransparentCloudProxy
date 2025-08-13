@@ -31,40 +31,55 @@ namespace TransparentCloudServerProxy.Managed {
 
         public void ProxyBidirectional() {
             Task.Factory.StartNew(
-                () => ForwardTraffic(_clientSocket, _targetSocket, _cancellationTokenSource.Token),
+                () => ForwardTraffic(_clientSocket, _targetSocket, 0, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
             Task.Factory.StartNew(
-                () => ForwardTraffic(_targetSocket, _clientSocket, _cancellationTokenSource.Token),
+                () => ForwardTraffic(_targetSocket, _clientSocket, 1, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
         }
 
-        private static readonly double[] Delays = new double[50];
-        private static int _delayIndex = 0;
+        [ThreadStatic]
+        private static double[]? _delays;
+        [ThreadStatic]
+        private static int _delayIndex;
 
-        private static void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
+        private static readonly Lock DelayLogLock = new();
+
+        private static void ForwardTraffic(Socket source, Socket destination, int threadId, CancellationToken cancellationToken) {
+            _delays = new double[50];
+
             Span<byte> buffer = new byte[(int)(65536 * .4)];
 
-            // var stopWatch = new Stopwatch();
+            var stopWatch = new Stopwatch();
 
             while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {
-                // stopWatch.Restart();
+                stopWatch.Restart();
 
                 var bytesRead = source.Receive(buffer, SocketFlags.None);
                 destination.Send(buffer[..bytesRead], SocketFlags.None);
 
-                // stopWatch.Stop();
+                stopWatch.Stop();
 
-                // Delays[_delayIndex] = stopWatch.Elapsed.TotalMilliseconds;
-                // _delayIndex = (_delayIndex + 1) % Delays.Length;
-                // if (_delayIndex % 5 == 0) {
-                //     Console.Write($"\rMin: {Delays.Min():N5} Max: {Delays.Max():N5} Avg: {Delays.Average():N5}");
-                // }
+                _delays[_delayIndex] = stopWatch.Elapsed.TotalMilliseconds;
+                _delayIndex = (_delayIndex + 1) % _delays.Length;
+                if (_delayIndex % 5 == 0)
+                {
+                    var min = _delays.Min();
+                    var max = _delays.Max();
+                    var avg = _delays.Average();
+                    lock (DelayLogLock)
+                    {
+                        var log = $"T{threadId:0}: Min: {min:000.000} Max: {max:000.000} Avg: {avg:000.000}  ";
+                        Console.CursorLeft = log.Length * threadId;
+                        Console.Write(log);
+                    }
+                }
             }
         }
     }
