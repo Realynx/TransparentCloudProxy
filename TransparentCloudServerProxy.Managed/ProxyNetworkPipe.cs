@@ -53,26 +53,29 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         private void ForwardTraffic(Socket source, Socket destination, ConcurrentQueue<long> timestampQueue) {
-            //var channel = Channel.CreateBounded<Payload>(16);
-            //Task.Factory.StartNew(
-            //    () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
-            //    _cancellationTokenSource.Token,
-            //    TaskCreationOptions.LongRunning,
-            //    TaskScheduler.Default
-            //);
-            //Task.Factory.StartNew(
-            //    () => SendTraffic(destination, channel, timestampQueue, _cancellationTokenSource.Token),
-            //    _cancellationTokenSource.Token,
-            //    TaskCreationOptions.LongRunning,
-            //    TaskScheduler.Default
-            //);
+            var payloadChannel = Channel.CreateBounded<Payload>(16);
+            var bufferChannel = Channel.CreateBounded<byte[]>(16);
+            while (bufferChannel.Writer.TryWrite(new byte[BUFFER_SIZE])) { }
 
             Task.Factory.StartNew(
-                () => ForwardTraffic(source, destination, 0, _cancellationTokenSource.Token),
+                () => ReceiveTraffic(source, bufferChannel, payloadChannel, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
             );
+            Task.Factory.StartNew(
+                () => SendTraffic(destination, bufferChannel, payloadChannel, timestampQueue, _cancellationTokenSource.Token),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            );
+
+            // Task.Factory.StartNew(
+            //     () => ForwardTraffic(source, destination, 0, _cancellationTokenSource.Token),
+            //     _cancellationTokenSource.Token,
+            //     TaskCreationOptions.LongRunning,
+            //     TaskScheduler.Default
+            // );
         }
 
         // [ThreadStatic]
@@ -108,33 +111,32 @@ namespace TransparentCloudServerProxy.Managed {
             }
         }
 
-        private static void ReceiveTraffic(Socket source, Channel<Payload> channel, CancellationToken cancellationToken) {
-            var buffer = new byte[BUFFER_SIZE];
-
+        private static void ReceiveTraffic(Socket source, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
+                byte[]? buffer;
+                while (!bufferChannel.Reader.TryRead(out buffer)) { }
+
                 var timestamp = Stopwatch.GetTimestamp();
                 var bytesRead = source.Receive(buffer.AsSpan(), SocketFlags.None);
 
-                var newBuff = ArrayPool<byte>.Shared.Rent(bytesRead);
-                buffer.AsSpan(0, bytesRead).CopyTo(newBuff);
-                while (!channel.Writer.TryWrite(new Payload(newBuff, bytesRead, timestamp))) { }
+                while (!payloadChannel.Writer.TryWrite(new Payload(buffer, bytesRead, timestamp))) { }
             }
         }
 
-        private static void SendTraffic(Socket destination, Channel<Payload> channel, ConcurrentQueue<long> timestampQueue, CancellationToken cancellationToken) {
+        private static void SendTraffic(Socket destination, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, ConcurrentQueue<long> timestampQueue, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && destination.Connected) {
-                if (channel.Reader.TryRead(out var payload)) {
+                if (payloadChannel.Reader.TryRead(out var payload)) {
 
                     var bytesSent = 0;
                     while (bytesSent < payload.Length) {
                         bytesSent = destination.Send(payload.Buffer.AsSpan()[bytesSent..payload.Length], SocketFlags.None);
                     }
 
-                    ArrayPool<byte>.Shared.Return(payload.Buffer);
+                    while (!bufferChannel.Writer.TryWrite(payload.Buffer)) { }
 
                     // Profiling
-                    var latency = Stopwatch.GetTimestamp() - payload.Timestamp;
-                    timestampQueue.Enqueue(latency);
+                    // var latency = Stopwatch.GetTimestamp() - payload.Timestamp;
+                    // timestampQueue.Enqueue(latency);
                 }
             }
         }
