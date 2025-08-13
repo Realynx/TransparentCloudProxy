@@ -53,15 +53,22 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         private void ForwardTraffic(Socket source, Socket destination, ConcurrentQueue<long> timestampQueue) {
-            var channel = Channel.CreateBounded<Payload>(16);
+            //var channel = Channel.CreateBounded<Payload>(16);
+            //Task.Factory.StartNew(
+            //    () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
+            //    _cancellationTokenSource.Token,
+            //    TaskCreationOptions.LongRunning,
+            //    TaskScheduler.Default
+            //);
+            //Task.Factory.StartNew(
+            //    () => SendTraffic(destination, channel, timestampQueue, _cancellationTokenSource.Token),
+            //    _cancellationTokenSource.Token,
+            //    TaskCreationOptions.LongRunning,
+            //    TaskScheduler.Default
+            //);
+
             Task.Factory.StartNew(
-                () => ReceiveTraffic(source, channel, _cancellationTokenSource.Token),
-                _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default
-            );
-            Task.Factory.StartNew(
-                () => SendTraffic(destination, channel, timestampQueue, _cancellationTokenSource.Token),
+                () => ForwardTraffic(source, destination, 0, _cancellationTokenSource.Token),
                 _cancellationTokenSource.Token,
                 TaskCreationOptions.LongRunning,
                 TaskScheduler.Default
