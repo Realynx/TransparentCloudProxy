@@ -52,7 +52,7 @@ namespace TransparentCloudServerProxy.Managed {
             var stopWatch = new Stopwatch();
 
             var index = 0;
-            while (!cancellationToken.IsCancellationRequested) {
+            while (!cancellationToken.IsCancellationRequested && source.Connected && destination.Connected) {
                 index++;
                 stopWatch.Restart();
 
@@ -66,7 +66,8 @@ namespace TransparentCloudServerProxy.Managed {
                 delays.Add(stopWatch.Elapsed.TotalMilliseconds);
 
                 if (index % 5 == 0) {
-                    Console.WriteLine(delays.Average());
+                    Console.CursorLeft = 0;
+                    Console.Write(delays.Average());
                 }
             }
         }
