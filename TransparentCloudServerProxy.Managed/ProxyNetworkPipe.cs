@@ -53,29 +53,29 @@ namespace TransparentCloudServerProxy.Managed {
         }
 
         private void ForwardTraffic(Socket source, Socket destination, ConcurrentQueue<long> timestampQueue) {
-            var payloadChannel = Channel.CreateBounded<Payload>(16);
-            var bufferChannel = Channel.CreateBounded<byte[]>(16);
-            while (bufferChannel.Writer.TryWrite(new byte[BUFFER_SIZE])) { }
-
-            Task.Factory.StartNew(
-                () => ReceiveTraffic(source, bufferChannel, payloadChannel, _cancellationTokenSource.Token),
-                _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default
-            );
-            Task.Factory.StartNew(
-                () => SendTraffic(destination, bufferChannel, payloadChannel, timestampQueue, _cancellationTokenSource.Token),
-                _cancellationTokenSource.Token,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default
-            );
-
+            // var payloadChannel = Channel.CreateBounded<Payload>(16);
+            // var bufferChannel = Channel.CreateBounded<byte[]>(16);
+            // while (bufferChannel.Writer.TryWrite(new byte[BUFFER_SIZE])) { }
+            //
             // Task.Factory.StartNew(
-            //     () => ForwardTraffic(source, destination, 0, _cancellationTokenSource.Token),
+            //     () => ReceiveTraffic(source, bufferChannel, payloadChannel, _cancellationTokenSource.Token),
             //     _cancellationTokenSource.Token,
             //     TaskCreationOptions.LongRunning,
             //     TaskScheduler.Default
             // );
+            // Task.Factory.StartNew(
+            //     () => SendTraffic(destination, bufferChannel, payloadChannel, timestampQueue, _cancellationTokenSource.Token),
+            //     _cancellationTokenSource.Token,
+            //     TaskCreationOptions.LongRunning,
+            //     TaskScheduler.Default
+            // );
+
+            Task.Factory.StartNew(
+                () => ForwardTraffic(source, destination, 0, _cancellationTokenSource.Token),
+                _cancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            );
         }
 
         // [ThreadStatic]
