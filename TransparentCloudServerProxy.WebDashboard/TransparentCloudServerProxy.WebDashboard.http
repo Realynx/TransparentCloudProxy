@@ -27,6 +27,7 @@ Content-Type: application/json
 {
   "listenAddress": "0.0.0.0",
   "listenPort": 25565,
+
   "targetAddress": "10.0.1.222",
   "targetPort": 25565
 }

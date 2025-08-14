@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.Models;
 
 namespace TransparentCloudServerProxy.Managed.NativeC {
@@ -68,6 +69,8 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
 
         private async Task Listen() {
             while (!_cancellationTokenSource.IsCancellationRequested) {
+                PruneNetworkPipes();
+
                 var clientSocket = await _listenSocket.AcceptAsync();
                 await Console.Out.WriteLineAsync($"Accepted a connection from: {clientSocket.RemoteEndPoint}");
 
@@ -76,6 +79,12 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
                     proxyNetworkPipe.Start();
                     _proxyNetworkPipes.Add(proxyNetworkPipe);
                 }
+            }
+        }
+
+        private void PruneNetworkPipes() {
+            foreach (var deadStatePipe in _proxyNetworkPipes.Where(i => i.ClosedState)) {
+                // _proxyNetworkPipes.Remove(deadStatePipe);
             }
         }
 

@@ -40,7 +40,6 @@ static int  socket_errno() { return errno; }
 
 
 extern "C" {
-
 	struct ProxyPipe {
 		socket_t client;
 		socket_t target;

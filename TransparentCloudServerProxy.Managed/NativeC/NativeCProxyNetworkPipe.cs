@@ -5,17 +5,18 @@ using TransparentCloudServerProxy.Managed.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.NativeC {
     public partial class NativeCProxyNetworkPipe : IProxyNetworkPipe {
-        // Windows: "proxypipe.dll"; Linux: "libproxypipe.so"
-        private const string LIB_NAME =
-#if WINDOWS
-                "TransparentCloudServerProxy.CNative";
-#else
-                    "TransparentCloudServerProxy.CNative";
-#endif
+        private const string LIB_NAME = "TransparentCloudServerProxy.CNative";
 
         private nint _handle;
         private readonly Socket _client;
         private readonly Socket _target;
+
+        public bool ClosedState {
+            get {
+                return !_client.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead)
+                    || !_target.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead);
+            }
+        }
 
         [LibraryImport(LIB_NAME)]
         [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]

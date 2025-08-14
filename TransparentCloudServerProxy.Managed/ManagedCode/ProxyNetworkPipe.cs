@@ -20,6 +20,13 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             }
         }
 
+        public bool ClosedState {
+            get {
+                return !_clientSocket.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead)
+                    || !_targetSocket.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectWrite);
+            }
+        }
+
         public ProxyNetworkPipe(Socket clientSocket, Socket targetSocket) {
             _clientSocket = clientSocket;
             _targetSocket = targetSocket;

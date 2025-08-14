@@ -60,6 +60,8 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
 
         private async Task Listen() {
             while (!_cancellationTokenSource.IsCancellationRequested) {
+                PruneNetworkPipes();
+
                 var clientSocket = await _listenSocket.AcceptAsync();
                 await Console.Out.WriteLineAsync($"Accepted a connection from: {clientSocket.RemoteEndPoint}");
 
@@ -68,6 +70,12 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
                     proxyNetworkPipe.Start();
                     _proxyNetworkPipes.Add(proxyNetworkPipe);
                 }
+            }
+        }
+
+        private void PruneNetworkPipes() {
+            foreach (var deadStatePipe in _proxyNetworkPipes.Where(i => i.ClosedState)) {
+                // _proxyNetworkPipes.Remove(deadStatePipe);
             }
         }
 
