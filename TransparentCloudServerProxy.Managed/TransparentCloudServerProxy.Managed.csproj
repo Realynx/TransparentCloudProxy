@@ -7,16 +7,20 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+  <PropertyGroup>
+    <IsWindows Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">true</IsWindows>
+    <IsWindows Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">true</IsWindows>
+    <DefineConstants Condition="'$(IsWindows)' == 'true'">$(DefineConstants);WINDOWS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll" CopyToOutputDirectory="Always" />
+    <ProjectReference Condition="'$(IsWindows)' == 'true'" Include="..\TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+
+    <None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
