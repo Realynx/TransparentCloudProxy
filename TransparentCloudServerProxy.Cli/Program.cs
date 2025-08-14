@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-using TransparentCloudServerProxy.Cli.Models;
 using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Managed.ManagedCode;
+using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.Managed.NativeC;
 using TransparentCloudServerProxy.Managed.UnixNetfilter;
 using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
@@ -10,7 +10,7 @@ using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 namespace TransparentCloudServerProxy.Cli {
     internal class Program {
         static async Task Main(string[] args) {
-            ProxyConfig proxyConfig = new();
+            IProxyConfig proxyConfig;
             Console.WriteLine("Welcome to Cloud Proxy.");
 
             if (File.Exists(Path.GetFullPath("appsettings.json"))) {
@@ -23,6 +23,9 @@ namespace TransparentCloudServerProxy.Cli {
                 if (string.IsNullOrWhiteSpace(proxyConfig.PacketEngine)) {
                     proxyConfig.PacketEngine = "Managed";
                 }
+            }
+            else {
+                proxyConfig = new ProxyConfig();
             }
 
             var proxyEndpoints = new List<IProxyEndpoint>();
@@ -37,15 +40,15 @@ namespace TransparentCloudServerProxy.Cli {
                 entry.Id = Guid.NewGuid();
 
                 switch (proxyConfig.PacketEngine) {
-                    case "NativeC":
-                        var nativeProxyEndpoint = new NativeCProxyEndpoint(entry);
-                        proxyEndpoints.Add(nativeProxyEndpoint);
-                        nativeProxyEndpoint.Start();
-                        break;
                     case "NetFilter":
                         var netFilterEndpoint = new NetFilterProxyEndpoint(entry);
                         proxyEndpoints.Add(netFilterEndpoint);
                         netFilterEndpoint.Start();
+                        break;
+                    case "NativeC":
+                        var nativeProxyEndpoint = new NativeCProxyEndpoint(entry);
+                        proxyEndpoints.Add(nativeProxyEndpoint);
+                        nativeProxyEndpoint.Start();
                         break;
                     default:
                         var managedProxyEndpoint = new ManagedProxyEndpoint(entry);

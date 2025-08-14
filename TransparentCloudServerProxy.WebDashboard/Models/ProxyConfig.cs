@@ -1,7 +1,7 @@
 ﻿using TransparentCloudServerProxy.Managed.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Models {
-    public class ProxyConfig {
+    public class ProxyConfig : IProxyConfig {
         public ProxyConfig(IConfigurationRoot configurationRoot) {
             configurationRoot.GetSection(nameof(ProxyConfig)).Bind(this);
         }

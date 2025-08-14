@@ -22,18 +22,47 @@ namespace TransparentCloudServerProxy.Managed.UnixNetfilter {
             return 0;
         }
 
-        public void Start() {
-            // ManagedProxyEntry.Id
-            var tableId = $"proxy";
-            Console.WriteLine(NetFilter.RunNetFilterCommand("add rule ip " + tableId + $" prerouting iifname != \"lo\" udp dport {ManagedProxyEntry.ListenPort} dnat to {ManagedProxyEntry.TargetAddress}:{ManagedProxyEntry.TargetPort}"));
-            Console.WriteLine(NetFilter.RunNetFilterCommand("add rule ip " + tableId + $" prerouting iifname != \"lo\" tcp dport {ManagedProxyEntry.ListenPort} dnat to {ManagedProxyEntry.TargetAddress}:{ManagedProxyEntry.TargetPort}"));
+        private string ComputeFilterRule(string tableName, ProxySocketType? overide = null) {
+            var socketType = string.Empty;
 
+            var switchType = overide is null ? ManagedProxyEntry.ProxySocketType : overide;
+            switch (switchType) {
+                case ProxySocketType.Tcp:
+                    socketType = "tcp";
+                    break;
+                case ProxySocketType.Udp:
+                    socketType = "udp";
+                    break;
+                case ProxySocketType.Any:
+                    socketType = string.Empty;
+                    break;
+
+                default:
+                    socketType = "tcp";
+                    break;
+            }
+
+            return $"rule ip {tableName} prerouting iifname != \"lo\" {socketType} dport {ManagedProxyEntry.ListenPort} dnat to {ManagedProxyEntry.TargetAddress}:{ManagedProxyEntry.TargetPort}";
+        }
+
+        public void Start() {
+            if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
+                Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy")}"));
+                return;
+            }
+
+            Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Tcp)}"));
+            Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Udp)}"));
         }
 
         public void Stop() {
-            var tableId = $"proxy_{ManagedProxyEntry.Id.ToString()}";
+            if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
+                Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy")}"));
+                return;
+            }
 
-            // Console.WriteLine(NetFilter.RunNetFilterCommand($"delete table ip {tableId}"));
+            Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Tcp)}"));
+            Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Udp)}"));
         }
     }
 }

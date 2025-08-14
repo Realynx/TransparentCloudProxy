@@ -1,5 +1,15 @@
-﻿namespace TransparentCloudServerProxy.Managed.Models {
+﻿using System.Text.Json.Serialization;
+
+namespace TransparentCloudServerProxy.Managed.Models {
+    public enum ProxySocketType {
+        Tcp,
+        Udp,
+        Tcp_Udp,
+        Any
+    }
+
     public class ManagedProxyEntry {
+
         public ManagedProxyEntry(string listenAddress, int listenPort, string targetAddress, int targetPort) {
             ListenAddress = listenAddress;
             ListenPort = listenPort;
@@ -10,6 +20,9 @@
 
         public Guid Id { get; set; }
         public bool Enabled { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ProxySocketType ProxySocketType { get; set; }
         public double MeasuredDelayNanoSeconds { get; set; }
 
         public string ListenAddress { get; set; }
