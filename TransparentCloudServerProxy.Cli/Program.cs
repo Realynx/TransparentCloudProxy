@@ -4,6 +4,8 @@ using TransparentCloudServerProxy.Cli.Models;
 using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.NativeC;
+using TransparentCloudServerProxy.Managed.UnixNetfilter;
+using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 
 namespace TransparentCloudServerProxy.Cli {
     internal class Program {
@@ -25,9 +27,14 @@ namespace TransparentCloudServerProxy.Cli {
 
             var proxyEndpoints = new List<IProxyEndpoint>();
 
+            if (proxyConfig.PacketEngine == "NetFilter") {
+                NetFilter.ResetTables();
+            }
+
             Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
             foreach (var entry in proxyConfig.ManagedProxyEntry) {
                 Console.WriteLine(entry.ToString());
+                entry.Id = Guid.NewGuid();
 
                 switch (proxyConfig.PacketEngine) {
                     case "NativeC":
@@ -35,8 +42,10 @@ namespace TransparentCloudServerProxy.Cli {
                         proxyEndpoints.Add(nativeProxyEndpoint);
                         nativeProxyEndpoint.Start();
                         break;
-                    case "NativeR":
-
+                    case "NetFilter":
+                        var netFilterEndpoint = new NetFilterProxyEndpoint(entry);
+                        proxyEndpoints.Add(netFilterEndpoint);
+                        netFilterEndpoint.Start();
                         break;
                     default:
                         var managedProxyEndpoint = new ManagedProxyEndpoint(entry);
@@ -55,7 +64,13 @@ namespace TransparentCloudServerProxy.Cli {
 
                 Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
                 foreach (var endpoint in proxyEndpoints) {
-                    Console.WriteLine($"[{endpoint.GetAverageDelayNanoSecond() / 1000000:F4} Ms] {endpoint}");
+                    var delayString = $"[{endpoint.GetAverageDelayNanoSecond() / 1000000:F4} Ms] ";
+
+                    if (proxyConfig.PacketEngine == "NetFilter") {
+                        delayString = string.Empty;
+                    }
+
+                    Console.WriteLine($"{delayString}{endpoint}");
                 }
 
                 Console.WriteLine("\n\r\n\r\n\r\n\r");
