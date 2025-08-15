@@ -2,14 +2,15 @@
 using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.Managed.NativeC;
-using TransparentCloudServerProxy.WebDashboard.Models;
+using TransparentCloudServerProxy.Managed.UnixNetfilter;
+using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class WindowsProxyService : IProxyService {
         private readonly List<IProxyEndpoint> _proxyEndpoints = new();
-        private readonly ProxyConfig _proxyConfig;
+        private readonly IProxyConfig _proxyConfig;
 
-        public WindowsProxyService(ProxyConfig proxyConfig) {
+        public WindowsProxyService(IProxyConfig proxyConfig) {
             _proxyConfig = proxyConfig;
 
             foreach (var entry in _proxyConfig.ManagedProxyEntry) {
@@ -56,8 +57,10 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                     _proxyEndpoints.Add(nativeProxyEndpoint);
                     nativeProxyEndpoint.Start();
                     break;
-                case "NativeR":
-
+                case "NetFilter":
+                    var netFilterEndpoint = new NetFilterProxyEndpoint(managedProxyEntry);
+                    _proxyEndpoints.Add(netFilterEndpoint);
+                    netFilterEndpoint.Start();
                     break;
                 default:
                     var managedProxyEndpoint = new ManagedProxyEndpoint(managedProxyEntry);

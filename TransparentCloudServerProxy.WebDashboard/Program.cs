@@ -1,5 +1,9 @@
+using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
+using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
+
+using ProxyConfig = TransparentCloudServerProxy.WebDashboard.Models.ProxyConfig;
 
 namespace TransparentCloudServerProxy.WebDashboard {
     public class Program {
@@ -14,7 +18,7 @@ namespace TransparentCloudServerProxy.WebDashboard {
 
             builder.Services
                 .AddSingleton<IConfigurationRoot>(builder.Configuration)
-                .AddSingleton<ProxyConfig>()
+                .AddSingleton<IProxyConfig, ProxyConfig>()
                 .AddSingleton<DashboardConfig>();
 
             switch (Environment.OSVersion.Platform) {

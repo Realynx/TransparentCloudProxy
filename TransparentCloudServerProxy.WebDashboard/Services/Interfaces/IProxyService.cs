@@ -1,6 +1,6 @@
 ﻿using TransparentCloudServerProxy.Managed.Models;
 
-namespace TransparentCloudServerProxy.WebDashboard.Services {
+namespace TransparentCloudServerProxy.WebDashboard.Services.Interfaces {
     public interface IProxyService {
         void AddProxyEntry(ManagedProxyEntry managedProxyEntry);
         ManagedProxyEntry[] GetProxies();
