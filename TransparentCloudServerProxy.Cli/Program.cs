@@ -4,7 +4,6 @@ using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
 using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
-using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 using TransparentCloudServerProxy.SystemTools;
 
 namespace TransparentCloudServerProxy.Cli {
@@ -51,7 +50,7 @@ namespace TransparentCloudServerProxy.Cli {
                         break;
 
                     default:
-                        proxyImplementation = NativeCProxy.FromInstance(proxy);
+                        proxyImplementation = ManagedProxy.FromInstance(proxy);
                         break;
                 }
 
