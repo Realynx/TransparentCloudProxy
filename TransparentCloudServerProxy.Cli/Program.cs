@@ -31,7 +31,7 @@ namespace TransparentCloudServerProxy.Cli {
             var proxyEndpoints = new List<IProxyEndpoint>();
 
             if (proxyConfig.PacketEngine == "NetFilter") {
-                NetFilter.ResetTables();
+                new NetFilter().ResetTables();
             }
 
             Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
@@ -41,7 +41,7 @@ namespace TransparentCloudServerProxy.Cli {
 
                 switch (proxyConfig.PacketEngine) {
                     case "NetFilter":
-                        var netFilterEndpoint = new NetFilterProxyEndpoint(entry);
+                        var netFilterEndpoint = new NetFilterProxyEndpoint(entry, new NetFilter());
                         proxyEndpoints.Add(netFilterEndpoint);
                         netFilterEndpoint.Start();
                         break;

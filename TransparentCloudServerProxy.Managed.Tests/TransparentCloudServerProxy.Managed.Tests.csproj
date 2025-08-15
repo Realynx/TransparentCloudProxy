@@ -26,7 +26,6 @@
   <ItemGroup>
     <Folder Include="Linux\ManagedTerminatedProxy\" />
     <Folder Include="Linux\NativeTerminatedProxy\" />
-    <Folder Include="Linux\NetFilterProxy\" />
     <Folder Include="Windows\ManagedTerminatedProxy\" />
     <Folder Include="Windows\NativeTerminatedProxy\" />
     <Folder Include="Windows\WPFProxy\" />

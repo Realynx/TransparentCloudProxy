@@ -4,10 +4,13 @@ using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 
 namespace TransparentCloudServerProxy.Managed.UnixNetfilter {
     public class NetFilterProxyEndpoint : IDisposable, IProxyEndpoint {
+        private readonly ISystemProgram _netFilterProgram;
+
         public ManagedProxyEntry ManagedProxyEntry { get; }
 
-        public NetFilterProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
+        public NetFilterProxyEndpoint(ManagedProxyEntry managedProxyEntry, ISystemProgram netFilterProgram) {
             ManagedProxyEntry = managedProxyEntry;
+            _netFilterProgram = netFilterProgram;
         }
 
         public override string ToString() {
@@ -47,22 +50,22 @@ namespace TransparentCloudServerProxy.Managed.UnixNetfilter {
 
         public void Start() {
             if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
-                Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy")}"));
+                _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy")}");
                 return;
             }
 
-            Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Tcp)}"));
-            Console.WriteLine(NetFilter.RunNetFilterCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Udp)}"));
+            _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Tcp)}");
+            _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Udp)}");
         }
 
         public void Stop() {
             if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
-                Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy")}"));
+                _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy")}");
                 return;
             }
 
-            Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Tcp)}"));
-            Console.WriteLine(NetFilter.RunNetFilterCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Udp)}"));
+            _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Tcp)}");
+            _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Udp)}");
         }
     }
 }

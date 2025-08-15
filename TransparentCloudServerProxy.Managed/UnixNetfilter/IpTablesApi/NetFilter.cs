@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
 
 namespace TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi {
-    public class NetFilter {
+    public class NetFilter : ISystemProgram {
         public NetFilter() {
 
         }
 
-        public static string RunNetFilterCommand(string arguments) {
+        public string RunCommand(string arguments) {
             try {
                 var netFilterProcess = Process.Start(new ProcessStartInfo("nft", arguments) {
                     RedirectStandardOutput = true,
@@ -21,13 +21,13 @@ namespace TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi {
             }
         }
 
-        public static void ResetTables() {
-            RunNetFilterCommand("flush ruleset");
+        public void ResetTables() {
+            RunCommand("flush ruleset");
 
-            Console.WriteLine(RunNetFilterCommand($"add table ip proxy"));
-            Console.WriteLine(RunNetFilterCommand("add chain ip proxy prerouting { type nat hook prerouting priority -100; }"));
-            Console.WriteLine(RunNetFilterCommand("add chain ip proxy postrouting { type nat hook postrouting priority 100; }"));
-            Console.WriteLine(RunNetFilterCommand("add rule ip proxy postrouting oifname != \"lo\" masquerade"));
+            Console.WriteLine(RunCommand($"add table ip proxy"));
+            Console.WriteLine(RunCommand("add chain ip proxy prerouting { type nat hook prerouting priority -100; }"));
+            Console.WriteLine(RunCommand("add chain ip proxy postrouting { type nat hook postrouting priority 100; }"));
+            Console.WriteLine(RunCommand("add rule ip proxy postrouting oifname != \"lo\" masquerade"));
         }
     }
 }

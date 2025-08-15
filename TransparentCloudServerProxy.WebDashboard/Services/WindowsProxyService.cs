@@ -3,6 +3,7 @@ using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.Managed.NativeC;
 using TransparentCloudServerProxy.Managed.UnixNetfilter;
+using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
@@ -58,7 +59,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                     nativeProxyEndpoint.Start();
                     break;
                 case "NetFilter":
-                    var netFilterEndpoint = new NetFilterProxyEndpoint(managedProxyEntry);
+                    var netFilterEndpoint = new NetFilterProxyEndpoint(managedProxyEntry, new NetFilter());
                     _proxyEndpoints.Add(netFilterEndpoint);
                     netFilterEndpoint.Start();
                     break;
