@@ -25,16 +25,10 @@
 					FontWeight="Bold"
 					Margin="0,0,0,10" />
 
-			<TextBox Name="UsernameBox"
+			<TextBox Name="Credential"
 					Background="#555"
 					Foreground="White"
-					Watermark="Username"
-					CornerRadius="6" />
-
-			<TextBox PasswordChar="*"
-					Name="PasswordBox"
-					Background="#555"
-					Foreground="White"
+					Watermark="Access Credential"
 					CornerRadius="6" />
 
 			<Button Content="Login"

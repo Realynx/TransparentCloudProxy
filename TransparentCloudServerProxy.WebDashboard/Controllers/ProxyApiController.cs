@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TransparentCloudServerProxy.ProxyBackend;
@@ -6,6 +7,7 @@ using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = "KeyToken")]
     public class ProxyApiController : ControllerBase {
         private readonly ILogger<ProxyApiController> _logger;
         private readonly IProxyService _proxyService;

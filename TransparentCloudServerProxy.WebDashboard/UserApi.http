@@ -1,0 +1,17 @@
+@TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
+@sslVerify = false
+@authKey = 063BBFD59228117C3DF840A83E22C63EB8AC0E7068399A65189A2CE7A0C47868
+
+### Get Self
+GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/Get
+Accept: application/json
+Authorization: Key {{authKey}}
+
+### Create User
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/CreateUser
+Authorization: Key {{authKey}}
+Content-Type: application/json
+
+{
+  "Username": "poofy"
+}

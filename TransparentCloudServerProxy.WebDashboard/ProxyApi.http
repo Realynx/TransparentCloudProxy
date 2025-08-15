@@ -1,18 +1,20 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
 @sslVerify = false
-
+@authKey = F2DB40DFDA42B33173CDBEEDC670359B61CD43DB4BB5D9CF48FE62268269AAC3
 
 ### Get proxies
 GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/GetProxies
 Accept: application/json
+Authorization: Key {{authKey}}
 
 ### Start all proxies
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StartAllProxies
+Authorization: Key {{authKey}}
 
 ### Start proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StartProxy
 Content-Type: application/json
-
+Authorization: Key {{authKey}}
 {
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
@@ -25,7 +27,7 @@ Content-Type: application/json
 ### Stop proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StopProxy
 Content-Type: application/json
-
+Authorization: Key {{authKey}}
 {
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
@@ -38,7 +40,7 @@ Content-Type: application/json
 ### Add proxy entry
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/AddProxy
 Content-Type: application/json
-
+Authorization: Key {{authKey}}
 {
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
@@ -51,7 +53,7 @@ Content-Type: application/json
 ### Remove proxy
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/RemoveProxy
 Content-Type: application/json
-
+Authorization: Key {{authKey}}
 {
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
