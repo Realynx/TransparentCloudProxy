@@ -15,7 +15,7 @@ namespace TransparentCloudServerProxy.Managed.Tests.ProxyListenerTests {
 
         protected override void Act() {
             TestableImplementation.Start(client => acceptedSocket = client);
-            Thread.Sleep(10);
+            Thread.Sleep(20);
         }
 
         [Fact]
