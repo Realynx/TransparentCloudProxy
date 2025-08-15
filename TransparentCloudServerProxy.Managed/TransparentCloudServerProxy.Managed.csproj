@@ -1,26 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <IsWindows Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">true</IsWindows>
-    <IsWindows Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">true</IsWindows>
-    <DefineConstants Condition="'$(IsWindows)' == 'true'">$(DefineConstants);WINDOWS</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup>
+		<DefineConstants Condition=" '$(OS)' == 'Windows_NT' ">$(DefineConstants);WINDOWS</DefineConstants>
+		<DefineConstants Condition=" '$(OS)' != 'Windows_NT' ">$(DefineConstants);UNIX</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Condition="'$(IsWindows)' == 'true'" Include="..\TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+	<ItemGroup>
+		<ProjectReference Condition="'$(WINDOWS)' == 'true'" Include="..\TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
 
-    <None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+		<None Include="..\x64\$(Configuration)\TransparentCloudServerProxy.CNative.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
