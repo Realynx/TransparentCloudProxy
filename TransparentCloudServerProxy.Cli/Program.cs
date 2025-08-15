@@ -68,7 +68,9 @@ namespace TransparentCloudServerProxy.Cli {
             for (var input = Console.ReadLine(); !input.Equals("exit", StringComparison.OrdinalIgnoreCase); input = Console.ReadLine()) {
             }
 
-            ResetLowLevelPacketFiltering(proxyConfig);
+            foreach (var proxy in proxies) {
+                proxy.Stop();
+            }
         }
 
         private static void ResetLowLevelPacketFiltering(IProxyConfig proxyConfig) {

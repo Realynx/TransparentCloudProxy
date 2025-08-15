@@ -25,6 +25,10 @@ namespace TransparentCloudServerProxy.Managed.Tests.WindowsPfProxyTests {
         [Fact]
         public void Was_RuleDeleted() {
             _netshService.Verify(i => i.RunCommand(It.Is<string>(i => i.StartsWith("interface portproxy delete", StringComparison.OrdinalIgnoreCase))), Times.Once());
+
+            _netshService.Verify(i => i.RunCommand(It.Is<string>(i => !i.Contains($"connectaddress={_targetAddress}", StringComparison.OrdinalIgnoreCase))), Times.Once());
+            _netshService.Verify(i => i.RunCommand(It.Is<string>(i => !i.Contains($"connectport={_targetPort}", StringComparison.OrdinalIgnoreCase))), Times.Once());
+
         }
 
         [Fact]

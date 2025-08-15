@@ -26,7 +26,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.WindowsPF {
         }
 
         public override bool Start() {
-            var response = Netsh.RunCommand($"interface portproxy add {ComputeFilterRule()}");
+            var response = Netsh.RunCommand($"interface portproxy add v4tov4 listenport={ListenPort} listenaddress={ListenHost} connectport={TargetPort} connectaddress={TargetHost} protocol=tcp");
             if (!string.IsNullOrWhiteSpace(response)) {
                 return false;
             }
@@ -36,17 +36,13 @@ namespace TransparentCloudServerProxy.ProxyBackend.WindowsPF {
         }
 
         public override bool Stop() {
-            var response = Netsh.RunCommand($"interface portproxy delete {ComputeFilterRule()}");
+            var response = Netsh.RunCommand($"interface portproxy delete v4tov4 listenport={ListenPort} listenaddress={ListenHost} protocol=tcp");
             if (!string.IsNullOrWhiteSpace(response)) {
                 return false;
             }
 
             Enabled = false;
             return !Enabled;
-        }
-
-        private string ComputeFilterRule() {
-            return $"v4tov4 listenport={ListenPort} listenaddress={ListenHost} connectport={TargetPort} connectaddress={TargetHost} protocol=tcp";
         }
     }
 }
