@@ -22,7 +22,7 @@ namespace TransparentCloudServerProxy.WebDashboard {
                 .AddSingleton<DashboardConfig>();
 
             builder.Services
-                        .AddSingleton<IProxyService, WindowsProxyService>();
+                        .AddSingleton<IProxyService, ProxyService>();
 
             var app = builder.Build();
 

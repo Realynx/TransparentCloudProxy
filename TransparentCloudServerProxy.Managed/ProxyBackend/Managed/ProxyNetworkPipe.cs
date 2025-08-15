@@ -6,7 +6,7 @@ using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
-    internal class ProxyNetworkPipe : IProxyNetworkPipe {
+    public class ProxyNetworkPipe : IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
 
         private readonly CancellationTokenSource _cancellationTokenSource = new();
@@ -26,10 +26,6 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             _targetSocket = targetSocket;
         }
 
-        public override string ToString() {
-            return $"{_clientSocket.RemoteEndPoint} <-> {_targetSocket.RemoteEndPoint}";
-        }
-
         public void Dispose() {
             Stop();
 
@@ -37,13 +33,13 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             _targetSocket.Dispose();
         }
 
-        public void Stop() {
-            _cancellationTokenSource.Cancel();
-        }
-
         public void Start() {
             ForwardTraffic(_clientSocket, _targetSocket);
             ForwardTraffic(_targetSocket, _clientSocket);
+        }
+
+        public void Stop() {
+            _cancellationTokenSource.Cancel();
         }
 
         private void ForwardTraffic(ITestableSocket source, ITestableSocket destination) {

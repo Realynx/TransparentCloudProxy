@@ -4,6 +4,5 @@
         void Dispose();
         void Start();
         void Stop();
-        string ToString();
     }
 }

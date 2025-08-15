@@ -14,10 +14,12 @@ POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StartProx
 Content-Type: application/json
 
 {
-  "listenAddress": "0.0.0.0",
-  "listenPort": 25565,
-  "targetAddress": "10.0.1.222",
-  "targetPort": 25565
+  "PacketEngine": "NativeC",
+  "SocketType": "Tcp",
+  "ListenHost": "0.0.0.0",
+  "ListenPort": 25565,
+  "TargetHost": "10.0.1.222",
+  "TargetPort": 25565
 }
 
 ### Stop proxy
@@ -25,11 +27,12 @@ POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/StopProxy
 Content-Type: application/json
 
 {
-  "listenAddress": "0.0.0.0",
-  "listenPort": 25565,
-
-  "targetAddress": "10.0.1.222",
-  "targetPort": 25565
+  "PacketEngine": "NativeC",
+  "SocketType": "Tcp",
+  "ListenHost": "0.0.0.0",
+  "ListenPort": 25565,
+  "TargetHost": "10.0.1.222",
+  "TargetPort": 25565
 }
 
 ### Add proxy entry
@@ -37,10 +40,12 @@ POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/AddProxy
 Content-Type: application/json
 
 {
-  "listenAddress": "0.0.0.0",
-  "listenPort": 25565,
-  "targetAddress": "10.0.1.222",
-  "targetPort": 25565
+  "PacketEngine": "NativeC",
+  "SocketType": "Tcp",
+  "ListenHost": "0.0.0.0",
+  "ListenPort": 25565,
+  "TargetHost": "10.0.1.222",
+  "TargetPort": 25565
 }
 
 ### Remove proxy
@@ -48,8 +53,10 @@ POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/RemovePro
 Content-Type: application/json
 
 {
-  "listenAddress": "0.0.0.0",
-  "listenPort": 25565,
-  "targetAddress": "10.0.1.222",
-  "targetPort": 25565
+  "PacketEngine": "NativeC",
+  "SocketType": "Tcp",
+  "ListenHost": "0.0.0.0",
+  "ListenPort": 25565,
+  "TargetHost": "10.0.1.222",
+  "TargetPort": 25565
 }

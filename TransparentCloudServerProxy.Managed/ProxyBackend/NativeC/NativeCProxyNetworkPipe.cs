@@ -57,10 +57,6 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
             }
         }
 
-        public override string ToString() {
-            return $"{_client.RemoteEndPoint} <-> {_target.RemoteEndPoint}";
-        }
-
         public void Dispose() {
             try { Stop(); }
             catch { }

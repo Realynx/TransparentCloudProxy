@@ -26,7 +26,6 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         }
 
         public bool Enabled { get; set; }
-        public uint Id { get; set; }
         public string PacketEngine { get; set; }
 
         public string ListenHost { get; init; }
@@ -62,7 +61,7 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         }
 
         public static bool operator ==(Proxy left, Proxy right) {
-            return left.ToString().Equals(right.ToString(), StringComparison.OrdinalIgnoreCase);
+            return left.ListenHost == right.ListenHost && left.ListenPort == right.ListenPort && left.SocketType == right.SocketType;
         }
 
         public static bool operator !=(Proxy left, Proxy right) {

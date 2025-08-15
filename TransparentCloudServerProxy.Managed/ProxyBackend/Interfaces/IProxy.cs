@@ -1,4 +1,6 @@
-﻿using TransparentCloudServerProxy.Managed.Models;
+﻿using System.Text.Json.Serialization;
+
+using TransparentCloudServerProxy.Managed.Models;
 
 namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
     public interface IProxy {
@@ -6,11 +8,11 @@ namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
         int ListenPort { get; init; }
         string TargetHost { get; init; }
         int TargetPort { get; init; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         ProxySocketType SocketType { get; init; }
         string PacketEngine { get; set; }
         bool Enabled { get; set; }
-        uint Id { get; set; }
-
         void Dispose();
         bool Start();
         bool Stop();

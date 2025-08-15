@@ -4,21 +4,20 @@ using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 using TransparentCloudServerProxy.SystemTools;
+using TransparentCloudServerProxy.WebDashboard.Services.Exceptions;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
-    public class WindowsProxyService : IProxyService {
+    public class ProxyService : IProxyService {
         private readonly List<IProxy> _proxies = new();
         private readonly IProxyConfig _proxyConfig;
 
-        public WindowsProxyService(IProxyConfig proxyConfig) {
+        public ProxyService(IProxyConfig proxyConfig) {
             _proxyConfig = proxyConfig;
             ResetLowLevelPacketFiltering();
 
             for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
                 var proxy = proxyConfig.Proxies[x];
-                proxy.Id = x;
-
                 Console.WriteLine($"[{proxy.PacketEngine}] {proxy.ToString()}");
                 AddStartProxy(proxy);
             }
@@ -64,36 +63,36 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         }
 
         public void StartProxy(Proxy proxy) {
-            var existingProxy = _proxies.SingleOrDefault(proxy);
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
             if (existingProxy is null) {
-                return;
+                throw new ProxyNotFoundException($"The proxy {proxy} could not be found to start");
             }
 
             existingProxy.Start();
         }
 
         public void StopProxy(Proxy proxy) {
-            var existingProxy = _proxies.SingleOrDefault(proxy);
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
             if (existingProxy is null) {
-                return;
+                throw new ProxyNotFoundException($"The proxy {proxy} could not be found to stop");
             }
 
             existingProxy.Stop();
         }
 
         public void AddProxyEntry(Proxy proxy) {
-            var existingProxy = _proxies.SingleOrDefault(proxy);
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
             if (existingProxy is not null) {
-                return;
+                throw new ProxyExistsException($"The proxy {proxy} already exists");
             }
 
             AddStartProxy(proxy);
         }
 
         public void RemoveProxyEntry(Proxy proxy) {
-            var existingProxy = _proxies.SingleOrDefault(proxy);
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
             if (existingProxy is null) {
-                return;
+                throw new ProxyNotFoundException($"The proxy {proxy} could not be found to stop");
             }
 
             existingProxy.Stop();

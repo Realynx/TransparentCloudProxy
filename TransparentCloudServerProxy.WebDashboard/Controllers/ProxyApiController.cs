@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
 using TransparentCloudServerProxy.ProxyBackend;
-using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
@@ -16,77 +15,85 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             _proxyService = proxyService;
         }
 
+        private static IActionResult BadRequestError(Exception e) {
+            return new ContentResult() {
+                StatusCode = StatusCodes.Status400BadRequest,
+                ContentType = "application/json",
+                Content = e.Message.ToString()
+            };
+        }
+
         [HttpGet(nameof(GetProxies))]
-        public IProxy[] GetProxies() {
+        public IActionResult GetProxies() {
             try {
-                return _proxyService.GetProxies();
+                return Ok(_proxyService.GetProxies());
             }
             catch (Exception e) {
+                return BadRequestError(e);
             }
-
-            return null;
         }
 
         [HttpPost(nameof(StartAllProxies))]
-        public string StartAllProxies() {
+        public IActionResult StartAllProxies() {
             try {
                 _proxyService.StartAllProxies();
             }
             catch (Exception e) {
-                return e.ToString();
+                return BadRequestError(e);
             }
 
-            return string.Empty;
+            return Ok();
         }
 
         [HttpPost(nameof(StartProxy))]
-        public string StartProxy([FromBody] Proxy managedProxyEntry) {
+        public IActionResult StartProxy([FromBody] Proxy proxy) {
             try {
-                _proxyService.StartProxy(managedProxyEntry);
+                _proxyService.StartProxy(proxy);
             }
             catch (Exception e) {
-                return e.ToString();
+                return BadRequestError(e);
             }
 
-            return string.Empty;
+            return Ok();
         }
 
         [HttpPost(nameof(StopProxy))]
-        public string StopProxy([FromBody] Proxy managedProxyEntry) {
-            Console.WriteLine(managedProxyEntry);
+        public IActionResult StopProxy([FromBody] Proxy proxy) {
+            Console.WriteLine(proxy);
 
             try {
-                _proxyService.StopProxy(managedProxyEntry);
+                _proxyService.StopProxy(proxy);
             }
             catch (Exception e) {
-                return e.ToString();
+                return BadRequestError(e);
             }
 
-            return string.Empty;
+            return Ok();
+
         }
 
         [HttpPost(nameof(AddProxy))]
-        public string AddProxy([FromBody] Proxy managedProxyEntry) {
+        public IActionResult AddProxy([FromBody] Proxy proxy) {
             try {
-                _proxyService.AddProxyEntry(managedProxyEntry);
+                _proxyService.AddProxyEntry(proxy);
             }
             catch (Exception e) {
-                return e.ToString();
+                return BadRequestError(e);
             }
 
-            return string.Empty;
+            return Ok();
         }
 
         [HttpPost(nameof(RemoveProxy))]
-        public string RemoveProxy([FromBody] Proxy managedProxyEntry) {
+        public IActionResult RemoveProxy([FromBody] Proxy proxy) {
             try {
-                _proxyService.RemoveProxyEntry(managedProxyEntry);
+                _proxyService.RemoveProxyEntry(proxy);
             }
             catch (Exception e) {
-                return e.ToString();
+                return BadRequestError(e);
             }
 
-            return string.Empty;
+            return Ok();
         }
     }
 }

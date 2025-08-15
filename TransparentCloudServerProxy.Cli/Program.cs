@@ -32,7 +32,6 @@ namespace TransparentCloudServerProxy.Cli {
 
             for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
                 var proxy = proxyConfig.Proxies[x];
-                proxy.Id = x;
                 Console.WriteLine(proxy.ToString());
 
                 IProxy proxyImplementation;
