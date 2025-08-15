@@ -26,10 +26,10 @@ namespace TransparentCloudServerProxy.SystemTools {
         public void ResetTables() {
             RunCommand("flush ruleset");
 
-            Console.WriteLine(RunCommand($"add table ip proxy"));
-            Console.WriteLine(RunCommand("add chain ip proxy prerouting { type nat hook prerouting priority -100; }"));
-            Console.WriteLine(RunCommand("add chain ip proxy postrouting { type nat hook postrouting priority 100; }"));
-            Console.WriteLine(RunCommand("add rule ip proxy postrouting oifname != \"lo\" masquerade"));
+            RunCommand($"add table ip proxy");
+            RunCommand("add chain ip proxy prerouting { type nat hook prerouting priority -100; }");
+            RunCommand("add chain ip proxy postrouting { type nat hook postrouting priority 100; }");
+            RunCommand("add rule ip proxy postrouting oifname != \"lo\" masquerade");
         }
     }
 }

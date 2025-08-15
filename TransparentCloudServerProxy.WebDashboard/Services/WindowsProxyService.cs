@@ -2,6 +2,8 @@
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
+using TransparentCloudServerProxy.SystemTools;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
@@ -11,6 +13,14 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
 
         public WindowsProxyService(IProxyConfig proxyConfig) {
             _proxyConfig = proxyConfig;
+
+            if (proxyConfig.PacketEngine == "WindowsPF") {
+                new Netsh().ResetState();
+            }
+
+            if (proxyConfig.PacketEngine == "NetFilter") {
+                new NetFilter().ResetTables();
+            }
 
             for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
                 var proxy = proxyConfig.Proxies[x];
@@ -29,6 +39,9 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                     break;
                 case "NativeC":
                     proxyImplementation = NativeCProxy.FromInstance(proxy);
+                    break;
+                case "WindowsPF":
+                    proxyImplementation = WindowsPFProxy.FromInstance(proxy);
                     break;
 
                 default:

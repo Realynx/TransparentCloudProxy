@@ -33,7 +33,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.UnixNetfilter {
             NetFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy")}");
 
             Enabled = false;
-            return Enabled;
+            return !Enabled;
         }
 
         private string ComputeFilterRule(string tableName, ProxySocketType? overide = null) {

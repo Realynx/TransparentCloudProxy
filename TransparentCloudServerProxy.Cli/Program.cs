@@ -4,6 +4,7 @@ using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
 using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 using TransparentCloudServerProxy.SystemTools;
 
 namespace TransparentCloudServerProxy.Cli {
@@ -27,10 +28,7 @@ namespace TransparentCloudServerProxy.Cli {
                 proxyConfig = new ProxyConfig();
             }
 
-
-            if (proxyConfig.PacketEngine == "NetFilter") {
-                new NetFilter().ResetTables();
-            }
+            ResetLowLevelPacketFiltering(proxyConfig);
 
             var proxies = new List<IProxy>();
             Console.WriteLine($"Adding {proxyConfig.Proxies.Length} proxies from config");
@@ -48,6 +46,9 @@ namespace TransparentCloudServerProxy.Cli {
                     case "NativeC":
                         proxyImplementation = NativeCProxy.FromInstance(proxy);
                         break;
+                    case "WindowsPF":
+                        proxyImplementation = WindowsPFProxy.FromInstance(proxy);
+                        break;
 
                     default:
                         proxyImplementation = ManagedProxy.FromInstance(proxy);
@@ -59,19 +60,25 @@ namespace TransparentCloudServerProxy.Cli {
             }
 
             Console.WriteLine($"Proxy is running...");
-            Console.Clear();
+            Console.WriteLine($"Type 'exit' to turn off forwarding.");
+            Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
+            foreach (var endpoint in proxies) {
+                Console.WriteLine(endpoint.ToString());
+            }
 
-            while (true) {
-                Console.CursorTop = 0;
-                Console.CursorLeft = 0;
+            for (var input = Console.ReadLine(); !input.Equals("exit", StringComparison.OrdinalIgnoreCase); input = Console.ReadLine()) {
+            }
 
-                Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
-                foreach (var endpoint in proxies) {
-                    Console.WriteLine(endpoint.ToString());
-                }
+            ResetLowLevelPacketFiltering(proxyConfig);
+        }
 
-                Console.WriteLine("\n\r\n\r\n\r\n\r");
-                await Task.Delay(TimeSpan.FromSeconds(1));
+        private static void ResetLowLevelPacketFiltering(IProxyConfig proxyConfig) {
+            if (proxyConfig.PacketEngine == "WindowsPF") {
+                new Netsh().ResetState();
+            }
+
+            if (proxyConfig.PacketEngine == "NetFilter") {
+                new NetFilter().ResetTables();
             }
         }
     }
