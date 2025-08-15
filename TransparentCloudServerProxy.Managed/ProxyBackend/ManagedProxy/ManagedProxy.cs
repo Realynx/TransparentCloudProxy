@@ -27,6 +27,10 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
         }
 
         public override bool Start() {
+            if (Enabled) {
+                return Enabled;
+            }
+
             _cancellationTokenSource = new();
             _proxyListener = _proxyListenerFactory.CreateProxyListener(ListenEndpoint, SocketType, _cancellationTokenSource.Token);
 
@@ -50,6 +54,10 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
         }
 
         public override bool Stop() {
+            if (!Enabled) {
+                return !Enabled;
+            }
+
             _proxyListener.Stop(_cancellationTokenSource);
             DisposeProxyPipes();
 
@@ -62,6 +70,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
                 networkPipe.Stop();
                 networkPipe.Dispose();
             }
+
             _proxyNetworkPipes.Clear();
         }
 
