@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TransparentCloudServerProxy.App.MainWindow"
+	    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	    mc:Ignorable="d"
+	    Title="TransparentCloudServerProxy.App"
+	    WindowStartupLocation="CenterScreen"
+	    Width="400" Height="300"
+	    TransparencyLevelHint="AcrylicBlur"
+	    ExtendClientAreaToDecorationsHint="True"
+	    ExtendClientAreaChromeHints="NoChrome"
+	    Background="Transparent">
+
+	<Border Background="#333"
+            CornerRadius="16"
+            Padding="20"
+            PointerPressed="DragWindow">
+
+		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="250" Spacing="10">
+			<TextBlock Text="Login"
+					HorizontalAlignment="Center"
+					FontSize="18"
+					Foreground="White"
+					FontWeight="Bold"
+					Margin="0,0,0,10" />
+
+			<TextBox Name="UsernameBox"
+					Background="#555"
+					Foreground="White"
+					Watermark="Username"
+					CornerRadius="6" />
+
+			<TextBox PasswordChar="*"
+					Name="PasswordBox"
+					Background="#555"
+					Foreground="White"
+					CornerRadius="6" />
+
+			<Button Content="Login"
+					Background="#0078d7"
+					Foreground="White"
+					CornerRadius="6"
+					HorizontalAlignment="Center"
+					Width="80" />
+		</StackPanel>
+
+	</Border>
+</Window>
