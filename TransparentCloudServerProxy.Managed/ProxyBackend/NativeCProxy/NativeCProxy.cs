@@ -15,15 +15,20 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeCProxy {
         private readonly List<NativeCProxyNetworkPipe> _proxyNetworkPipes = new();
         private CancellationTokenSource _cancellationTokenSource = new();
 
-        private ProxyListener _proxyListener;
+        private IProxyListener _proxyListener;
+        private readonly ITestableSocketFactory _testableSocketFactory;
+        private readonly IProxyListenerFactory _proxyListenerFactory;
 
-        public NativeCProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+        public NativeCProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort,
+            ITestableSocketFactory testableSocketFactory = null, IProxyListenerFactory proxyListenerFactory = null)
             : base(socketType, listenHost, listenPort, targetHost, targetPort) {
+            _testableSocketFactory = testableSocketFactory;
+            _proxyListenerFactory = proxyListenerFactory;
         }
 
         public override bool Start() {
             _cancellationTokenSource = new();
-            _proxyListener = new ProxyListener(ListenEndpoint, SocketType, _cancellationTokenSource.Token);
+            _proxyListener = _proxyListenerFactory.CreateProxyListener(ListenEndpoint, SocketType, _cancellationTokenSource.Token);
 
             _proxyListener.Start(async clientSocket => {
                 try {
@@ -57,7 +62,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeCProxy {
         }
 
         private async Task<NativeCProxyNetworkPipe> ConnectNetworkPipe(ITestableSocket clientSocket) {
-            var targetSocket = new TestableSocket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
+            var targetSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
             await targetSocket.ConnectAsync(TargetEndpoint);
 
             return new NativeCProxyNetworkPipe(clientSocket, targetSocket);

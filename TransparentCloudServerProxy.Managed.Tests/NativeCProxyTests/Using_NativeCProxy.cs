@@ -1,17 +1,16 @@
-﻿using System.Net;
-using System.Net.Sockets;
-
-using Moq;
+﻿using Moq;
 
 using TestingShared;
 
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
-using TransparentCloudServerProxy.Testables;
+using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
 using TransparentCloudServerProxy.Testables.Interfaces;
+using TransparentCloudServerProxy.Testables;
+using System.Net.Sockets;
+using System.Net;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ManagedProxyTests {
-    public class Using_ManagedProxy : SpecAutoMocker<IProxy, ManagedProxy> {
+namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests {
+    public class Using_NativeCProxy : SpecAutoMocker<IProxy, NativeCProxy> {
         protected Mock<ITestableSocket> _testableSocket;
         protected Mock<IProxyListener> _mockedListener;
         protected Mock<ITestableSocketFactory> _socketFactory;
@@ -23,7 +22,7 @@ namespace TransparentCloudServerProxy.Managed.Tests.ManagedProxyTests {
         protected string _targetAddress = "10.0.1.20";
         protected int _targetPort = 25565;
 
-        public Using_ManagedProxy() {
+        public Using_NativeCProxy() {
             Init(false);
         }
 
