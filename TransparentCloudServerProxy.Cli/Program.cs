@@ -61,6 +61,8 @@ namespace TransparentCloudServerProxy.Cli {
 
             Console.WriteLine($"Proxy is running...");
             Console.WriteLine($"Type 'exit' to turn off forwarding.");
+
+            Console.WriteLine($"\n\r\n\r");
             Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
             foreach (var endpoint in proxies) {
                 Console.WriteLine(endpoint.ToString());
