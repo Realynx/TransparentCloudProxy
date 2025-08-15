@@ -1,95 +1,94 @@
-﻿using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.Managed.ManagedCode;
-using TransparentCloudServerProxy.Managed.Models;
-using TransparentCloudServerProxy.Managed.NativeC;
-using TransparentCloudServerProxy.Managed.UnixNetfilter;
-using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
+﻿using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class WindowsProxyService : IProxyService {
-        private readonly List<IProxyEndpoint> _proxyEndpoints = new();
+        private readonly List<IProxy> _proxies = new();
         private readonly IProxyConfig _proxyConfig;
 
         public WindowsProxyService(IProxyConfig proxyConfig) {
             _proxyConfig = proxyConfig;
 
-            foreach (var entry in _proxyConfig.ManagedProxyEntry) {
-                entry.Id = Guid.NewGuid();
-                AddProxyEntry(entry);
+            for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
+                var proxy = proxyConfig.Proxies[x];
+                proxy.Id = x;
+
+                Console.WriteLine(proxy.ToString());
+                AddStartProxy(proxy);
             }
         }
 
+        private void AddStartProxy(Proxy proxy) {
+            IProxy proxyImplementation;
+            switch (_proxyConfig.PacketEngine) {
+                case "NetFilter":
+                    proxyImplementation = NativeCProxy.FromInstance(proxy);
+                    break;
+                case "NativeC":
+                    proxyImplementation = NativeCProxy.FromInstance(proxy);
+                    break;
+
+                default:
+                    proxyImplementation = NativeCProxy.FromInstance(proxy);
+                    break;
+            }
+
+            _proxies.Add(proxyImplementation);
+            proxyImplementation.Start();
+        }
+
         public void StartAllProxies() {
-            foreach (var proxy in _proxyEndpoints) {
+            foreach (var proxy in _proxies) {
                 proxy.Start();
             }
         }
 
-        public void StartProxy(ManagedProxyEntry managedProxyEntry) {
-            var existingProxy = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+        public void StartProxy(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(proxy);
             if (existingProxy is null) {
                 return;
             }
 
-            managedProxyEntry.Enabled = true;
             existingProxy.Start();
         }
 
-        public void StopProxy(ManagedProxyEntry managedProxyEntry) {
-            var existingProxy = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+        public void StopProxy(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(proxy);
             if (existingProxy is null) {
                 return;
             }
 
             existingProxy.Stop();
-            managedProxyEntry.Enabled = false;
         }
 
-        public void AddProxyEntry(ManagedProxyEntry managedProxyEntry) {
-            var existingProxy = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+        public void AddProxyEntry(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(proxy);
             if (existingProxy is not null) {
                 return;
             }
 
-            switch (_proxyConfig.PacketEngine) {
-                case "NativeC":
-                    var nativeProxyEndpoint = new NativeCProxyEndpoint(managedProxyEntry);
-                    _proxyEndpoints.Add(nativeProxyEndpoint);
-                    nativeProxyEndpoint.Start();
-                    break;
-                case "NetFilter":
-                    var netFilterEndpoint = new NetFilterProxyEndpoint(managedProxyEntry, new NetFilter());
-                    _proxyEndpoints.Add(netFilterEndpoint);
-                    netFilterEndpoint.Start();
-                    break;
-                default:
-                    var managedProxyEndpoint = new ManagedProxyEndpoint(managedProxyEntry);
-                    _proxyEndpoints.Add(managedProxyEndpoint);
-                    managedProxyEndpoint.Start();
-                    break;
-            }
-
-            managedProxyEntry.Enabled = true;
+            AddStartProxy(proxy);
         }
 
-        public void RemoveProxyEntry(ManagedProxyEntry managedProxyEntry) {
-            var existingProxy = _proxyEndpoints.SingleOrDefault(i => i.ManagedProxyEntry == managedProxyEntry);
+        public void RemoveProxyEntry(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(proxy);
             if (existingProxy is null) {
                 return;
             }
 
             existingProxy.Stop();
             existingProxy.Dispose();
-            _proxyEndpoints.Remove(existingProxy);
+            _proxies.Remove(existingProxy);
         }
 
-        public ManagedProxyEntry[] GetProxies() {
-            foreach (var proxy in _proxyEndpoints) {
-                proxy.ManagedProxyEntry.MeasuredDelayNanoSeconds = proxy.GetAverageDelayNanoSecond();
-            }
+        public IProxy[] GetProxies() {
+            return _proxies.ToArray();
+        }
 
-            return _proxyEndpoints.Select(i => i.ManagedProxyEntry).ToArray();
+        Proxy[] IProxyService.GetProxies() {
+            throw new NotImplementedException();
         }
     }
 }

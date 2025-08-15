@@ -3,13 +3,12 @@
 using TestingShared;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.Managed.Models;
-using TransparentCloudServerProxy.Managed.UnixNetfilter;
+using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEndpoint {
-    public class Using_NetFilterProxyEndpoint : SpecAutoMocker<IProxyEndpoint, NetFilterProxyEndpoint> {
+namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+    public class Using_NetFilterProxy : SpecAutoMocker<IProxy, NetFilterProxy> {
         protected Mock<ISystemProgram> _netFilterService;
-
 
         protected string _listenAddress = "0.0.0.0";
         protected int _listenPort = 25565;
@@ -17,15 +16,15 @@ namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEn
         protected string _targetAddress = "0.0.0.0";
         protected int _targetPort = 25565;
 
-        public Using_NetFilterProxyEndpoint() {
-            Init();
+        public Using_NetFilterProxy() {
+            Init(false);
+        }
 
-            // configure defaults for each test that is Using_NetFilterProxyEndpoint.
+        protected void MockSystemProgram() {
             _netFilterService = Mocker.GetMock<ISystemProgram>();
             _netFilterService
                 .Setup(i => i.RunCommand(It.IsAny<string>()))
                 .Returns(string.Empty);
-
         }
     }
 }

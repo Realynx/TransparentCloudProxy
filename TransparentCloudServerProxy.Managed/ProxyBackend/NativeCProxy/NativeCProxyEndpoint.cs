@@ -3,18 +3,19 @@ using System.Net.Sockets;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Managed.NativeC;
 
-namespace TransparentCloudServerProxy.Managed.ManagedCode {
-    public class ManagedProxyEndpoint : IDisposable, IProxyEndpoint {
+namespace TransparentCloudServerProxy.ProxyBackend.NativeC {
+    public class NativeCProxyEndpoint : IDisposable, IProxyEndpoint {
         public ManagedProxyEntry ManagedProxyEntry { get; }
 
         private readonly IPEndPoint _targetEndpoint;
-        private readonly List<ProxyNetworkPipe> _proxyNetworkPipes = new();
+        private readonly List<NativeCProxyNetworkPipe> _proxyNetworkPipes = new();
 
         private Socket _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private CancellationTokenSource _cancellationTokenSource = new();
 
-        public ManagedProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
+        public NativeCProxyEndpoint(ManagedProxyEntry managedProxyEntry) {
             ManagedProxyEntry = managedProxyEntry;
 
             _targetEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.TargetAddress), ManagedProxyEntry.TargetPort);
@@ -22,6 +23,14 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
 
         public override string ToString() {
             return ManagedProxyEntry.ToString();
+        }
+
+        public double GetAverageDelayNanoSecond() {
+            if (_proxyNetworkPipes.Count <= 0) {
+                return 0;
+            }
+
+            return _proxyNetworkPipes.Average(i => i.Latency.Nanoseconds);
         }
 
         public void Start() {
@@ -48,21 +57,9 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
         }
 
         private void BindSocket() {
-            switch (ManagedProxyEntry.ProxySocketType) {
-                case ProxySocketType.Tcp:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    break;
-                case ProxySocketType.Udp:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
-                    break;
-                case ProxySocketType.Any:
-                    break;
-                default:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    break;
-            }
-
+            _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var listenEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.ListenAddress), ManagedProxyEntry.ListenPort);
+
             _listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _listenSocket.Bind(listenEndpoint);
             _listenSocket.Listen(128);
@@ -91,32 +88,14 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             }
         }
 
-        private async Task<ProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
-            ProxyNetworkPipe? proxyNetworkPipe = null;
+        private async Task<NativeCProxyNetworkPipe?> ConnectNetworkPipe(Socket clientSocket) {
+            NativeCProxyNetworkPipe? proxyNetworkPipe = null;
 
             try {
-                Socket? targetSocket = null;
-                switch (ManagedProxyEntry.ProxySocketType) {
-                    case ProxySocketType.Tcp:
-                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        break;
-                    case ProxySocketType.Udp:
-                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
-                        break;
-                    case ProxySocketType.Any:
-                        break;
-                    default:
-                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        break;
-                }
-
-                if (targetSocket is null) {
-                    throw new Exception("Could not connect to target socket.");
-                }
-
+                var targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 await targetSocket.ConnectAsync(_targetEndpoint);
 
-                proxyNetworkPipe = new ProxyNetworkPipe(clientSocket, targetSocket);
+                proxyNetworkPipe = new NativeCProxyNetworkPipe(clientSocket, targetSocket);
                 await Console.Out.WriteLineAsync($"Setup Network Pipe: {proxyNetworkPipe}");
             }
             catch (Exception e) {
@@ -125,13 +104,6 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             }
 
             return proxyNetworkPipe;
-        }
-
-        public double GetAverageDelayNanoSecond() {
-            if (_proxyNetworkPipes.Count <= 0) {
-                return 0;
-            }
-            return _proxyNetworkPipes.Average(i => i.Latency.TotalNanoseconds);
         }
 
         public void Dispose() {

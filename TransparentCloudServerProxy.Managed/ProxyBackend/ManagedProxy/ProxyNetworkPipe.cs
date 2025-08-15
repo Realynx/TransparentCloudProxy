@@ -4,7 +4,7 @@ using System.Threading.Channels;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.ManagedCode {
+namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
     internal class ProxyNetworkPipe : IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
 

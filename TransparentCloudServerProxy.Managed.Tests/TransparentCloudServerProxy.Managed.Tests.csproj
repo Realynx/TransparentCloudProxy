@@ -23,12 +23,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Linux\ManagedTerminatedProxy\" />
-    <Folder Include="Linux\NativeTerminatedProxy\" />
-    <Folder Include="Windows\ManagedTerminatedProxy\" />
-    <Folder Include="Windows\NativeTerminatedProxy\" />
-    <Folder Include="Windows\WPFProxy\" />
-  </ItemGroup>
-
 </Project>

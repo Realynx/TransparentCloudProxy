@@ -1,13 +1,15 @@
 ﻿using Moq;
 
 using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEndpoint {
-    public class When_Stopping_Udp : Using_NetFilterProxyEndpoint {
+namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+    public class When_Stopping_Udp : Using_NetFilterProxy {
         protected override void Setup() {
-            Mocker.Use(new ManagedProxyEntry(_listenAddress, _listenPort, _targetAddress, _targetPort) {
-                ProxySocketType = ProxySocketType.Udp
-            });
+            MockSystemProgram();
+
+            TestableImplementation = new NetFilterProxy(ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort);
+            TestableImplementation.NetFilterProgram = _netFilterService.Object;
         }
 
         protected override void Act() {
@@ -25,6 +27,11 @@ namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEn
         [Fact]
         public void Was_NotTcp() {
             _netFilterService.Verify(i => i.RunCommand(It.Is<string>(i => i.Contains("tcp", StringComparison.OrdinalIgnoreCase))), Times.Never());
+        }
+
+        [Fact]
+        public void Was_EnableTurnOff() {
+            Assert.False(TestableImplementation.Enabled);
         }
     }
 }

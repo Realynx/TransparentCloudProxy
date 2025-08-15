@@ -1,11 +1,14 @@
 ﻿using Moq;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEndpoint {
-    public class When_Default_ConfigureProxies : Using_NetFilterProxyEndpoint {
+namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+    public class When_Starting_Default : Using_NetFilterProxy {
         protected override void Setup() {
-            Mocker.Use(new ManagedProxyEntry(_listenAddress, _listenPort, _targetAddress, _targetPort));
+            MockSystemProgram();
+
+            TestableImplementation = new NetFilterProxy(Models.ProxySocketType.Any, _listenAddress, _listenPort, _targetAddress, _targetPort);
+            TestableImplementation.NetFilterProgram = _netFilterService.Object;
         }
 
         protected override void Act() {
@@ -25,6 +28,11 @@ namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEn
         [Fact]
         public void Was_ValidIpRule() {
             _netFilterService.Verify(i => i.RunCommand(It.Is<string>(i => i.Contains($"add rule ip"))), Times.Once());
+        }
+
+        [Fact]
+        public void Was_EnableTurnOn() {
+            Assert.True(TestableImplementation.Enabled);
         }
     }
 }

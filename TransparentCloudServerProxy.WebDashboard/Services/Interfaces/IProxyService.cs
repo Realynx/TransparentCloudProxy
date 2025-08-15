@@ -1,12 +1,12 @@
-﻿using TransparentCloudServerProxy.Managed.Models;
+﻿using TransparentCloudServerProxy.ProxyBackend;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services.Interfaces {
     public interface IProxyService {
-        void AddProxyEntry(ManagedProxyEntry managedProxyEntry);
-        ManagedProxyEntry[] GetProxies();
-        void RemoveProxyEntry(ManagedProxyEntry managedProxyEntry);
+        void AddProxyEntry(Proxy managedProxyEntry);
+        Proxy[] GetProxies();
+        void RemoveProxyEntry(Proxy managedProxyEntry);
         void StartAllProxies();
-        void StartProxy(ManagedProxyEntry managedProxyEntry);
-        void StopProxy(ManagedProxyEntry managedProxyEntry);
+        void StartProxy(Proxy managedProxyEntry);
+        void StopProxy(Proxy managedProxyEntry);
     }
 }

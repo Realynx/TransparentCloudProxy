@@ -1,9 +1,11 @@
-﻿namespace TransparentCloudServerProxy.Managed.Models {
+﻿using TransparentCloudServerProxy.ProxyBackend;
+
+namespace TransparentCloudServerProxy.Managed.Models {
     public class ProxyConfig : IProxyConfig {
         public ProxyConfig() {
         }
 
-        public ManagedProxyEntry[] ManagedProxyEntry { get; set; }
+        public Proxy[] Proxies { get; set; }
         public string PacketEngine { get; set; } = "";
 
     }

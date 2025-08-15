@@ -2,7 +2,7 @@
 
 using TransparentCloudServerProxy.Managed.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi {
+namespace TransparentCloudServerProxy.SystemTools {
     public class NetFilter : ISystemProgram {
         public NetFilter() {
 

@@ -1,4 +1,5 @@
 ﻿using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend;
 
 namespace TransparentCloudServerProxy.WebDashboard.Models {
     public class ProxyConfig : IProxyConfig {
@@ -6,7 +7,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Models {
             configurationRoot.GetSection(nameof(ProxyConfig)).Bind(this);
         }
 
-        public ManagedProxyEntry[] ManagedProxyEntry { get; set; }
+        public Proxy[] Proxies { get; set; }
         public string PacketEngine { get; set; } = "";
 
     }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
@@ -16,7 +16,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpGet(nameof(GetProxies))]
-        public ManagedProxyEntry[] GetProxies() {
+        public Proxy[] GetProxies() {
             try {
                 return _proxyService.GetProxies();
             }
@@ -39,7 +39,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpPost(nameof(StartProxy))]
-        public string StartProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
+        public string StartProxy([FromBody] Proxy managedProxyEntry) {
             try {
                 _proxyService.StartProxy(managedProxyEntry);
             }
@@ -51,7 +51,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpPost(nameof(StopProxy))]
-        public string StopProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
+        public string StopProxy([FromBody] Proxy managedProxyEntry) {
             Console.WriteLine(managedProxyEntry);
 
             try {
@@ -65,7 +65,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpPost(nameof(AddProxy))]
-        public string AddProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
+        public string AddProxy([FromBody] Proxy managedProxyEntry) {
             try {
                 _proxyService.AddProxyEntry(managedProxyEntry);
             }
@@ -77,7 +77,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpPost(nameof(RemoveProxy))]
-        public string RemoveProxy([FromBody] ManagedProxyEntry managedProxyEntry) {
+        public string RemoveProxy([FromBody] Proxy managedProxyEntry) {
             try {
                 _proxyService.RemoveProxyEntry(managedProxyEntry);
             }

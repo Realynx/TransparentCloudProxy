@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.Models;
-using TransparentCloudServerProxy.Managed.NativeC;
-using TransparentCloudServerProxy.Managed.UnixNetfilter;
-using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
+using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
+using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
+using TransparentCloudServerProxy.SystemTools;
 
 namespace TransparentCloudServerProxy.Cli {
     internal class Program {
@@ -28,34 +28,35 @@ namespace TransparentCloudServerProxy.Cli {
                 proxyConfig = new ProxyConfig();
             }
 
-            var proxyEndpoints = new List<IProxyEndpoint>();
 
             if (proxyConfig.PacketEngine == "NetFilter") {
                 new NetFilter().ResetTables();
             }
 
-            Console.WriteLine($"Adding {proxyConfig.ManagedProxyEntry.Length} proxies from config");
-            foreach (var entry in proxyConfig.ManagedProxyEntry) {
-                Console.WriteLine(entry.ToString());
-                entry.Id = Guid.NewGuid();
+            var proxies = new List<IProxy>();
+            Console.WriteLine($"Adding {proxyConfig.Proxies.Length} proxies from config");
 
+            for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
+                var proxy = proxyConfig.Proxies[x];
+                proxy.Id = x;
+                Console.WriteLine(proxy.ToString());
+
+                IProxy proxyImplementation;
                 switch (proxyConfig.PacketEngine) {
                     case "NetFilter":
-                        var netFilterEndpoint = new NetFilterProxyEndpoint(entry, new NetFilter());
-                        proxyEndpoints.Add(netFilterEndpoint);
-                        netFilterEndpoint.Start();
+                        proxyImplementation = NativeCProxy.FromInstance(proxy);
                         break;
                     case "NativeC":
-                        var nativeProxyEndpoint = new NativeCProxyEndpoint(entry);
-                        proxyEndpoints.Add(nativeProxyEndpoint);
-                        nativeProxyEndpoint.Start();
+                        proxyImplementation = NativeCProxy.FromInstance(proxy);
                         break;
+
                     default:
-                        var managedProxyEndpoint = new ManagedProxyEndpoint(entry);
-                        proxyEndpoints.Add(managedProxyEndpoint);
-                        managedProxyEndpoint.Start();
+                        proxyImplementation = NativeCProxy.FromInstance(proxy);
                         break;
                 }
+
+                proxies.Add(proxyImplementation);
+                proxyImplementation.Start();
             }
 
             Console.WriteLine($"Proxy is running...");
@@ -66,14 +67,8 @@ namespace TransparentCloudServerProxy.Cli {
                 Console.CursorLeft = 0;
 
                 Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
-                foreach (var endpoint in proxyEndpoints) {
-                    var delayString = $"[{endpoint.GetAverageDelayNanoSecond() / 1000000:F4} Ms] ";
-
-                    if (proxyConfig.PacketEngine == "NetFilter") {
-                        delayString = string.Empty;
-                    }
-
-                    Console.WriteLine($"{delayString}{endpoint}");
+                foreach (var endpoint in proxies) {
+                    Console.WriteLine(endpoint.ToString());
                 }
 
                 Console.WriteLine("\n\r\n\r\n\r\n\r");
