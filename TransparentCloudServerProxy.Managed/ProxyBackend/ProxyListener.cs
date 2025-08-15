@@ -2,28 +2,32 @@
 using System.Net.Sockets;
 
 using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
+using TransparentCloudServerProxy.Testables;
+using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
-    internal class ProxyListener : IDisposable {
+namespace TransparentCloudServerProxy.ProxyBackend {
+    public class ProxyListener : IDisposable, IProxyListener {
         private readonly IPEndPoint _listenEndpoint;
-        private readonly IPEndPoint _targetEndpoint;
         private readonly ProxySocketType _proxySocketType;
         private readonly CancellationToken _cancellationToken;
 
-        private Socket _listenSocket;
+        private readonly ITestableSocketFactory _testableSocketFactory;
+        private ITestableSocket _listenSocket;
         private Task _listenTask;
 
-        public ProxyListener(IPEndPoint listenEndpoint, IPEndPoint targetEndpoint, ProxySocketType proxySocketType, CancellationToken cancellationToken) {
+        public ProxyListener(IPEndPoint listenEndpoint, ProxySocketType proxySocketType, CancellationToken cancellationToken, ITestableSocketFactory testableSocketFactory = null) {
             _listenEndpoint = listenEndpoint;
-            _targetEndpoint = targetEndpoint;
             _proxySocketType = proxySocketType;
             _cancellationToken = cancellationToken;
+
+            _testableSocketFactory = testableSocketFactory;
         }
 
-        public void Start(Action<Socket> acceptedConnection) {
+        public void Start(Action<ITestableSocket> acceptedConnection) {
             BindSocket();
 
-            _listenTask = Listen(acceptedConnection);
+            _listenTask = Task.Run(() => Listen(acceptedConnection));
         }
 
         /// <summary>
@@ -32,32 +36,29 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
         /// <param name="sourceToken"></param>
         public void Stop(CancellationTokenSource sourceToken) {
             sourceToken.Cancel();
-
             _listenSocket.Close();
-            _listenTask.Dispose();
+
+            Dispose();
         }
 
         private void BindSocket() {
+            var protoType = ProtocolType.Tcp;
             switch (_proxySocketType) {
-                case ProxySocketType.Tcp:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                    break;
                 case ProxySocketType.Udp:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
-                    break;
-                case ProxySocketType.Any:
+                    protoType = ProtocolType.Udp;
                     break;
                 default:
-                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    protoType = ProtocolType.Tcp;
                     break;
             }
 
+            _listenSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, SocketType.Stream, protoType);
             _listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _listenSocket.Bind(_listenEndpoint);
             _listenSocket.Listen(128);
         }
 
-        private async Task Listen(Action<Socket> acceptedConnection) {
+        private async Task Listen(Action<TestableSocket> acceptedConnection) {
             while (!_cancellationToken.IsCancellationRequested) {
                 var clientSocket = await _listenSocket.AcceptAsync();
 
@@ -66,6 +67,9 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
         }
 
         public void Dispose() {
+            while (!_listenTask.IsCompleted) {
+            }
+
             _listenTask.Dispose();
             _listenSocket.Dispose();
 

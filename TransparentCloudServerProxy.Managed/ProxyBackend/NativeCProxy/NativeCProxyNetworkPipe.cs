@@ -2,21 +2,15 @@
 using System.Runtime.InteropServices;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.NativeC {
     public partial class NativeCProxyNetworkPipe : IProxyNetworkPipe {
         private const string LIB_NAME = "TransparentCloudServerProxy.CNative";
 
         private nint _handle;
-        private readonly Socket _client;
-        private readonly Socket _target;
-
-        public bool ClosedState {
-            get {
-                return !_client.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead)
-                    || !_target.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead);
-            }
-        }
+        private readonly ITestableSocket _client;
+        private readonly ITestableSocket _target;
 
         [LibraryImport(LIB_NAME)]
         [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
@@ -38,7 +32,7 @@ namespace TransparentCloudServerProxy.Managed.NativeC {
         [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
         private static partial ulong ProxyPipe_GetAverageLatencyNs(nint hPipe);
 
-        public NativeCProxyNetworkPipe(Socket client, Socket target) {
+        public NativeCProxyNetworkPipe(ITestableSocket client, ITestableSocket target) {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _target = target ?? throw new ArgumentNullException(nameof(target));
 

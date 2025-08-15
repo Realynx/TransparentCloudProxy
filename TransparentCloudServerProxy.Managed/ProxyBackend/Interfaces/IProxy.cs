@@ -1,6 +1,6 @@
 ﻿using TransparentCloudServerProxy.Managed.Models;
 
-namespace TransparentCloudServerProxy.ProxyBackend {
+namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
     public interface IProxy {
         string ListenHost { get; init; }
         int ListenPort { get; init; }

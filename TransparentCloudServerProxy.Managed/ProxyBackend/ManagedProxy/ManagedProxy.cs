@@ -1,7 +1,10 @@
 ﻿using System.Net.Sockets;
 
 using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.ManagedCode;
+using TransparentCloudServerProxy.Testables;
+using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
     public class ManagedProxy : Proxy, IProxy, IDisposable {
@@ -12,15 +15,20 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
         private readonly List<ProxyNetworkPipe> _proxyNetworkPipes = new();
         private CancellationTokenSource _cancellationTokenSource = new();
 
-        private ProxyListener _proxyListener;
+        private IProxyListener _proxyListener;
+        private readonly ITestableSocketFactory _testableSocketFactory;
+        private readonly IProxyListenerFactory _proxyListenerFactory;
 
-        public ManagedProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+        public ManagedProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort,
+            ITestableSocketFactory testableSocketFactory = null, IProxyListenerFactory proxyListenerFactory = null)
             : base(socketType, listenHost, listenPort, targetHost, targetPort) {
+            _testableSocketFactory = testableSocketFactory;
+            _proxyListenerFactory = proxyListenerFactory;
         }
 
         public override bool Start() {
             _cancellationTokenSource = new();
-            _proxyListener = new ProxyListener(ListenEndpoint, TargetEndpoint, SocketType, _cancellationTokenSource.Token);
+            _proxyListener = _proxyListenerFactory.CreateProxyListener(ListenEndpoint, SocketType, _cancellationTokenSource.Token);
 
             _proxyListener.Start(async clientSocket => {
                 try {
@@ -57,26 +65,18 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedProxy {
             _proxyNetworkPipes.Clear();
         }
 
-        private async Task<ProxyNetworkPipe> ConnectNetworkPipe(Socket clientSocket) {
-            Socket? targetSocket = null;
+        private async Task<ProxyNetworkPipe> ConnectNetworkPipe(ITestableSocket clientSocket) {
+            var protoType = ProtocolType.Tcp;
             switch (SocketType) {
-                case ProxySocketType.Tcp:
-                    targetSocket = new Socket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
-                    break;
                 case ProxySocketType.Udp:
-                    targetSocket = new Socket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Udp);
-                    break;
-                case ProxySocketType.Any:
+                    protoType = ProtocolType.Udp;
                     break;
                 default:
-                    targetSocket = new Socket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
+                    protoType = ProtocolType.Tcp;
                     break;
             }
 
-            if (targetSocket is null) {
-                throw new Exception("Could not connect to target socket.");
-            }
-
+            var targetSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, protoType);
             await targetSocket.ConnectAsync(TargetEndpoint);
             return new ProxyNetworkPipe(clientSocket, targetSocket);
         }

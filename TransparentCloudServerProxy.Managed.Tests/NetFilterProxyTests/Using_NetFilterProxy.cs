@@ -3,7 +3,7 @@
 using TestingShared;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
 namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {

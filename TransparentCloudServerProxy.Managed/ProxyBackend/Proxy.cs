@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend.Exceptions;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend {
     public class Proxy : IProxy, IDisposable {

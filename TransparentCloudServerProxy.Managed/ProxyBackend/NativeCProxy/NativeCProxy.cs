@@ -2,7 +2,9 @@
 
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.Managed.NativeC;
-using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
+using TransparentCloudServerProxy.Testables;
+using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend.NativeCProxy {
     public class NativeCProxy : Proxy, IProxy {
@@ -21,7 +23,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeCProxy {
 
         public override bool Start() {
             _cancellationTokenSource = new();
-            _proxyListener = new ProxyListener(ListenEndpoint, TargetEndpoint, SocketType, _cancellationTokenSource.Token);
+            _proxyListener = new ProxyListener(ListenEndpoint, SocketType, _cancellationTokenSource.Token);
 
             _proxyListener.Start(async clientSocket => {
                 try {
@@ -54,8 +56,8 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeCProxy {
             _proxyNetworkPipes.Clear();
         }
 
-        private async Task<NativeCProxyNetworkPipe> ConnectNetworkPipe(Socket clientSocket) {
-            var targetSocket = new Socket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
+        private async Task<NativeCProxyNetworkPipe> ConnectNetworkPipe(ITestableSocket clientSocket) {
+            var targetSocket = new TestableSocket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
             await targetSocket.ConnectAsync(TargetEndpoint);
 
             return new NativeCProxyNetworkPipe(clientSocket, targetSocket);

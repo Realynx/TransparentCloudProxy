@@ -3,14 +3,15 @@ using System.Net.Sockets;
 using System.Threading.Channels;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
     internal class ProxyNetworkPipe : IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
 
         private readonly CancellationTokenSource _cancellationTokenSource = new();
-        private readonly Socket _clientSocket;
-        private readonly Socket _targetSocket;
+        private readonly ITestableSocket _clientSocket;
+        private readonly ITestableSocket _targetSocket;
         private readonly long[] _latencies = new long[50];
         private long _latencyIndex;
 
@@ -20,14 +21,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             }
         }
 
-        public bool ClosedState {
-            get {
-                return !_clientSocket.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectRead)
-                    || !_targetSocket.Poll(TimeSpan.FromMilliseconds(500).Microseconds, SelectMode.SelectWrite);
-            }
-        }
-
-        public ProxyNetworkPipe(Socket clientSocket, Socket targetSocket) {
+        public ProxyNetworkPipe(ITestableSocket clientSocket, ITestableSocket targetSocket) {
             _clientSocket = clientSocket;
             _targetSocket = targetSocket;
         }
@@ -52,7 +46,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             ForwardTraffic(_targetSocket, _clientSocket);
         }
 
-        private void ForwardTraffic(Socket source, Socket destination) {
+        private void ForwardTraffic(ITestableSocket source, ITestableSocket destination) {
             // var payloadChannel = Channel.CreateBounded<Payload>(16);
             // var bufferChannel = Channel.CreateBounded<byte[]>(16);
             // while (bufferChannel.Writer.TryWrite(new byte[BUFFER_SIZE])) { }
@@ -78,7 +72,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             );
         }
 
-        private void ForwardTraffic(Socket source, Socket destination, CancellationToken cancellationToken) {
+        private void ForwardTraffic(ITestableSocket source, ITestableSocket destination, CancellationToken cancellationToken) {
             cancellationToken.UnsafeRegister(static state => {
                 var socket = (Socket)state!;
                 socket.Disconnect(false);
@@ -103,7 +97,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             }
         }
 
-        private static void ReceiveTraffic(Socket source, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
+        private static void ReceiveTraffic(ITestableSocket source, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && source.Connected) {
                 byte[]? buffer;
                 while (!bufferChannel.Reader.TryRead(out buffer)) { }
@@ -115,7 +109,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
             }
         }
 
-        private void SendTraffic(Socket destination, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
+        private void SendTraffic(ITestableSocket destination, Channel<byte[]> bufferChannel, Channel<Payload> payloadChannel, CancellationToken cancellationToken) {
             while (!cancellationToken.IsCancellationRequested && destination.Connected) {
                 if (payloadChannel.Reader.TryRead(out var payload)) {
                     var bytesSent = 0;
