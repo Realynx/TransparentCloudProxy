@@ -367,3 +367,4 @@ FodyWeavers.xsd
 
 # Ignore contents of wwwroot
 /TransparentCloudServerProxy.WebDashboard/wwwroot/*
+!/TransparentCloudServerProxy.WebDashboard/wwwroot/.gitkeep
