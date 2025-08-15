@@ -84,12 +84,16 @@ namespace TransparentCloudServerProxy.ProxyBackend.Managed {
 
         private async Task<ProxyNetworkPipe> ConnectNetworkPipe(ITestableSocket clientSocket) {
             var protoType = ProtocolType.Tcp;
+            var socketType = System.Net.Sockets.SocketType.Stream;
+
             switch (SocketType) {
                 case ProxySocketType.Udp:
                     protoType = ProtocolType.Udp;
+                    socketType = System.Net.Sockets.SocketType.Dgram;
                     break;
                 default:
                     protoType = ProtocolType.Tcp;
+                    socketType = System.Net.Sockets.SocketType.Stream;
                     break;
             }
 

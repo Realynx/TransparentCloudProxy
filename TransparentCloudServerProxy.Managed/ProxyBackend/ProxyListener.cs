@@ -46,16 +46,20 @@ namespace TransparentCloudServerProxy.ProxyBackend {
 
         private void BindSocket() {
             var protoType = ProtocolType.Tcp;
+            var socketType = SocketType.Stream;
+
             switch (_proxySocketType) {
                 case ProxySocketType.Udp:
                     protoType = ProtocolType.Udp;
+                    socketType = SocketType.Dgram;
                     break;
                 default:
                     protoType = ProtocolType.Tcp;
+                    socketType = SocketType.Stream;
                     break;
             }
 
-            _listenSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, SocketType.Stream, protoType);
+            _listenSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, socketType, protoType);
             _listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _listenSocket.Bind(_listenEndpoint);
             _listenSocket.Listen(128);

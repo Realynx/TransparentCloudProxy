@@ -6,8 +6,11 @@ using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.Testables {
     public class TestableSocket : Socket, ITestableSocket {
+        private readonly SocketType _socketType;
+
         public TestableSocket(AddressFamily addressFamily, SocketType socketType, ProtocolType protocolType)
             : base(addressFamily, socketType, protocolType) {
+            _socketType = socketType;
         }
 
         public TestableSocket(Socket acceptedSocket) : base(acceptedSocket.SafeHandle) { }
@@ -37,7 +40,9 @@ namespace TransparentCloudServerProxy.Testables {
         }
 
         public new void Listen(int backlog) {
-            base.Listen(backlog);
+            if (_socketType == SocketType.Stream) {
+                base.Listen(backlog);
+            }
         }
 
         public new void Close() {

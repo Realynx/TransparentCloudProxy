@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
@@ -16,7 +17,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         }
 
         [HttpGet(nameof(GetProxies))]
-        public Proxy[] GetProxies() {
+        public IProxy[] GetProxies() {
             try {
                 return _proxyService.GetProxies();
             }

@@ -19,7 +19,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                 var proxy = proxyConfig.Proxies[x];
                 proxy.Id = x;
 
-                Console.WriteLine(proxy.ToString());
+                Console.WriteLine($"[{proxy.PacketEngine}] {proxy.ToString()}");
                 AddStartProxy(proxy);
             }
         }
@@ -103,10 +103,6 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
 
         public IProxy[] GetProxies() {
             return _proxies.ToArray();
-        }
-
-        Proxy[] IProxyService.GetProxies() {
-            throw new NotImplementedException();
         }
     }
 }

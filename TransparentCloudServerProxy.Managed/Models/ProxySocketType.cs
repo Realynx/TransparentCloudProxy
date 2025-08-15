@@ -2,7 +2,6 @@
     public enum ProxySocketType {
         Tcp,
         Udp,
-        Tcp_Udp,
         Any
     }
 }

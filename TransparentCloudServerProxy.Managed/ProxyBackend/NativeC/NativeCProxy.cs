@@ -70,7 +70,21 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeC {
         }
 
         private async Task<NativeCProxyNetworkPipe> ConnectNetworkPipe(ITestableSocket clientSocket) {
-            var targetSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, ProtocolType.Tcp);
+            var protoType = ProtocolType.Tcp;
+            var socketType = System.Net.Sockets.SocketType.Stream;
+
+            switch (SocketType) {
+                case ProxySocketType.Udp:
+                    protoType = ProtocolType.Udp;
+                    socketType = System.Net.Sockets.SocketType.Dgram;
+                    break;
+                default:
+                    protoType = ProtocolType.Tcp;
+                    socketType = System.Net.Sockets.SocketType.Stream;
+                    break;
+            }
+
+            var targetSocket = _testableSocketFactory.CreateSocket(AddressFamily.InterNetwork, socketType, protoType);
             await targetSocket.ConnectAsync(TargetEndpoint);
 
             return new NativeCProxyNetworkPipe(clientSocket, targetSocket);
