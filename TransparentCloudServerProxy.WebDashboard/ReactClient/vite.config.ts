@@ -5,16 +5,14 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-    build: {
-        outDir: path.join(
-            __dirname,
-            "../wwwroot"
-        ),
+  build: {
+    outDir: path.join(__dirname, "../wwwroot"),
+    emptyOutDir: true,
+  },
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
-    plugins: [react(), tailwindcss()],
-    resolve: {
-        alias: {
-            "@": path.resolve(__dirname, "./src"),
-        },
-    },
+  },
 });
