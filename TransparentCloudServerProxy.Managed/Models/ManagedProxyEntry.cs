@@ -1,13 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace TransparentCloudServerProxy.Managed.Models {
-    public enum ProxySocketType {
-        Tcp,
-        Udp,
-        Tcp_Udp,
-        Any
-    }
-
     public class ManagedProxyEntry {
 
         public ManagedProxyEntry(string listenAddress, int listenPort, string targetAddress, int targetPort) {

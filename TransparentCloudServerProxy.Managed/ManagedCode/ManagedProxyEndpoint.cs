@@ -48,9 +48,21 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
         }
 
         private void BindSocket() {
-            _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var listenEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.ListenAddress), ManagedProxyEntry.ListenPort);
+            switch (ManagedProxyEntry.ProxySocketType) {
+                case ProxySocketType.Tcp:
+                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    break;
+                case ProxySocketType.Udp:
+                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
+                    break;
+                case ProxySocketType.Any:
+                    break;
+                default:
+                    _listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    break;
+            }
 
+            var listenEndpoint = new IPEndPoint(IPAddress.Parse(ManagedProxyEntry.ListenAddress), ManagedProxyEntry.ListenPort);
             _listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _listenSocket.Bind(listenEndpoint);
             _listenSocket.Listen(128);
@@ -83,7 +95,25 @@ namespace TransparentCloudServerProxy.Managed.ManagedCode {
             ProxyNetworkPipe? proxyNetworkPipe = null;
 
             try {
-                var targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Socket? targetSocket = null;
+                switch (ManagedProxyEntry.ProxySocketType) {
+                    case ProxySocketType.Tcp:
+                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        break;
+                    case ProxySocketType.Udp:
+                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Udp);
+                        break;
+                    case ProxySocketType.Any:
+                        break;
+                    default:
+                        targetSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        break;
+                }
+
+                if (targetSocket is null) {
+                    throw new Exception("Could not connect to target socket.");
+                }
+
                 await targetSocket.ConnectAsync(_targetEndpoint);
 
                 proxyNetworkPipe = new ProxyNetworkPipe(clientSocket, targetSocket);
