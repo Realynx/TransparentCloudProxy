@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 
+using TransparentCloudServerProxy.Managed.Interfaces;
+
 namespace TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi {
     public class NetFilter : ISystemProgram {
         public NetFilter() {

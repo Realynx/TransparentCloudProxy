@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TestingShared\TestingShared.csproj" />
-    <ProjectReference Include="..\TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.Managed.csproj" />
+    <ProjectReference Include="..\TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.csproj" />
   </ItemGroup>
 
   <ItemGroup>

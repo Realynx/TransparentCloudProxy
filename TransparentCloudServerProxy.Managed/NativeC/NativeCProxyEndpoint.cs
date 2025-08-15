@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 
 using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.Managed.ManagedCode;
 using TransparentCloudServerProxy.Managed.Models;
 
 namespace TransparentCloudServerProxy.Managed.NativeC {

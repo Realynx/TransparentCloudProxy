@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Managed", "TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.Managed.csproj", "{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy", "TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.csproj", "{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Cli", "TransparentCloudServerProxy.Cli\TransparentCloudServerProxy.Cli.csproj", "{9B5939E2-1E58-4CFA-867E-460E25259CEC}"
 EndProject

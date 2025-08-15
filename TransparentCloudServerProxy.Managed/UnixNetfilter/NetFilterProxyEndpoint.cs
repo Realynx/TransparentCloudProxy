@@ -1,6 +1,5 @@
 ﻿using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Managed.Models;
-using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 
 namespace TransparentCloudServerProxy.Managed.UnixNetfilter {
     public class NetFilterProxyEndpoint : IDisposable, IProxyEndpoint {
@@ -49,23 +48,11 @@ namespace TransparentCloudServerProxy.Managed.UnixNetfilter {
         }
 
         public void Start() {
-            if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
-                _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy")}");
-                return;
-            }
-
-            _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Tcp)}");
-            _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy", ProxySocketType.Udp)}");
+            _netFilterProgram.RunCommand($"add {ComputeFilterRule("proxy")}");
         }
 
         public void Stop() {
-            if (ManagedProxyEntry.ProxySocketType != ProxySocketType.Tcp_Udp) {
-                _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy")}");
-                return;
-            }
-
-            _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Tcp)}");
-            _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy", ProxySocketType.Udp)}");
+            _netFilterProgram.RunCommand($"delete {ComputeFilterRule("proxy")}");
         }
     }
 }

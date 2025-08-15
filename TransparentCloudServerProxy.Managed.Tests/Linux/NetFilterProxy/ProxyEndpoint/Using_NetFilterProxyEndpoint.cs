@@ -5,7 +5,6 @@ using TestingShared;
 using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.Managed.UnixNetfilter;
-using TransparentCloudServerProxy.Managed.UnixNetfilter.IpTablesApi;
 
 namespace TransparentCloudServerProxy.Managed.Tests.Linux.NetFilterProxy.ProxyEndpoint {
     public class Using_NetFilterProxyEndpoint : SpecAutoMocker<IProxyEndpoint, NetFilterProxyEndpoint> {
