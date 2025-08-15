@@ -8,7 +8,7 @@ namespace TransparentCloudServerProxy.Managed.Tests.WindowsPfProxyTests {
         protected override void Setup() {
             MockSystemProgram();
 
-            TestableImplementation = new WindowsPFProxy(ProxySocketType.Tcp, _listenAddress, _listenPort, _targetAddress, _targetPort);
+            TestableImplementation = new WindowsPFProxy("WindowsPF", ProxySocketType.Tcp, _listenAddress, _listenPort, _targetAddress, _targetPort);
             TestableImplementation.Netsh = _netshService.Object;
         }
 

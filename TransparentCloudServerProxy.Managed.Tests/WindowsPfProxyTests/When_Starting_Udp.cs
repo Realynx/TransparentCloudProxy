@@ -9,7 +9,7 @@ namespace TransparentCloudServerProxy.Managed.Tests.WindowsPfProxyTests {
 
         [Fact]
         public void Was_Error() {
-            Assert.ThrowsAny<Exception>(() => new WindowsPFProxy(ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort));
+            Assert.ThrowsAny<Exception>(() => new WindowsPFProxy("WindowsPF", ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort));
         }
     }
 }

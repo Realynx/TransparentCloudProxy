@@ -6,13 +6,13 @@ using TransparentCloudServerProxy.SystemTools;
 namespace TransparentCloudServerProxy.ProxyBackend.WindowsPF {
     public class WindowsPFProxy : Proxy, IProxy {
         public static WindowsPFProxy FromInstance(IProxy instance) {
-            return new(instance.SocketType, instance.ListenHost, instance.ListenPort, instance.TargetHost, instance.TargetPort);
+            return new(instance.PacketEngine, instance.SocketType, instance.ListenHost, instance.ListenPort, instance.TargetHost, instance.TargetPort);
         }
 
         public ISystemProgram Netsh { get; set; }
 
-        public WindowsPFProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
-            : base(socketType, listenHost, listenPort, targetHost, targetPort) {
+        public WindowsPFProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+            : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             if (socketType != ProxySocketType.Tcp) {
                 throw new Exception("Windows PF is only capable of porxying TCP streams.");
             }

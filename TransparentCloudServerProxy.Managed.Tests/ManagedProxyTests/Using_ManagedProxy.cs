@@ -6,7 +6,7 @@ using Moq;
 using TestingShared;
 
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
+using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.Testables;
 using TransparentCloudServerProxy.Testables.Interfaces;
 

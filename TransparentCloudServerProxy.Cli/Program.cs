@@ -2,8 +2,8 @@
 
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
-using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.Managed;
+using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 using TransparentCloudServerProxy.SystemTools;
 
@@ -20,9 +20,6 @@ namespace TransparentCloudServerProxy.Cli {
                 Console.WriteLine(jsonConfig);
 
                 proxyConfig = JsonSerializer.Deserialize<ProxyConfig>(jsonConfig);
-                if (string.IsNullOrWhiteSpace(proxyConfig.PacketEngine)) {
-                    proxyConfig.PacketEngine = "Managed";
-                }
             }
             else {
                 proxyConfig = new ProxyConfig();
@@ -39,7 +36,7 @@ namespace TransparentCloudServerProxy.Cli {
                 Console.WriteLine(proxy.ToString());
 
                 IProxy proxyImplementation;
-                switch (proxyConfig.PacketEngine) {
+                switch (proxy.PacketEngine) {
                     case "NetFilter":
                         proxyImplementation = NativeCProxy.FromInstance(proxy);
                         break;
@@ -51,6 +48,7 @@ namespace TransparentCloudServerProxy.Cli {
                         break;
 
                     default:
+                        proxy.PacketEngine = "Managed";
                         proxyImplementation = ManagedProxy.FromInstance(proxy);
                         break;
                 }
@@ -63,9 +61,8 @@ namespace TransparentCloudServerProxy.Cli {
             Console.WriteLine($"Type 'exit' to turn off forwarding.");
 
             Console.WriteLine($"\n\r\n\r");
-            Console.WriteLine($"Packet Engine: {proxyConfig.PacketEngine}");
-            foreach (var endpoint in proxies) {
-                Console.WriteLine(endpoint.ToString());
+            foreach (var proxy in proxies) {
+                Console.WriteLine($"[{proxy.PacketEngine}] {proxy}");
             }
 
             for (var input = Console.ReadLine(); !input.Equals("exit", StringComparison.OrdinalIgnoreCase); input = Console.ReadLine()) {
@@ -75,11 +72,11 @@ namespace TransparentCloudServerProxy.Cli {
         }
 
         private static void ResetLowLevelPacketFiltering(IProxyConfig proxyConfig) {
-            if (proxyConfig.PacketEngine == "WindowsPF") {
+            if (proxyConfig.Proxies.Any(i => i.PacketEngine == "WindowsPF")) {
                 new Netsh().ResetState();
             }
 
-            if (proxyConfig.PacketEngine == "NetFilter") {
+            if (proxyConfig.Proxies.Any(i => i.PacketEngine == "NetFilter")) {
                 new NetFilter().ResetTables();
             }
         }

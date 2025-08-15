@@ -6,13 +6,13 @@ using TransparentCloudServerProxy.SystemTools;
 namespace TransparentCloudServerProxy.ProxyBackend.UnixNetfilter {
     public class NetFilterProxy : Proxy, IProxy {
         public static NetFilterProxy FromInstance(IProxy instance) {
-            return new(instance.SocketType, instance.ListenHost, instance.ListenPort, instance.TargetHost, instance.TargetPort);
+            return new(instance.PacketEngine, instance.SocketType, instance.ListenHost, instance.ListenPort, instance.TargetHost, instance.TargetPort);
         }
 
         public ISystemProgram NetFilterProgram { get; set; }
 
-        public NetFilterProxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
-            : base(socketType, listenHost, listenPort, targetHost, targetPort) {
+        public NetFilterProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+            : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             NetFilterProgram = new NetFilter();
 
 #if !DEBUG

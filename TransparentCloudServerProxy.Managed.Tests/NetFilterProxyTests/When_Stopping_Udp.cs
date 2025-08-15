@@ -8,7 +8,7 @@ namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
         protected override void Setup() {
             MockSystemProgram();
 
-            TestableImplementation = new NetFilterProxy(ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort);
+            TestableImplementation = new NetFilterProxy("NetFilter", ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort);
             TestableImplementation.NetFilterProgram = _netFilterService.Object;
         }
 

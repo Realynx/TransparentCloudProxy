@@ -27,6 +27,7 @@ namespace TransparentCloudServerProxy.ProxyBackend {
 
         public bool Enabled { get; set; }
         public uint Id { get; set; }
+        public string PacketEngine { get; set; }
 
         public string ListenHost { get; init; }
         public int ListenPort { get; init; }
@@ -36,7 +37,8 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProxySocketType SocketType { get; init; }
 
-        public Proxy(ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort) {
+        public Proxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort) {
+            PacketEngine = packetEngine;
             SocketType = socketType;
             ListenHost = listenHost;
             ListenPort = listenPort;

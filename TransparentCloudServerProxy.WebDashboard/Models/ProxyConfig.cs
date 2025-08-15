@@ -8,7 +8,5 @@ namespace TransparentCloudServerProxy.WebDashboard.Models {
         }
 
         public Proxy[] Proxies { get; set; }
-        public string PacketEngine { get; set; } = "";
-
     }
 }

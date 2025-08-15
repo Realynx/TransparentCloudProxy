@@ -22,6 +22,9 @@ namespace TransparentCloudServerProxy.ProxyBackend {
             _cancellationToken = cancellationToken;
 
             _testableSocketFactory = testableSocketFactory;
+            if (_testableSocketFactory is null) {
+                _testableSocketFactory = new TestableSocketFactory();
+            }
         }
 
         public void Start(Action<ITestableSocket> acceptedConnection) {

@@ -1,7 +1,7 @@
 ﻿using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 using TransparentCloudServerProxy.SystemTools;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
@@ -13,14 +13,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
 
         public WindowsProxyService(IProxyConfig proxyConfig) {
             _proxyConfig = proxyConfig;
-
-            if (proxyConfig.PacketEngine == "WindowsPF") {
-                new Netsh().ResetState();
-            }
-
-            if (proxyConfig.PacketEngine == "NetFilter") {
-                new NetFilter().ResetTables();
-            }
+            ResetLowLevelPacketFiltering();
 
             for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
                 var proxy = proxyConfig.Proxies[x];
@@ -31,9 +24,19 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             }
         }
 
+        private void ResetLowLevelPacketFiltering() {
+            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == "WindowsPF")) {
+                new Netsh().ResetState();
+            }
+
+            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == "NetFilter")) {
+                new NetFilter().ResetTables();
+            }
+        }
+
         private void AddStartProxy(Proxy proxy) {
             IProxy proxyImplementation;
-            switch (_proxyConfig.PacketEngine) {
+            switch (proxy.PacketEngine) {
                 case "NetFilter":
                     proxyImplementation = NativeCProxy.FromInstance(proxy);
                     break;
@@ -45,6 +48,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                     break;
 
                 default:
+                    proxy.PacketEngine = "Managed";
                     proxyImplementation = NativeCProxy.FromInstance(proxy);
                     break;
             }

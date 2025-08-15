@@ -6,7 +6,5 @@ namespace TransparentCloudServerProxy.Managed.Models {
         }
 
         public Proxy[] Proxies { get; set; }
-        public string PacketEngine { get; set; } = "";
-
     }
 }

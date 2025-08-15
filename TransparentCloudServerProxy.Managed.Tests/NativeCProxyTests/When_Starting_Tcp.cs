@@ -2,14 +2,14 @@
 
 using System.Net;
 
-using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests {
     public class When_Starting_Tcp : Using_NativeCProxy {
         protected override void Setup() {
             MockFactories();
-            TestableImplementation = new NativeCProxy(Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
+            TestableImplementation = new NativeCProxy("NativeC", Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
                 _targetAddress, _targetPort, _socketFactory.Object, _listenerFactory.Object);
         }
 

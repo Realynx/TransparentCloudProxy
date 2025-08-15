@@ -3,7 +3,7 @@
 using TestingShared;
 
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.NativeCProxy;
+using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.Testables.Interfaces;
 using TransparentCloudServerProxy.Testables;
 using System.Net.Sockets;

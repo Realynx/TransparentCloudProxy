@@ -2,14 +2,14 @@
 
 using Moq;
 
-using TransparentCloudServerProxy.ProxyBackend.ManagedProxy;
+using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
 namespace TransparentCloudServerProxy.Managed.Tests.ManagedProxyTests {
     public class When_Stoping_Stoped : Using_ManagedProxy {
         protected override void Setup() {
             MockFactories();
-            TestableImplementation = new ManagedProxy(Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
+            TestableImplementation = new ManagedProxy("Managed", Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
                 _targetAddress, _targetPort, _socketFactory.Object, _listenerFactory.Object);
         }
 
