@@ -10,9 +10,7 @@ using TransparentCloudServerProxy.Client.ViewModels.Pages;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
     public class StartupWindowViewModel : ViewModel {
-        private readonly IAuthenticationService _authService;
         private readonly IServiceProvider _serviceProvider;
-
         public event Action? StartupCompleted;
 
         private ViewModel _currentPage;
@@ -26,11 +24,10 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             }
         }
 
-        public StartupWindowViewModel(IAuthenticationService authService, IServiceProvider sp) {
-            _authService = authService;
-            _serviceProvider = sp;
+        public StartupWindowViewModel(IServiceProvider serviceProvider) {
 
             CurrentPage = new IdleSpinnerViewModel("Checking credentials...");
+            _serviceProvider = serviceProvider;
         }
 
         public void CloseWindow() {
@@ -38,7 +35,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
         }
 
         public async Task InitializeAsync() {
-            var validAuth = await _authService.CheckCredential();
+            var authCredential = _serviceProvider.GetRequiredService<IAuthenticationService>();
+            var validAuth = await authCredential.CheckCredential();
 
             if (validAuth) {
                 var mainWindow = new DashboardWindow {
@@ -47,7 +45,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
                 mainWindow.Show();
             }
             else {
-                CurrentPage = new LoginPageViewModel(this, _authService);
+                CurrentPage = new LoginPageViewModel(this, authCredential);
             }
         }
 
