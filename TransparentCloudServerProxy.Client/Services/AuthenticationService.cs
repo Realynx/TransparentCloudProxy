@@ -23,6 +23,10 @@ namespace TransparentCloudServerProxy.Client.Services {
             }
         }
 
+        public ProxyUser? GetCurrentUser() {
+            return _currentUser;
+        }
+
         public async Task<bool> LoginAsync(string server, string credential) {
             var serverUri = NormalizeServerUrl(server);
             if (serverUri is null) {
