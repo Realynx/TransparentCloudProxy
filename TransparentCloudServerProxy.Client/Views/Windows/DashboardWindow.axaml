@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="DashboardWindow"
         WindowStartupLocation="CenterScreen"
-        Width="1900" Height="1280"
+        Width="950" Height="640"
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"

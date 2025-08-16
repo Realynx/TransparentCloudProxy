@@ -1,8 +1,11 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
 using System.Threading.Tasks;
 
 using ReactiveUI;
 
+using TransparentCloudServerProxy.Client.Extentions;
+using TransparentCloudServerProxy.Client.Services;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Windows;
 
@@ -10,6 +13,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
     public class LoginPageViewModel : ViewModel {
         private readonly StartupWindowViewModel _startupWindowViewModel;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ILoginStorageService _loginStorageService;
         private string _credential;
         public string Credential {
             get => _credential;
@@ -30,9 +34,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
 
         public ReactiveCommand<Unit, Unit> LoginCommand { get; }
 
-        public LoginPageViewModel(StartupWindowViewModel startupWindowViewModel, IAuthenticationService authenticationService) {
+        public LoginPageViewModel(StartupWindowViewModel startupWindowViewModel, IAuthenticationService authenticationService,
+            ILoginStorageService loginStorageService) {
             _startupWindowViewModel = startupWindowViewModel;
             _authenticationService = authenticationService;
+            _loginStorageService = loginStorageService;
             LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
         }
 
@@ -51,6 +57,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
                 return;
             }
 
+            _loginStorageService.StoreLogin(Credential, ServerAddress.NormalizeHostUri());
             CloseWindow();
         }
     }

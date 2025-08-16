@@ -1,15 +1,13 @@
-﻿using System;
+﻿using ReactiveUI;
 
-using Microsoft.Extensions.DependencyInjection;
-
-using ReactiveUI;
-
+using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Pages;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
     public class DashboardWindowViewModel : ViewModel {
         private ViewModel _currentPage;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly UserControlPanelViewModel _userControlPanelViewModel;
+        private readonly IPageRouter _pageRouter;
 
         public ViewModel CurrentPage {
             get {
@@ -21,11 +19,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             }
         }
 
-        public DashboardWindowViewModel(IServiceProvider serviceProvider) {
-            var userControlViewModel = serviceProvider.GetRequiredService<UserControlPanelViewModel>();
+        public DashboardWindowViewModel(UserControlPanelViewModel userControlPanelViewModel, IPageRouter pageRouter) {
+            _userControlPanelViewModel = userControlPanelViewModel;
+            _pageRouter = pageRouter;
 
-            CurrentPage = userControlViewModel;
-            _serviceProvider = serviceProvider;
+            _pageRouter.OnNavigatePage += (newPage) => CurrentPage = newPage;
+            CurrentPage = _userControlPanelViewModel;
         }
     }
 }

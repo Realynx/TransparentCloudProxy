@@ -8,6 +8,7 @@
 			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
 
 	<TextBlock
-		Foreground="Pink"
-		Text="Hello, {Binding CurrentUsername, Mode=OneWay}"/>
+		Foreground="Pink">
+		Hello, <Run Text="{Binding CurrentUsername}" />
+	</TextBlock>
 </UserControl>

@@ -39,14 +39,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             var validAuth = await authCredential.CheckCredential();
 
             if (validAuth) {
-                var mainWindow = new DashboardWindow {
-                    DataContext = _serviceProvider.GetRequiredService<DashboardWindowViewModel>()
-                };
-                mainWindow.Show();
+                CloseWindow();
+                return;
             }
-            else {
-                CurrentPage = new LoginPageViewModel(this, authCredential);
-            }
+
+            var storageService = _serviceProvider.GetRequiredService<ILoginStorageService>();
+            CurrentPage = new LoginPageViewModel(this, authCredential, storageService);
         }
 
     }

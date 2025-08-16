@@ -22,7 +22,9 @@ namespace TransparentCloudServerProxy.Client {
 
             services
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
-                .AddSingleton<IUserApi, UserApi>();
+                .AddSingleton<IUserApi, UserApi>()
+                .AddSingleton<IPageRouter, PageRouter>()
+                .AddSingleton<ILoginStorageService, LoginStorageService>();
 
             return services;
         }
