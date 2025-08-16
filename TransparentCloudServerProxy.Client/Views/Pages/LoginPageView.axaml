@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TransparentCloudServerProxy.Client.Views.Pages.LoginPageView"
+	         x:DataType="vm:LoginPageViewModel"
+			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
+
+	<StackPanel VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="250"
+                Spacing="10">
+		<TextBlock Text="Login"
+                   HorizontalAlignment="Center"
+                   FontSize="18"
+                   Foreground="White"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10" />
+
+		<TextBox Text="{Binding ServerAddress, Mode=TwoWay}"
+                 Background="#555"
+                 Foreground="White"
+                 Watermark="https://127.0.0.1"
+                 CornerRadius="6" />
+
+		<TextBox Text="{Binding Credential, Mode=TwoWay}"
+                 Background="#555"
+                 Foreground="White"
+                 Watermark="Access Credential"
+                 CornerRadius="6" />
+
+		<Button Content="Login"
+                HorizontalContentAlignment="Center"
+                Background="#0078d7"
+                Foreground="White"
+                CornerRadius="6"
+                HorizontalAlignment="Center"
+                Width="80"
+                Command="{Binding LoginCommand}" />
+
+		<TextBlock Text="{Binding ErrorMessage}"
+		   Foreground="Red"
+		   FontWeight="Bold"
+		   HorizontalAlignment="Center" />
+
+	</StackPanel>
+</UserControl>
