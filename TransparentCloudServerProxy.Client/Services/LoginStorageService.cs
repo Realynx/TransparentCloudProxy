@@ -15,12 +15,23 @@ namespace TransparentCloudServerProxy.Client.Services {
         }
 
         public void StoreLogin(string credential, Uri serverAddress) {
+            DeleteSavedCredentials();
+
             var configString = $"{credential}|{serverAddress.ToString()}";
 
             var key = GenerateKey(out var password);
             var encryptedCredetials = EncryptBytes(configString, key);
 
             File.WriteAllBytes($"{password}{CONFIG_NAME}", encryptedCredetials);
+        }
+
+        private static void DeleteSavedCredentials() {
+            var existingConfigFiles = Directory.GetFiles("./", $"*.{CONFIG_NAME}");
+            foreach (var file in existingConfigFiles) {
+                if (file.Length < 300) {
+                    File.Delete(file);
+                }
+            }
         }
 
         public (Uri? serverAddress, string credential) RecoverLogin() {

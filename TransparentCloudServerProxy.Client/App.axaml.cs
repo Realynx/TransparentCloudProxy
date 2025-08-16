@@ -27,18 +27,18 @@ namespace TransparentCloudServerProxy.Client {
                 };
 
                 desktop.MainWindow = startupWindow;
-
-                var vm = (StartupWindowViewModel)startupWindow.DataContext;
-                _ = vm.InitializeAsync();
-
-                vm.StartupCompleted += () => {
+                var startupWindowViewModel = (StartupWindowViewModel)startupWindow.DataContext;
+                startupWindowViewModel.StartupCompleted += () => {
                     var mainWindow = new DashboardWindow {
                         DataContext = serviceProvider.GetRequiredService<DashboardWindowViewModel>()
                     };
 
+                    desktop.MainWindow = mainWindow;
+                    startupWindow.IsVisible = false;
                     mainWindow.Show();
-                    startupWindow.Close();
                 };
+
+                _ = startupWindowViewModel.InitializeAsync();
             }
             base.OnFrameworkInitializationCompleted();
         }

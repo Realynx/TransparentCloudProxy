@@ -32,6 +32,11 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         public int ListenPort { get; init; }
         public string TargetHost { get; init; }
         public int TargetPort { get; init; }
+        public string StringRepresentation {
+            get {
+                return ToString();
+            }
+        }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ProxySocketType SocketType { get; init; }

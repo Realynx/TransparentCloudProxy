@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 using ReactiveUI;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
@@ -15,8 +18,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             set => this.RaiseAndSetIfChanged(ref _currentUsername, value);
         }
 
-        private List<SavedProxy> _savedProxies;
-        public List<SavedProxy> SavedProxies {
+        private ObservableCollection<Proxy> _savedProxies;
+        public ObservableCollection<Proxy> SavedProxies {
             get => _savedProxies;
             set => this.RaiseAndSetIfChanged(ref _savedProxies, value);
         }
@@ -30,7 +33,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         public void Initialize() {
             var currentUser = _authenticationService.GetCurrentUser();
             _currentUsername = currentUser.Username;
-            _savedProxies = currentUser.UserSavedProxies;
+            _savedProxies = new ObservableCollection<Proxy>(currentUser.UserSavedProxies
+                .Select(i => i.GetProxy())
+                .Where(i => i is not null)
+                .Cast<Proxy>()
+                .ToList());
         }
     }
 }

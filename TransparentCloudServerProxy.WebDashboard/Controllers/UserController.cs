@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.Services;
+using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
@@ -16,10 +18,12 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     public class UserController : ControllerBase {
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
         private readonly CredentialsService _credentialsService;
+        private readonly IProxyService _proxyService;
 
-        public UserController(IDbContextFactory<WebDashboardDbContext> dbContextFactory, CredentialsService credentialsService) {
+        public UserController(IDbContextFactory<WebDashboardDbContext> dbContextFactory, CredentialsService credentialsService, IProxyService proxyService) {
             _dbContextFactory = dbContextFactory;
             _credentialsService = credentialsService;
+            _proxyService = proxyService;
         }
 
         private ProxyUser? GetCurrentUser(WebDashboardDbContext dbContext) {
@@ -40,6 +44,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             var currentUser = dbContext.Users
                 .Include(i => i.UserSavedProxies)
                 .FirstOrDefault(i => i.Id == currentUserId);
+
             return currentUser;
         }
 
@@ -49,6 +54,13 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             var currentUser = GetCurrentUser(dbContext);
             if (currentUser is null) {
                 return BadRequest();
+            }
+
+            if (currentUser.Admin) {
+                currentUser.UserSavedProxies = _proxyService
+                    .GetProxies()
+                    .Select(i => new SavedProxy((Proxy)i, currentUser.Id))
+                    .ToList();
             }
 
             return Ok(currentUser);

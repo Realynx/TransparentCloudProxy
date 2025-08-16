@@ -4,11 +4,37 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TransparentCloudServerProxy.Client.Views.Pages.UserControlPanelView"
-			 x:DataType="vm:UserControlPanelViewModel"
-			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
+             x:DataType="vm:UserControlPanelViewModel"
+             xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
 
-	<TextBlock
-		Foreground="Pink">
-		Hello, <Run Text="{Binding CurrentUsername}" />
-	</TextBlock>
+	<StackPanel>
+
+		<TextBlock Padding="20" Foreground="Pink">
+			Hello, <Run Text="{Binding CurrentUsername}" />
+		</TextBlock>
+
+		<StackPanel Margin="20">
+			<TextBlock Margin="0 5">List of your Proxies</TextBlock>
+			<ScrollViewer HorizontalScrollBarVisibility="Auto">
+				<ItemsRepeater ItemsSource="{Binding SavedProxies}" Margin="0 20">
+					<ItemsRepeater.Layout>
+						<StackLayout Spacing="10" Orientation="Vertical" />
+					</ItemsRepeater.Layout>
+
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{Binding PacketEngine}"/>
+
+								<TextBlock Margin="5 0" FontWeight="Bold"
+										   Text="{Binding StringRepresentation}"/>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+
+				</ItemsRepeater>
+			</ScrollViewer>
+		</StackPanel>
+
+	</StackPanel>
 </UserControl>

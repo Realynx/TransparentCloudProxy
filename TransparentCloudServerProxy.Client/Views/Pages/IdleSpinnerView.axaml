@@ -7,5 +7,16 @@
 			 x:DataType="vm:IdleSpinnerViewModel"
 			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
 
-	Welcome to Avalonia!
+	<StackPanel VerticalAlignment="Center"
+				HorizontalAlignment="Center"
+				Width="250"
+				Spacing="10">
+
+		<TextBlock Text="Welcome to Realynx Proxy"
+				   HorizontalAlignment="Center"
+				   FontSize="16"
+				   Foreground="White"
+				   FontWeight="Bold"
+				   Margin="0,0,0,10" />
+	</StackPanel>
 </UserControl>
