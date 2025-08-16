@@ -1,6 +1,6 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
 @sslVerify = false
-@authKey = F2DB40DFDA42B33173CDBEEDC670359B61CD43DB4BB5D9CF48FE62268269AAC3
+@authKey = 28C3A10AAC461880BFD5D238CAF1C6636A3000CE814AFFD1BE5D4C884EB85AEE
 
 ### Get proxies
 GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/GetProxies
@@ -19,7 +19,7 @@ Authorization: Key {{authKey}}
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
   "ListenHost": "0.0.0.0",
-  "ListenPort": 25565,
+  "ListenPort": 25567,
   "TargetHost": "10.0.1.222",
   "TargetPort": 25565
 }
@@ -45,7 +45,7 @@ Authorization: Key {{authKey}}
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
   "ListenHost": "0.0.0.0",
-  "ListenPort": 25565,
+  "ListenPort": 25567,
   "TargetHost": "10.0.1.222",
   "TargetPort": 25565
 }

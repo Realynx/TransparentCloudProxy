@@ -1,6 +1,6 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
 @sslVerify = false
-@authKey = 063BBFD59228117C3DF840A83E22C63EB8AC0E7068399A65189A2CE7A0C47868
+@authKey = 28C3A10AAC461880BFD5D238CAF1C6636A3000CE814AFFD1BE5D4C884EB85AEE
 
 ### Get Self
 GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/Get
@@ -9,6 +9,20 @@ Authorization: Key {{authKey}}
 
 ### Create User
 POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/CreateUser
+Authorization: Key {{authKey}}
+Content-Type: application/json
+
+{
+  "Username": "poofy"
+}
+
+### Reset Credential
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/ResetMyCredential
+Authorization: Key {{authKey}}
+Content-Type: application/json
+
+### Reset Other's Credential
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/User/ResetCredential
 Authorization: Key {{authKey}}
 Content-Type: application/json
 
