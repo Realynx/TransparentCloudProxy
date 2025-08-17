@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# JetBrains
+.idea/
+
+# Ignore contents of wwwroot
+/TransparentCloudServerProxy.WebDashboard/wwwroot/*
+!/TransparentCloudServerProxy.WebDashboard/wwwroot/.gitkeep
+/TransparentCloudServerProxy.WebDashboard/proxy.db
+/TransparentCloudServerProxy.WebDashboard/proxy.db-shm
+/TransparentCloudServerProxy.WebDashboard/proxy.db-wal

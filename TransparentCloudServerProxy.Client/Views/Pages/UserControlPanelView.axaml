@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TransparentCloudServerProxy.Client.Views.Pages.UserControlPanelView"
+             x:DataType="vm:UserControlPanelViewModel"
+             xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages"
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
+
+	<StackPanel HorizontalAlignment="Center">
+		<DataGrid MinWidth="350" MaxHeight="200" CanUserResizeColumns="True" ItemsSource="{Binding SavedProxies}" Margin="5">
+			<DataGrid.Styles>
+				<Style Selector="DataGridRowGroupHeader">
+					<Setter Property="IsItemCountVisible" Value="True" />
+				</Style>
+			</DataGrid.Styles>
+
+			<DataGrid.Columns>
+				<DataGridCheckBoxColumn Binding="{Binding Enabled}" Header="Enabled" />
+
+				<DataGridTextColumn SortMemberPath="PacketEngine" Binding="{Binding PacketEngine}" Header="Packet Engine" />
+				<DataGridTextColumn SortMemberPath="ListenHost" Binding="{Binding ListenHost}" Header="Listen Host" />
+
+				<DataGridTemplateColumn Header="Listen Port" SortMemberPath="ListenPortColumn">
+					<DataTemplate>
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTextColumn SortMemberPath="TargetHost" Binding="{Binding TargetHost}" Header="Target Host" />
+
+				<DataGridTemplateColumn Header="Target Port" SortMemberPath="TargetPortColumn">
+					<DataTemplate>
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+	</StackPanel>
+</UserControl>

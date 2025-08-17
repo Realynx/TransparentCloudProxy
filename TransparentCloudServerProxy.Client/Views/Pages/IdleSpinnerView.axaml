@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TransparentCloudServerProxy.Client.Views.Pages.IdleSpinnerView"
+			 x:DataType="vm:IdleSpinnerViewModel"
+			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
+
+	<StackPanel VerticalAlignment="Center"
+				HorizontalAlignment="Center"
+				Width="250"
+				Spacing="10">
+
+		<TextBlock Text="Welcome to Realynx Proxy"
+				   HorizontalAlignment="Center"
+				   FontSize="16"
+				   Foreground="White"
+				   FontWeight="Bold"
+				   Margin="0,0,0,10" />
+		<suki:Loading LoadingStyle="Glow" />
+	</StackPanel>
+</UserControl>
