@@ -13,16 +13,11 @@
 		<suki:PropertyGridTemplateSelector x:Key="PropertyGridTemplateSelector" UseSukiHost="False" />
 	</UserControl.Resources>
 
-
-	<!--<StackPanel HorizontalAlignment="Right">
-		<suki:GlassCard Width="500">
-			<ScrollViewer>
-				<suki:PropertyGrid Item="{Binding AppSettingsModel}">
-					<suki:PropertyGrid.DataTemplates>
-						<StaticResource ResourceKey="PropertyGridTemplateSelector" />
-					</suki:PropertyGrid.DataTemplates>
-				</suki:PropertyGrid>
-			</ScrollViewer>
-		</suki:GlassCard>
-	</StackPanel>-->
+	<StackPanel HorizontalAlignment="Stretch" Margin="15">
+		<suki:PropertyGrid Item="{Binding AppSettingsModel}" HorizontalAlignment="Stretch">
+			<suki:PropertyGrid.DataTemplates>
+				<StaticResource ResourceKey="PropertyGridTemplateSelector" />
+			</suki:PropertyGrid.DataTemplates>
+		</suki:PropertyGrid>
+	</StackPanel>
 </UserControl>

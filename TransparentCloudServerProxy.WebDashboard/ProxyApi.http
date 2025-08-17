@@ -1,6 +1,6 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
 @sslVerify = false
-@authKey = 63BC25FC74DDC4ACBA20FAB781A8BA80F7712E13CFAC6865D10F0AAC9002ABC7
+@authKey = 0BF5FFE161F87743EA63B6E4884BC2C26D618EFBC2C1A6C3A8E265CF89B2421D
 
 ### Get proxies
 GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/GetProxies
