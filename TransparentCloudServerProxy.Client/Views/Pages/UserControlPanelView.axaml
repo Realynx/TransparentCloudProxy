@@ -5,36 +5,37 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TransparentCloudServerProxy.Client.Views.Pages.UserControlPanelView"
              x:DataType="vm:UserControlPanelViewModel"
-             xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
+             xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages"
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
-	<StackPanel>
+	<StackPanel HorizontalAlignment="Center">
+		<DataGrid MinWidth="350" MaxHeight="200" CanUserResizeColumns="True" ItemsSource="{Binding SavedProxies}" Margin="5">
+			<DataGrid.Styles>
+				<Style Selector="DataGridRowGroupHeader">
+					<Setter Property="IsItemCountVisible" Value="True" />
+				</Style>
+			</DataGrid.Styles>
 
-		<TextBlock Padding="20" Foreground="Pink">
-			Hello, <Run Text="{Binding CurrentUsername}" />
-		</TextBlock>
+			<DataGrid.Columns>
+				<DataGridCheckBoxColumn Binding="{Binding Enabled}" Header="Enabled" />
 
-		<StackPanel Margin="20">
-			<TextBlock Margin="0 5">List of your Proxies</TextBlock>
-			<ScrollViewer HorizontalScrollBarVisibility="Auto">
-				<ItemsRepeater ItemsSource="{Binding SavedProxies}" Margin="0 20">
-					<ItemsRepeater.Layout>
-						<StackLayout Spacing="10" Orientation="Vertical" />
-					</ItemsRepeater.Layout>
+				<DataGridTextColumn SortMemberPath="PacketEngine" Binding="{Binding PacketEngine}" Header="Packet Engine" />
+				<DataGridTextColumn SortMemberPath="ListenHost" Binding="{Binding ListenHost}" Header="Listen Host" />
 
-					<ItemsRepeater.ItemTemplate>
-						<DataTemplate>
-							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{Binding PacketEngine}"/>
+				<DataGridTemplateColumn Header="Listen Port" SortMemberPath="ListenPortColumn">
+					<DataTemplate>
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
 
-								<TextBlock Margin="5 0" FontWeight="Bold"
-										   Text="{Binding StringRepresentation}"/>
-							</StackPanel>
-						</DataTemplate>
-					</ItemsRepeater.ItemTemplate>
+				<DataGridTextColumn SortMemberPath="TargetHost" Binding="{Binding TargetHost}" Header="Target Host" />
 
-				</ItemsRepeater>
-			</ScrollViewer>
-		</StackPanel>
-
+				<DataGridTemplateColumn Header="Target Port" SortMemberPath="TargetPortColumn">
+					<DataTemplate>
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
 	</StackPanel>
 </UserControl>

@@ -9,6 +9,7 @@ using TransparentCloudServerProxy.Client.ViewModels.Windows;
 using Polly.Extensions.Http;
 using Polly;
 using System.Net.Http;
+using TransparentCloudServerProxy.Client.Models;
 
 namespace TransparentCloudServerProxy.Client {
     internal static class Startup {
@@ -35,7 +36,10 @@ namespace TransparentCloudServerProxy.Client {
                 .AddTransient<DashboardWindowViewModel>()
                 .AddTransient<IdleSpinnerViewModel>()
                 .AddTransient<LoginPageViewModel>()
-                .AddTransient<UserControlPanelViewModel>();
+                .AddTransient<UserControlPanelViewModel>()
+                .AddTransient<AppSettingsViewModel>()
+
+                .AddSingleton<AppSettingsModel>();
 
             return services;
         }

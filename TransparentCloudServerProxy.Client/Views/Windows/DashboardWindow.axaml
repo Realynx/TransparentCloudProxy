@@ -1,24 +1,107 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="TransparentCloudServerProxy.Client.DashboardWindow"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Title="DashboardWindow"
-        WindowStartupLocation="CenterScreen"
-        Width="950" Height="640"
-        TransparencyLevelHint="AcrylicBlur"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="NoChrome"
-        Background="Transparent"
-		x:DataType="vm:DashboardWindowViewModel"
-		xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows">
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+				 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+				 xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+				 x:Class="TransparentCloudServerProxy.Client.DashboardWindow"
+				 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+				 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				 mc:Ignorable="d"
+				 Title="Realynx Proxy"
+				 WindowStartupLocation="CenterScreen"
+				 Width="1100" Height="640" MinWidth="1000" MinHeight="640"
+				 TransparencyLevelHint="AcrylicBlur"
+				 ExtendClientAreaToDecorationsHint="True"
+				 ExtendClientAreaChromeHints="NoChrome"
+				 Background="Transparent"
+				 x:DataType="vm:DashboardWindowViewModel"
+				 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
+				 BackgroundStyle="Flat"
+				 IsMenuVisible="True">
+
+	<suki:SukiWindow.MenuItems>
+		<MenuItem Header="File">
+			<MenuItem Header="Proxies">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Network" />
+				</MenuItem.Icon>
+				<MenuItem Header="Export Proxies">
+					<MenuItem.Icon>
+						<avalonia:MaterialIcon Kind="File" />
+					</MenuItem.Icon>
+				</MenuItem>
+
+				<MenuItem Header="Import Proxies">
+					<MenuItem.Icon>
+						<avalonia:MaterialIcon Kind="File" />
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
 
 
-	<Border Background="#333"
-            CornerRadius="16"
-            Padding="20"
-            PointerPressed="DragWindow">
-		<ContentControl Content="{Binding CurrentPage}" />
-	</Border>
-</Window>
+			<MenuItem Header="Import Servers">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="ServerAdd" />
+				</MenuItem.Icon>
+			</MenuItem>
+		</MenuItem>
+
+		<MenuItem Header="Deploy">
+			<MenuItem Header="Azure">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Cloud" />
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem Header="Aws">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Cloud" />
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem Header="Google Cloud">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Cloud" />
+				</MenuItem.Icon>
+			</MenuItem>
+
+			<MenuItem Header="VPS">
+				<MenuItem.Icon>
+					<avalonia:MaterialIcon Kind="Server" />
+				</MenuItem.Icon>
+			</MenuItem>
+		</MenuItem>
+	</suki:SukiWindow.MenuItems>
+
+	<suki:SukiSideMenu>
+		<suki:SukiSideMenu.Items>
+			<suki:SukiSideMenuItem Header="Dashboard" Classes="Compact" >
+				<!--<suki:SukiSideMenuItem.Icon>
+					
+				</suki:SukiSideMenuItem.Icon>-->
+				<suki:SukiSideMenuItem.PageContent>
+					<ContentControl Content="{Binding CurrentPage}" />
+				</suki:SukiSideMenuItem.PageContent>
+			</suki:SukiSideMenuItem>
+
+			<suki:SukiSideMenuItem Header="Settings" Classes="Compact" >
+				<suki:SukiSideMenuItem.PageContent>
+					<ContentControl Content="{Binding AppSettingsViewModel}" />
+				</suki:SukiSideMenuItem.PageContent>
+			</suki:SukiSideMenuItem>
+
+		</suki:SukiSideMenu.Items>
+
+
+		<suki:SukiSideMenu.HeaderContent>
+			<TextBlock FontSize="20" Padding="10" HorizontalAlignment="Center">
+				Hello, <Run Text="{Binding CurrentUser.Username}" />
+			</TextBlock>
+		</suki:SukiSideMenu.HeaderContent>
+
+		<suki:SukiSideMenu.FooterContent>
+			<!--<TextBlock Padding="10" HorizontalAlignment="Left" ClipToBounds="True">
+				Last login: <Run Text="{Binding CurrentUser.LastLogin}" />
+			</TextBlock>-->
+		</suki:SukiSideMenu.FooterContent>
+	</suki:SukiSideMenu>
+</suki:SukiWindow>

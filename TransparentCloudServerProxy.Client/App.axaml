@@ -1,7 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TransparentCloudServerProxy.Client.App"
-             xmlns:local="using:TransparentCloudServerProxy.Client">
+             xmlns:local="using:TransparentCloudServerProxy.Client"
+			 xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
 	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
 	<Application.DataTemplates>
@@ -9,7 +10,7 @@
 	</Application.DataTemplates>
 
 	<Application.Styles>
-		<FluentTheme />
+		<sukiUi:SukiTheme ThemeColor="Blue"  />
 		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
 	</Application.Styles>
 </Application>

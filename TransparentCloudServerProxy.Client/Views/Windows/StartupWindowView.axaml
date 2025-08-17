@@ -1,24 +1,25 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="TransparentCloudServerProxy.Client.Views.Windows.StartupWindowView"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Title="Startup"
-        WindowStartupLocation="CenterScreen"
-        Width="400" Height="300"
-        TransparencyLevelHint="AcrylicBlur"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaChromeHints="NoChrome"
-        Background="Transparent"
-		x:DataType="vm:StartupWindowViewModel"
-		xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows">
+<suki:SukiWindow xmlns="https://github.com/avaloniaui" BackgroundStyle="Flat"
+				 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 x:Class="TransparentCloudServerProxy.Client.Views.Windows.StartupWindowView"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 mc:Ignorable="d"
+                 Title="Startup"
+                 WindowStartupLocation="CenterScreen"
+                 Width="400" Height="300"
+                 TransparencyLevelHint="AcrylicBlur"
+                 ExtendClientAreaToDecorationsHint="True"
+                 ExtendClientAreaChromeHints="NoChrome"
+                 Background="Transparent"
+		         x:DataType="vm:StartupWindowViewModel"
+		         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
+				 IsTitleBarVisible="False" CanMove="True" >
 
 
-	<Border Background="#333"
-            CornerRadius="16"
-            Padding="20"
-            PointerPressed="DragWindow">
+	<Border Background="Transparent"
+		PointerPressed="DragWindow">
 		<ContentControl Content="{Binding CurrentPage}" />
 	</Border>
-</Window>
+
+</suki:SukiWindow>

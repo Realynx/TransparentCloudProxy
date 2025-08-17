@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TransparentCloudServerProxy.Client.Views.Pages.AppSettingsView"
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+			 xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Collections"
+			 x:DataType="vm:AppSettingsViewModel"
+			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
+
+	<UserControl.Resources>
+		<suki:PropertyGridTemplateSelector x:Key="PropertyGridTemplateSelector" UseSukiHost="False" />
+	</UserControl.Resources>
+
+
+	<!--<StackPanel HorizontalAlignment="Right">
+		<suki:GlassCard Width="500">
+			<ScrollViewer>
+				<suki:PropertyGrid Item="{Binding AppSettingsModel}">
+					<suki:PropertyGrid.DataTemplates>
+						<StaticResource ResourceKey="PropertyGridTemplateSelector" />
+					</suki:PropertyGrid.DataTemplates>
+				</suki:PropertyGrid>
+			</ScrollViewer>
+		</suki:GlassCard>
+	</StackPanel>-->
+</UserControl>

@@ -1,4 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TransparentCloudServerProxy.Client.Views.Pages.LoginPageView"
 	         x:DataType="vm:LoginPageViewModel"
@@ -27,14 +28,29 @@
                  Watermark="Access Credential"
                  CornerRadius="6" />
 
-		<Button Content="Login"
-                HorizontalContentAlignment="Center"
-                Background="#0078d7"
-                Foreground="White"
-                CornerRadius="6"
-                HorizontalAlignment="Center"
-                Width="80"
-                Command="{Binding LoginCommand}" />
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button Classes="Outlined"
+					Content="Login"
+					HorizontalContentAlignment="Center"
+					Background="#0078d7"
+					Foreground="White"
+					CornerRadius="6"
+					HorizontalAlignment="Center"
+					Width="80"
+					Margin="10"
+					Command="{Binding LoginCommand}" />
+
+			<Button Classes="Outlined"
+					Content="Local"
+					HorizontalContentAlignment="Center"
+					Background="#0078d7"
+					Foreground="White"
+					CornerRadius="6"
+					HorizontalAlignment="Center"
+					Width="80"
+					Margin="10"
+					Command="{Binding LoginCommand}" />
+		</StackPanel>
 
 		<TextBlock Text="{Binding ErrorMessage}"
 		   Foreground="Red"
