@@ -1,6 +1,6 @@
 @TransparentCloudServerProxy.WebDashboard_HostAddress = https://localhost:7002
 @sslVerify = false
-@authKey = FA812C8AEE5A987776B0BFFE96228C5EEE52F282E9A051F178B45D17B01B94D5
+@authKey = 63BC25FC74DDC4ACBA20FAB781A8BA80F7712E13CFAC6865D10F0AAC9002ABC7
 
 ### Get proxies
 GET {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/GetProxies
@@ -19,7 +19,7 @@ Authorization: Key {{authKey}}
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
   "ListenHost": "0.0.0.0",
-  "ListenPort": 25567,
+  "ListenPort": 25565,
   "TargetHost": "10.0.1.222",
   "TargetPort": 25565
 }
@@ -37,17 +37,18 @@ Authorization: Key {{authKey}}
   "TargetPort": 25565
 }
 
-### Add proxy entry
-POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/AddProxy
+### AddOrModifyProxy proxy entry
+POST {{TransparentCloudServerProxy.WebDashboard_HostAddress}}/ProxyApi/AddOrModifyProxy
 Content-Type: application/json
 Authorization: Key {{authKey}}
 {
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
   "ListenHost": "0.0.0.0",
-  "ListenPort": 25567,
+  "ListenPort": 25565,
   "TargetHost": "10.0.1.222",
-  "TargetPort": 25565
+  "TargetPort": 25565,
+  "Enabled": true
 }
 
 ### Remove proxy
@@ -58,7 +59,7 @@ Authorization: Key {{authKey}}
   "PacketEngine": "NativeC",
   "SocketType": "Tcp",
   "ListenHost": "0.0.0.0",
-  "ListenPort": 25565,
+  "ListenPort": 25567,
   "TargetHost": "10.0.1.222",
   "TargetPort": 25565
 }

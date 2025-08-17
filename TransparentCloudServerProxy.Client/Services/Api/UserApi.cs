@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
-namespace TransparentCloudServerProxy.Client.Services {
+namespace TransparentCloudServerProxy.Client.Services.Api {
     internal class UserApi : IUserApi {
         private readonly IHttpClientFactory _httpClientFactory;
 

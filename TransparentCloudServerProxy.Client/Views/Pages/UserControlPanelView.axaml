@@ -6,10 +6,12 @@
              x:Class="TransparentCloudServerProxy.Client.Views.Pages.UserControlPanelView"
              x:DataType="vm:UserControlPanelViewModel"
              xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages"
+			 xmlns:proxyBackend="clr-namespace:TransparentCloudServerProxy.ProxyBackend;assembly=TransparentCloudServerProxy"
+			 xmlns:utility="clr-namespace:TransparentCloudServerProxy.Client.Utilities"
 			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
 	<StackPanel HorizontalAlignment="Center">
-		<DataGrid MinWidth="350" MaxHeight="200" CanUserResizeColumns="True" ItemsSource="{Binding SavedProxies}" Margin="5">
+		<DataGrid CellEditEnded="DataGrid_CellEditEnded" MinWidth="350" MaxHeight="200" CanUserResizeColumns="True" ItemsSource="{Binding DataGridProxies}" Margin="5">
 			<DataGrid.Styles>
 				<Style Selector="DataGridRowGroupHeader">
 					<Setter Property="IsItemCountVisible" Value="True" />
@@ -17,25 +19,42 @@
 			</DataGrid.Styles>
 
 			<DataGrid.Columns>
-				<DataGridCheckBoxColumn Binding="{Binding Enabled}" Header="Enabled" />
+				<DataGridCheckBoxColumn Binding="{Binding Enabled, Mode=TwoWay}" Header="Enabled" />
 
-				<DataGridTextColumn SortMemberPath="PacketEngine" Binding="{Binding PacketEngine}" Header="Packet Engine" />
-				<DataGridTextColumn SortMemberPath="ListenHost" Binding="{Binding ListenHost}" Header="Listen Host" />
+				<DataGridTemplateColumn Header="Packet Engine" SortMemberPath="PacketEngine">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<ComboBox ItemsSource="{utility:EnumValues {x:Type proxyBackend:PacketEngine}}"
+									  SelectedItem="{Binding PacketEngine, Mode=TwoWay}" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+
+				<DataGridTextColumn SortMemberPath="ListenHost" Binding="{Binding ListenHost, Mode=TwoWay}" Header="Listen Host" />
 
 				<DataGridTemplateColumn Header="Listen Port" SortMemberPath="ListenPortColumn">
 					<DataTemplate>
-						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort}" />
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort, Mode=TwoWay}" />
 					</DataTemplate>
 				</DataGridTemplateColumn>
 
-				<DataGridTextColumn SortMemberPath="TargetHost" Binding="{Binding TargetHost}" Header="Target Host" />
+				<DataGridTextColumn SortMemberPath="TargetHost" Binding="{Binding TargetHost, Mode=TwoWay}" Header="Target Host" />
 
 				<DataGridTemplateColumn Header="Target Port" SortMemberPath="TargetPortColumn">
 					<DataTemplate>
-						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort}" />
+						<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort, Mode=TwoWay}" />
 					</DataTemplate>
 				</DataGridTemplateColumn>
 			</DataGrid.Columns>
 		</DataGrid>
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="{Binding ApplyChangesVisible}">
+			<Button Content="Apply" Margin="10"
+					Command="{Binding ApplyChanges}" />
+
+			<Button Content="Reset" Margin="10"
+					Command="{Binding ResetChanges}" />
+		</StackPanel>
+
 	</StackPanel>
 </UserControl>

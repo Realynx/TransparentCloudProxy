@@ -21,7 +21,7 @@ namespace TransparentCloudServerProxy.WebDashboard.SqlDb.Models {
         }
 
         public SavedProxy(Proxy proxy, Guid proxyUserId) {
-            Id = GuidExtentions.FromSeed(proxy.ToString());
+            Id = GuidExtentions.FromSeed($"{proxy.ListenHost}:{proxy.ListenPort}");
             ProxyUserId = proxyUserId;
 
             ProxyBase64Json = JsonSerializer.Serialize(proxy);

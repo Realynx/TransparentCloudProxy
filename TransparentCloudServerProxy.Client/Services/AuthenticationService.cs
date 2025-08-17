@@ -49,6 +49,10 @@ namespace TransparentCloudServerProxy.Client.Services {
             return true;
         }
 
+        public (Uri?, string?) GetCurrentCredentials() {
+            return (_authServer, _userCredential);
+        }
+
         public async Task<bool> CheckCredential() {
             if (string.IsNullOrWhiteSpace(_userCredential) || _authServer is null) {
 

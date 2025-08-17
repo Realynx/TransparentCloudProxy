@@ -2,7 +2,7 @@
     public enum PacketEngine {
         Managed,
         NativeC,
-        Netfitler,
+        NetFilter,
         WindowsPF
     }
 }

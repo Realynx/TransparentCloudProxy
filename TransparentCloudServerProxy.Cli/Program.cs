@@ -38,7 +38,7 @@ namespace TransparentCloudServerProxy.Cli {
 
                 IProxy proxyImplementation;
                 switch (proxy.PacketEngine) {
-                    case PacketEngine.Netfitler:
+                    case PacketEngine.NetFilter:
                         proxyImplementation = NetFilterProxy.FromInstance(proxy);
                         break;
                     case PacketEngine.NativeC:
@@ -79,7 +79,7 @@ namespace TransparentCloudServerProxy.Cli {
                 new Netsh().ResetState();
             }
 
-            if (proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.Netfitler)) {
+            if (proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.NetFilter)) {
                 new NetFilter().ResetTables();
             }
         }

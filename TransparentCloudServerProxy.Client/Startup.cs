@@ -10,6 +10,7 @@ using Polly.Extensions.Http;
 using Polly;
 using System.Net.Http;
 using TransparentCloudServerProxy.Client.Models;
+using TransparentCloudServerProxy.Client.Services.Api;
 
 namespace TransparentCloudServerProxy.Client {
     internal static class Startup {

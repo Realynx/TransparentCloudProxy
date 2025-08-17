@@ -26,6 +26,8 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         }
 
         public bool Enabled { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public PacketEngine PacketEngine { get; set; }
 
         public string ListenHost { get; init; }

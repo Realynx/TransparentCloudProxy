@@ -54,7 +54,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeC {
         }
 
         public override bool Stop() {
-            _proxyListener.Stop(_cancellationTokenSource);
+            _proxyListener?.Stop(_cancellationTokenSource);
             DisposeProxyPipes();
 
             Enabled = false;

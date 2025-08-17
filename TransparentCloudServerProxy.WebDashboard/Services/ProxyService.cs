@@ -23,7 +23,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             _dbContextFactory = dbContextFactory;
             ResetLowLevelPacketFiltering();
 
-            for (uint x = 0; x < proxyConfig.Proxies.Length; x++) {
+            for (uint x = 0; x < proxyConfig.Proxies?.Length; x++) {
                 var proxy = proxyConfig.Proxies[x];
                 Console.WriteLine($"[{proxy.PacketEngine}] {proxy.ToString()}");
                 AddProxy(proxy);
@@ -46,11 +46,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         }
 
         private void ResetLowLevelPacketFiltering() {
-            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.WindowsPF)) {
+            if (_proxies.Any(i => i.PacketEngine == PacketEngine.WindowsPF)) {
                 new Netsh().ResetState();
             }
 
-            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.Netfitler)) {
+            if (_proxies.Any(i => i.PacketEngine == PacketEngine.NetFilter)) {
                 new NetFilter().ResetTables();
             }
         }
@@ -58,7 +58,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         private void AddProxy(Proxy proxy) {
             IProxy proxyImplementation;
             switch (proxy.PacketEngine) {
-                case PacketEngine.Netfitler:
+                case PacketEngine.NetFilter:
                     proxyImplementation = NetFilterProxy.FromInstance(proxy);
                     break;
                 case PacketEngine.NativeC:
@@ -75,7 +75,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             }
 
             _proxies.Add(proxyImplementation);
-            if (proxyImplementation.Enabled) {
+            if (proxy.Enabled) {
                 proxyImplementation.Start();
             }
         }
