@@ -11,6 +11,5 @@
 
 	<Application.Styles>
 		<sukiUi:SukiTheme ThemeColor="Red"  />
-		<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml"/>
 	</Application.Styles>
 </Application>

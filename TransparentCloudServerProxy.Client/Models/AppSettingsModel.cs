@@ -3,6 +3,8 @@
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using TransparentCloudServerProxy.ProxyBackend;
+
 namespace TransparentCloudServerProxy.Client.Models {
     public class AppSettingsModel : ReactiveObject {
         public AppSettingsModel() {
@@ -20,8 +22,18 @@ namespace TransparentCloudServerProxy.Client.Models {
         public string LoginCacheFile { get; set; } = "./config.bin";
 
 
-        [Reactive, Category("Proxy"), DisplayName("Default Packet Engine")]
-        public string DefaultEngine { get; set; } = "NativeC";
+        [Reactive, Category("Local Proxy"), DisplayName("Default Local Packet Engine")]
+        public PacketEngine LocalDefaultEngine { get; set; } = PacketEngine.NativeC;
+
+
+        [Reactive, Category("Cloud Proxy"), DisplayName("Azure PAT Credential")]
+        public string AzurePAT { get; set; } = "";
+
+        [Reactive, Category("Cloud Proxy"), DisplayName("Aws Access Key Credential")]
+        public string AwsAccessKey { get; set; } = "";
+
+        [Reactive, Category("Cloud Proxy"), DisplayName("Default Cloud Packet Engine")]
+        public PacketEngine DefaultEngine { get; set; } = PacketEngine.NetFilter;
 
     }
 }
