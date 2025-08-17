@@ -99,7 +99,7 @@
 					<icons:MaterialIcon Kind="Administrator" />
 				</suki:SukiSideMenuItem.Icon>
 				<suki:SukiSideMenuItem.PageContent>
-					<ContentControl Content="{Binding AppSettingsViewModel}" />
+					<ContentControl Content="{Binding AdminPanelViewModel}" />
 				</suki:SukiSideMenuItem.PageContent>
 			</suki:SukiSideMenuItem>
 		</suki:SukiSideMenu.Items>

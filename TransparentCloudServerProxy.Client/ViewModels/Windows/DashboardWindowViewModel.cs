@@ -18,11 +18,13 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
         public ProxyUser CurrentUser { get; set; }
 
         public ViewModel AppSettingsViewModel { get; }
+        public ViewModel AdminPanelViewModel { get; }
 
         public DashboardWindowViewModel(UserControlPanelViewModel userControlPanelViewModel, IPageRouter pageRouter,
-            IAuthenticationService authenticationService, AppSettingsViewModel appSettingsViewModel) {
+            IAuthenticationService authenticationService, AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel) {
 
             AppSettingsViewModel = appSettingsViewModel;
+            AdminPanelViewModel = adminPanelViewModel;
             _userControlPanelViewModel = userControlPanelViewModel;
             _pageRouter = pageRouter;
             _authenticationService = authenticationService;
