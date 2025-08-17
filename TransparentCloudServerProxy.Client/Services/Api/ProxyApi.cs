@@ -1,15 +1,13 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend;
-using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.Services.Api {
-    public class ProxyApi {
+    public class ProxyApi : IProxyApi {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAuthenticationService _authenticationService;
 
@@ -18,16 +16,18 @@ namespace TransparentCloudServerProxy.Client.Services.Api {
             _authenticationService = authenticationService;
         }
 
-        public async Task<bool> StartProxy(Proxy proxy) {
+        public async Task<bool> UpdateOrAddProxy(Proxy proxy) {
             using var httpClient = CreateHttpClient();
 
-            var proxyUserResponse = await httpClient.GetAsync("/ProxyApi/StartProxy");
-            if (!proxyUserResponse.IsSuccessStatusCode) {
-                return false;
-            }
+            var proxyUserResponse = await httpClient.PostAsJsonAsync("/ProxyApi/AddOrModifyProxy", proxy);
+            return proxyUserResponse.IsSuccessStatusCode;
+        }
 
-            var proxyUser = await proxyUserResponse.Content.ReadFromJsonAsync<Proxy>();
-            return true;
+        public async Task<bool> DeleteProxy(Proxy proxy) {
+            using var httpClient = CreateHttpClient();
+
+            var proxyUserResponse = await httpClient.PostAsJsonAsync("/ProxyApi/RemoveProxy", proxy);
+            return proxyUserResponse.IsSuccessStatusCode;
         }
 
         private HttpClient CreateHttpClient() {

@@ -11,7 +11,24 @@
 			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
 	<StackPanel HorizontalAlignment="Center">
-		<DataGrid CellEditEnded="DataGrid_CellEditEnded" MinWidth="350" MaxHeight="200" CanUserResizeColumns="True" ItemsSource="{Binding DataGridProxies}" Margin="5">
+		<DataGrid SelectedItem="{Binding SelectedProxy, Mode=TwoWay}"
+				  CellEditEnded="DataGrid_CellEditEnded"
+				  RowEditEnding="DataGrid_RowEditEnding"
+				  RowEditEnded="DataGrid_RowEditEnded"
+				  BeginningEdit="DataGrid_BeginningEdit"
+				  CellEditEnding="DataGrid_CellEditEnding"
+				  MinWidth="350"
+				  MaxHeight="200"
+				  CanUserResizeColumns="True"
+				  ItemsSource="{Binding DataGridProxies}"
+				  Margin="5">
+
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem Command="{Binding AddCommand}" Header="Add" />
+					<MenuItem Command="{Binding DeleteCommand}" Header="Delete" />
+				</ContextMenu>
+			</DataGrid.ContextMenu>
 			<DataGrid.Styles>
 				<Style Selector="DataGridRowGroupHeader">
 					<Setter Property="IsItemCountVisible" Value="True" />
@@ -24,7 +41,7 @@
 				<DataGridTemplateColumn Header="Packet Engine" SortMemberPath="PacketEngine">
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
-							<ComboBox ItemsSource="{utility:EnumValues {x:Type proxyBackend:PacketEngine}}"
+							<ComboBox DropDownClosed="ComboBox_DropDownClosed" ItemsSource="{utility:EnumValues {x:Type proxyBackend:PacketEngine}}"
 									  SelectedItem="{Binding PacketEngine, Mode=TwoWay}" />
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
