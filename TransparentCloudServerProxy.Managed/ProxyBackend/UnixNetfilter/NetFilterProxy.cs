@@ -11,7 +11,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.UnixNetfilter {
 
         public ISystemProgram NetFilterProgram { get; set; }
 
-        public NetFilterProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+        public NetFilterProxy(PacketEngine packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
             : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             NetFilterProgram = new NetFilter();
 

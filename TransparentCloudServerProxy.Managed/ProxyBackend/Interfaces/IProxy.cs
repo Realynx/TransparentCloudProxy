@@ -11,7 +11,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         ProxySocketType SocketType { get; init; }
-        string PacketEngine { get; set; }
+        PacketEngine PacketEngine { get; set; }
         bool Enabled { get; set; }
         void Dispose();
         bool Start();

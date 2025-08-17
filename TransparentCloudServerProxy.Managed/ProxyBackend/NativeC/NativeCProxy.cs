@@ -19,7 +19,7 @@ namespace TransparentCloudServerProxy.ProxyBackend.NativeC {
         private readonly ITestableSocketFactory _testableSocketFactory;
         private readonly IProxyListenerFactory _proxyListenerFactory;
 
-        public NativeCProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort,
+        public NativeCProxy(PacketEngine packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort,
             ITestableSocketFactory testableSocketFactory = null, IProxyListenerFactory proxyListenerFactory = null)
             : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             _testableSocketFactory = testableSocketFactory;

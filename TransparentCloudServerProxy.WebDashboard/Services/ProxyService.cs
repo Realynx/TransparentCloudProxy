@@ -3,7 +3,9 @@
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
+using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
+using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 using TransparentCloudServerProxy.SystemTools;
 using TransparentCloudServerProxy.WebDashboard.Services.Exceptions;
@@ -44,11 +46,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         }
 
         private void ResetLowLevelPacketFiltering() {
-            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == "WindowsPF")) {
+            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.WindowsPF)) {
                 new Netsh().ResetState();
             }
 
-            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == "NetFilter")) {
+            if (_proxyConfig.Proxies.Any(i => i.PacketEngine == PacketEngine.Netfitler)) {
                 new NetFilter().ResetTables();
             }
         }
@@ -56,19 +58,19 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         private void AddProxy(Proxy proxy) {
             IProxy proxyImplementation;
             switch (proxy.PacketEngine) {
-                case "NetFilter":
+                case PacketEngine.Netfitler:
+                    proxyImplementation = NetFilterProxy.FromInstance(proxy);
+                    break;
+                case PacketEngine.NativeC:
                     proxyImplementation = NativeCProxy.FromInstance(proxy);
                     break;
-                case "NativeC":
-                    proxyImplementation = NativeCProxy.FromInstance(proxy);
-                    break;
-                case "WindowsPF":
+                case PacketEngine.WindowsPF:
                     proxyImplementation = WindowsPFProxy.FromInstance(proxy);
                     break;
 
                 default:
-                    proxy.PacketEngine = "Managed";
-                    proxyImplementation = NativeCProxy.FromInstance(proxy);
+                    proxy.PacketEngine = PacketEngine.Managed;
+                    proxyImplementation = ManagedProxy.FromInstance(proxy);
                     break;
             }
 

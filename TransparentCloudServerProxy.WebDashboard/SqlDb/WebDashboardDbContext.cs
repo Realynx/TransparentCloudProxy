@@ -16,6 +16,7 @@ namespace TransparentCloudServerProxy.WebDashboard.SqlDb {
 
         }
 
+        public DbSet<AssociatedServer> AssociatedServers { get; set; } = default!;
         public DbSet<ProxyUser> Users { get; set; } = default!;
         public DbSet<SavedProxy> Proxies { get; set; } = default!;
     }
