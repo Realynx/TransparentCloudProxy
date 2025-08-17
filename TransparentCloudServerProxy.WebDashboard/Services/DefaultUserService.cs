@@ -1,5 +1,6 @@
 ﻿
 
+using System.Text;
 using System.Text.Json;
 
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,14 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             if (!string.IsNullOrWhiteSpace(CredentialString)) {
                 _logger.LogInformation("Created root user! Below is your credential, DO NOT LOSE THIS.");
                 _logger.LogInformation($"Root Cred: {CredentialString}");
+
+
+                // TODO: Make an ip service to grab ip addresses from different interfaces.
+                var fondInterfaceAddress = "localhost:7002";
+                var hexInterfaceAddress = Convert.ToHexString(Encoding.UTF8.GetBytes(fondInterfaceAddress));
+
+                var oneKey = $"{CredentialString}{hexInterfaceAddress}";
+                _logger.LogInformation($"OneKey Pass: {oneKey}");
             }
 
             var proxyUserJson = JsonSerializer.Serialize(proxyUser);

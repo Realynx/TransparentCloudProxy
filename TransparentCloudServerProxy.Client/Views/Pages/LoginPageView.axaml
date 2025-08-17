@@ -16,16 +16,10 @@
                    FontWeight="Bold"
                    Margin="0,0,0,10" />
 
-		<TextBox Text="{Binding ServerAddress, Mode=TwoWay}"
+		<TextBox Text="{Binding OneKey, Mode=TwoWay}"
                  Background="#555"
                  Foreground="White"
-                 Watermark="https://127.0.0.1"
-                 CornerRadius="6" />
-
-		<TextBox Text="{Binding Credential, Mode=TwoWay}"
-                 Background="#555"
-                 Foreground="White"
-                 Watermark="Access Credential"
+                 Watermark="OneKey Access Credential"
                  CornerRadius="6" />
 
 		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
