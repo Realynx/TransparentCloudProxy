@@ -9,5 +9,15 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         public AdminApiController(ILogger<AdminApiController> logger) {
             _logger = logger;
         }
+
+        [HttpGet(nameof(GetAssociationKey))]
+        public IActionResult GetAssociationKey() {
+            return Ok("key");
+        }
+
+        [HttpPost(nameof(JoinCluster))]
+        public IActionResult JoinCluster([FromBody] string associationKey) {
+            return Ok(associationKey);
+        }
     }
 }
