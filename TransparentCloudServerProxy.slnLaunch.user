@@ -1,0 +1,33 @@
+[
+  {
+    "Name": "Avalonia Debug",
+    "Projects": [
+      {
+        "Path": "TransparentCloudServerProxy.WebDashboard\\TransparentCloudServerProxy.WebDashboard.csproj",
+        "Action": "StartWithoutDebugging"
+      },
+      {
+        "Path": "TransparentCloudServerProxy.Client\\TransparentCloudServerProxy.Client.csproj",
+        "Action": "Start"
+      }
+    ]
+  },
+  {
+    "Name": "WebServer Debug",
+    "Projects": [
+      {
+        "Path": "TransparentCloudServerProxy.WebDashboard\\TransparentCloudServerProxy.WebDashboard.csproj",
+        "Action": "Start"
+      }
+    ]
+  },
+  {
+    "Name": "Cli Debug",
+    "Projects": [
+      {
+        "Path": "TransparentCloudServerProxy.Cli\\TransparentCloudServerProxy.Cli.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
