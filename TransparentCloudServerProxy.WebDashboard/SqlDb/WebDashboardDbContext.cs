@@ -14,6 +14,11 @@ namespace TransparentCloudServerProxy.WebDashboard.SqlDb {
                 .HasForeignKey(l => l.ProxyUserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<AssociatedServer>()
+                .HasMany(t => t.AssociatedCredential)
+                .WithOne(l => l.AssociatedServer)
+                .HasForeignKey(l => l.AssociatedServerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<AssociatedServer> AssociatedServers { get; set; } = default!;

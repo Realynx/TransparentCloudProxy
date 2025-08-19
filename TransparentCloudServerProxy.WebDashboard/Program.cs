@@ -5,6 +5,8 @@ using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
+using TransparentCloudServerProxy.WebDashboard.Services.Windows;
+using TransparentCloudServerProxy.WebDashboard.Services.Windows.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 
 using ProxyConfig = TransparentCloudServerProxy.WebDashboard.Models.ProxyConfig;
@@ -25,9 +27,14 @@ namespace TransparentCloudServerProxy.WebDashboard {
                     options.UseSqlite("Data Source=proxy.db"));
 
             builder.Services
+                .AddHttpClient();
+
+            builder.Services
                 .AddSingleton<IConfigurationRoot>(builder.Configuration)
                 .AddSingleton<IProxyConfig, ProxyConfig>()
                 .AddSingleton<IProxyService, ProxyService>()
+                .AddSingleton<IPublicAddressService, PublicAddressService>()
+                .AddSingleton<INetworkInterfaceService, NetworkInterfaceService>()
                 .AddSingleton<DashboardConfig>()
                 .AddSingleton<CredentialsService>();
 

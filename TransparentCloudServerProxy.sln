@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransparentCloudServerProxy.CNative", "TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj", "{B5A0D367-FB4E-49A5-85F1-029D5C63E367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Managed.Tests", "TransparentCloudServerProxy.Managed.Tests\TransparentCloudServerProxy.Managed.Tests.csproj", "{47F36296-69C7-4074-92D4-655610B12451}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Tests", "TransparentCloudServerProxy.Managed.Tests\TransparentCloudServerProxy.Tests.csproj", "{47F36296-69C7-4074-92D4-655610B12451}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{750D954D-47DA-43E6-823C-7596051BD529}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{14A82392-2940-4AB8-8AE3-2D6AC5C144CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Client", "TransparentCloudServerProxy.Client\TransparentCloudServerProxy.Client.csproj", "{7E463119-744E-4FED-AB78-4FB0A8EDD0E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.WebDashboard.Tests", "TransparentCloudServerProxy.WebDashboard.Tests\TransparentCloudServerProxy.WebDashboard.Tests.csproj", "{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{7E463119-744E-4FED-AB78-4FB0A8EDD0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E463119-744E-4FED-AB78-4FB0A8EDD0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E463119-744E-4FED-AB78-4FB0A8EDD0E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,5 +70,6 @@ Global
 		{47F36296-69C7-4074-92D4-655610B12451} = {750D954D-47DA-43E6-823C-7596051BD529}
 		{AA3574FF-AB86-403A-B6F3-D7A6F4B2FCFC} = {750D954D-47DA-43E6-823C-7596051BD529}
 		{7E463119-744E-4FED-AB78-4FB0A8EDD0E3} = {14A82392-2940-4AB8-8AE3-2D6AC5C144CC}
+		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81} = {750D954D-47DA-43E6-823C-7596051BD529}
 	EndGlobalSection
 EndGlobal

@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Principal;
 using System.Text.Encodings.Web;
 
 using Microsoft.AspNetCore.Authentication;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
+using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class CredentialAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions> {
@@ -36,6 +38,51 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             var givenCredentialHashString = Convert.ToHexString(givenCredentialHash);
 
             using var dbContext = _dbContextFactory.CreateDbContext();
+
+            var clusterResult = await EvauateClusterAuthentication(key, dbContext);
+            if (clusterResult.Succeeded) {
+                return clusterResult;
+            }
+
+            return await EvaluateUserAuthentication(givenCredentialHashString, dbContext);
+        }
+
+        private async Task<AuthenticateResult> EvauateClusterAuthentication(string key, WebDashboardDbContext dbContext) {
+            var selfServer = await dbContext.AssociatedServers.FirstOrDefaultAsync(i => i.IsSelf);
+            if (selfServer is null) {
+                return AuthenticateResult.Fail("Invalid credentials");
+            }
+
+            var credential = selfServer.AssociatedCredential;
+            if (credential.SingleOrDefault(i => i.Credential == key) is not AssociatedCredential serverCredential) {
+                return AuthenticateResult.Fail("Invalid credentials");
+            }
+
+            if (serverCredential.ValidTo < DateTimeOffset.Now) {
+                return AuthenticateResult.Fail("Invalid credentials");
+            }
+
+            PruneExpiresCredentials(selfServer);
+
+            var claims = new[] {
+                new Claim(ClaimTypes.Role, "ClusterJoiner")
+            };
+
+            var identity = new ClaimsIdentity(claims, Scheme.Name);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+            return AuthenticateResult.Success(ticket);
+        }
+
+        private static void PruneExpiresCredentials(AssociatedServer? selfServer) {
+            var removeList = selfServer.AssociatedCredential.Where(i => i.ValidTo < DateTimeOffset.Now).ToArray();
+            foreach (var removeItem in removeList) {
+                selfServer.AssociatedCredential.Remove(removeItem);
+            }
+        }
+
+        private async Task<AuthenticateResult> EvaluateUserAuthentication(string givenCredentialHashString, WebDashboardDbContext dbContext) {
             var user = await dbContext.Users.FirstOrDefaultAsync(proxyUser =>
                 proxyUser.HashedCredentialKey == givenCredentialHashString);
 

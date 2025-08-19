@@ -1,10 +1,8 @@
-﻿
-
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 using Microsoft.EntityFrameworkCore;
 
+using TransparentCloudServerProxy.WebDashboard.Services.Windows.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
@@ -14,14 +12,18 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
         /// If the account was just created this will contain it's credentials.
         /// </summary>
         public string CredentialString { get; set; }
+
         private readonly ILogger<DefaultUserService> _logger;
         private readonly CredentialsService _credentialsService;
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
+        private readonly INetworkInterfaceService _networkInterfaceService;
 
-        public DefaultUserService(ILogger<DefaultUserService> logger, CredentialsService credentialsService, IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
+        public DefaultUserService(ILogger<DefaultUserService> logger, CredentialsService credentialsService,
+            IDbContextFactory<WebDashboardDbContext> dbContextFactory, INetworkInterfaceService networkInterfaceService) {
             _logger = logger;
             _credentialsService = credentialsService;
             _dbContextFactory = dbContextFactory;
+            _networkInterfaceService = networkInterfaceService;
         }
 
         public async Task<ProxyUser> EnsureDefaultUser() {
@@ -60,10 +62,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
                 _logger.LogInformation("Created root user! Below is your credential, DO NOT LOSE THIS.");
                 _logger.LogInformation($"Root Cred: {CredentialString}");
 
-
-                // TODO: Make an ip service to grab ip addresses from different interfaces.
-                var fondInterfaceAddress = "localhost:7002";
-                var hexInterfaceAddress = Convert.ToHexString(Encoding.UTF8.GetBytes(fondInterfaceAddress));
+                var hexInterfaceAddress = await _networkInterfaceService.CreateReachableAddressString();
 
                 var oneKey = $"{CredentialString}{hexInterfaceAddress}";
                 _logger.LogInformation($"OneKey Pass: {oneKey}");

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = "KeyToken", Roles ="Admin")]
     public class AdminApiController : ControllerBase {
         private readonly ILogger<AdminApiController> _logger;
 
@@ -15,6 +17,7 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             return Ok("key");
         }
 
+        [Authorize(AuthenticationSchemes = "KeyToken", Roles = "ClusterHost")]
         [HttpPost(nameof(JoinCluster))]
         public IActionResult JoinCluster([FromBody] string associationKey) {
             return Ok(associationKey);

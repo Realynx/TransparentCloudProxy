@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using ReactiveUI;
@@ -65,19 +66,37 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
                  OneKey Pass: 0BF5FFE161F87743EA63B6E4884BC2C26D618EFBC2C1A6C3A8E265CF89B2421D6C6F63616C686F73743A37303032
              */
 
+
+
             // Take 64 nibbles, 32 bytes
             var credential = new string(OneKey.Take(64).ToArray());
             var addressHex = new string(OneKey.Skip(64).ToArray());
-            var addressString = Encoding.UTF8.GetString(Convert.FromHexString(addressHex));
 
-            var validLogin = await _authenticationService.LoginAsync(addressString, credential);
+            var serverAddressRegex = new Regex(@"https?:\/\/.+?(?=https?:\/\/|$)");
+            var addressesString = Encoding.UTF8.GetString(Convert.FromHexString(addressHex));
+            var addresses = serverAddressRegex.Matches(addressesString).SelectMany(i => i.Captures);
+
+            var validLogin = false;
+            var reachableHost = string.Empty;
+            foreach (Capture address in addresses) {
+                if (address.Index == 0) {
+                    continue;
+                }
+
+                validLogin = await _authenticationService.LoginAsync(address.Value, credential);
+                if (validLogin) {
+                    reachableHost = address.Value;
+                    break;
+                }
+            }
+
             if (!validLogin) {
                 _pageRouter.Navigate(this);
                 ErrorMessage = "Invalid login!";
                 return;
             }
 
-            _loginStorageService.StoreLogin(credential, addressString.NormalizeHostUri());
+            _loginStorageService.StoreLogin(credential, reachableHost.NormalizeHostUri());
             CloseWindow();
         }
     }

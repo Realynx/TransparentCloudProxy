@@ -9,5 +9,10 @@ namespace TransparentCloudServerProxy.WebDashboard.SqlDb.Models {
 
         [Required]
         public string ServerAddress { get; set; }
+
+        public bool ClusterHost { get; set; }
+        public bool IsSelf { get; set; }
+
+        public List<AssociatedCredential> AssociatedCredential { get; set; }
     }
 }
