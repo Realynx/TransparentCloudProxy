@@ -1,69 +1,27 @@
-﻿using System.Security.Claims;
-
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
-using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.Services;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
-namespace TransparentCloudServerProxy.WebDashboard.Controllers {
+namespace TransparentCloudServerProxy.WebDashboard.Controllers.User {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "KeyToken")]
-    public class UserController : ControllerBase {
+    [Authorize(AuthenticationSchemes = "UserKeyToken", Roles = "Admin")]
+    public class UserAdminController : ControllerBase {
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
         private readonly CredentialsService _credentialsService;
-        private readonly IProxyService _proxyService;
+        private readonly IUserService _userService;
 
-        public UserController(IDbContextFactory<WebDashboardDbContext> dbContextFactory, CredentialsService credentialsService, IProxyService proxyService) {
+        public UserAdminController(IDbContextFactory<WebDashboardDbContext> dbContextFactory, CredentialsService credentialsService,
+            IUserService userService) {
             _dbContextFactory = dbContextFactory;
             _credentialsService = credentialsService;
-            _proxyService = proxyService;
-        }
-
-        private ProxyUser? GetCurrentUser(WebDashboardDbContext dbContext) {
-
-            if (User.Identity is not ClaimsIdentity identity) {
-                return null;
-            }
-
-            var idClaim = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out var userId)) {
-                return null;
-            }
-
-            if (!Guid.TryParse(idClaim, out var currentUserId)) {
-                return null;
-            }
-
-            var currentUser = dbContext.Users
-                .Include(i => i.UserSavedProxies)
-                .FirstOrDefault(i => i.Id == currentUserId);
-
-            return currentUser;
-        }
-
-        [HttpGet(nameof(Get))]
-        public IActionResult Get() {
-            using var dbContext = _dbContextFactory.CreateDbContext();
-            var currentUser = GetCurrentUser(dbContext);
-            if (currentUser is null) {
-                return BadRequest();
-            }
-
-            if (currentUser.Admin) {
-                currentUser.UserSavedProxies = _proxyService
-                    .GetProxies()
-                    .Select(i => new SavedProxy((Proxy)i, currentUser.Id))
-                    .ToList();
-            }
-
-            return Ok(currentUser);
+            _userService = userService;
         }
 
         [HttpPost(nameof(CreateUser))]
@@ -102,15 +60,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         [HttpPost(nameof(ResetCredential))]
         public async Task<IActionResult> ResetCredential([FromBody] ProxyUser proxyUser) {
             using var dbContext = _dbContextFactory.CreateDbContext();
-            var currentUser = GetCurrentUser(dbContext);
-            if (currentUser is null) {
-                return BadRequest();
-            }
+            var currentUser = _userService.GetCurrentUser(User);
 
             if (!currentUser.Admin && proxyUser.Username != currentUser.Username) {
                 return BadRequest("You can only reset your own credential.");
             }
-
             var resetUser = dbContext.Users.Single(i => i.Username == proxyUser.Username);
 
             var rootCredential = _credentialsService.GenerateCredential();
@@ -123,26 +77,5 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             var credentialString = Convert.ToHexString(rootCredential);
             return Ok(credentialString);
         }
-
-
-        [HttpPost(nameof(ResetMyCredential))]
-        public async Task<IActionResult> ResetMyCredential() {
-            using var dbContext = _dbContextFactory.CreateDbContext();
-            var currentUser = GetCurrentUser(dbContext);
-            if (currentUser is null) {
-                return BadRequest();
-            }
-
-            var rootCredential = _credentialsService.GenerateCredential();
-            var credentialHash = _credentialsService.HashCredential(rootCredential);
-            var hashString = Convert.ToHexString(credentialHash);
-
-            currentUser.HashedCredentialKey = hashString;
-            await dbContext.SaveChangesAsync();
-
-            var credentialString = Convert.ToHexString(rootCredential);
-            return Ok(credentialString);
-        }
-
     }
 }

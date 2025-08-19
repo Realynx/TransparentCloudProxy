@@ -2,9 +2,9 @@
 using System.Net.NetworkInformation;
 using System.Text;
 
-using TransparentCloudServerProxy.WebDashboard.Services.Windows.Interfaces;
+using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
-namespace TransparentCloudServerProxy.WebDashboard.Services.Windows {
+namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class NetworkInterfaceService : INetworkInterfaceService {
         private readonly IPublicAddressService _publicAddressService;
 

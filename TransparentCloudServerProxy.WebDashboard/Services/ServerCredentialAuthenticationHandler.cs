@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Security.Principal;
 using System.Text.Encodings.Web;
 
 using Microsoft.AspNetCore.Authentication;
@@ -10,13 +9,12 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.WebDashboard.Services {
-    public class CredentialAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions> {
+    public class ServerCredentialAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions> {
         private readonly CredentialsService _credentialsService;
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
 
-        public CredentialAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,
-            UrlEncoder encoder, CredentialsService credentialsService, IDbContextFactory<WebDashboardDbContext> dbContextFactory)
-            : base(options, logger, encoder) {
+        public ServerCredentialAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger,
+            UrlEncoder encoder, CredentialsService credentialsService, IDbContextFactory<WebDashboardDbContext> dbContextFactory) : base(options, logger, encoder) {
             _credentialsService = credentialsService;
             _dbContextFactory = dbContextFactory;
         }
@@ -40,12 +38,17 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             using var dbContext = _dbContextFactory.CreateDbContext();
 
             var clusterResult = await EvauateClusterAuthentication(key, dbContext);
-            if (clusterResult.Succeeded) {
-                return clusterResult;
-            }
+            return clusterResult;
 
-            return await EvaluateUserAuthentication(givenCredentialHashString, dbContext);
         }
+
+        private static void PruneExpiresCredentials(AssociatedServer? selfServer) {
+            var removeList = selfServer.AssociatedCredential.Where(i => i.ValidTo < DateTimeOffset.Now).ToArray();
+            foreach (var removeItem in removeList) {
+                selfServer.AssociatedCredential.Remove(removeItem);
+            }
+        }
+
 
         private async Task<AuthenticateResult> EvauateClusterAuthentication(string key, WebDashboardDbContext dbContext) {
             var selfServer = await dbContext.AssociatedServers.FirstOrDefaultAsync(i => i.IsSelf);
@@ -74,37 +77,5 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
 
             return AuthenticateResult.Success(ticket);
         }
-
-        private static void PruneExpiresCredentials(AssociatedServer? selfServer) {
-            var removeList = selfServer.AssociatedCredential.Where(i => i.ValidTo < DateTimeOffset.Now).ToArray();
-            foreach (var removeItem in removeList) {
-                selfServer.AssociatedCredential.Remove(removeItem);
-            }
-        }
-
-        private async Task<AuthenticateResult> EvaluateUserAuthentication(string givenCredentialHashString, WebDashboardDbContext dbContext) {
-            var user = await dbContext.Users.FirstOrDefaultAsync(proxyUser =>
-                proxyUser.HashedCredentialKey == givenCredentialHashString);
-
-            if (user == null) {
-                return AuthenticateResult.Fail("Invalid credentials");
-            }
-
-            user.LastLogin = DateTimeOffset.Now;
-            await dbContext.SaveChangesAsync();
-
-            var claims = new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Admin ? "Admin" : "User")
-            };
-
-            var identity = new ClaimsIdentity(claims, Scheme.Name);
-            var principal = new ClaimsPrincipal(identity);
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-            return AuthenticateResult.Success(ticket);
-        }
     }
 }
-

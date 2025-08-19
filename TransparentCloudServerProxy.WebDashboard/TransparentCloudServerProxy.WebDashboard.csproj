@@ -19,6 +19,7 @@
   <ItemGroup>
     <Folder Include="ReactClient\" />
     <Folder Include="Services\Linux\Interfaces\" />
+    <Folder Include="Services\Windows\Interfaces\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

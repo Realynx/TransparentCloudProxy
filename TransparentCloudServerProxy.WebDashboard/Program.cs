@@ -5,8 +5,6 @@ using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
-using TransparentCloudServerProxy.WebDashboard.Services.Windows;
-using TransparentCloudServerProxy.WebDashboard.Services.Windows.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 
 using ProxyConfig = TransparentCloudServerProxy.WebDashboard.Models.ProxyConfig;
@@ -35,6 +33,7 @@ namespace TransparentCloudServerProxy.WebDashboard {
                 .AddSingleton<IProxyService, ProxyService>()
                 .AddSingleton<IPublicAddressService, PublicAddressService>()
                 .AddSingleton<INetworkInterfaceService, NetworkInterfaceService>()
+                .AddSingleton<IUserService, UserService>()
                 .AddSingleton<DashboardConfig>()
                 .AddSingleton<CredentialsService>();
 
@@ -43,8 +42,9 @@ namespace TransparentCloudServerProxy.WebDashboard {
 
             builder.Services
                 .AddAuthorization()
-                .AddAuthentication("KeyToken")
-                .AddScheme<AuthenticationSchemeOptions, CredentialAuthenticationHandler>("KeyToken", options => { });
+                .AddAuthentication("UserKeyToken")
+                .AddScheme<AuthenticationSchemeOptions, UserCredentialAuthenticationHandler>("ClusterToken", options => { })
+                .AddScheme<AuthenticationSchemeOptions, UserCredentialAuthenticationHandler>("UserKeyToken", options => { });
 
             var app = builder.Build();
 

@@ -13,7 +13,7 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(AuthenticationSchemes = "KeyToken")]
+    [Authorize(AuthenticationSchemes = "UserKeyToken")]
     public class ProxyApiController : ControllerBase {
         private readonly ILogger<ProxyApiController> _logger;
         private readonly IProxyService _proxyService;

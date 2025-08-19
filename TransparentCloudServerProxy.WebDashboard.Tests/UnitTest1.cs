@@ -2,7 +2,6 @@
 using Moq.AutoMock;
 
 using TransparentCloudServerProxy.WebDashboard.Services;
-using TransparentCloudServerProxy.WebDashboard.Services.Windows;
 
 namespace TransparentCloudServerProxy.WebDashboard.Tests {
     public class UnitTest1 {

@@ -60,15 +60,6 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             var loginSpeedLimit = _rng.Next(500, 2500);
             await Task.Delay(loginSpeedLimit);
 
-            /*
-             * Creds are always 32 bytes
-                   Root Cred: 0BF5FFE161F87743EA63B6E4884BC2C26D618EFBC2C1A6C3A8E265CF89B2421D
-                 OneKey Pass: 0BF5FFE161F87743EA63B6E4884BC2C26D618EFBC2C1A6C3A8E265CF89B2421D6C6F63616C686F73743A37303032
-             */
-
-
-
-            // Take 64 nibbles, 32 bytes
             var credential = new string(OneKey.Take(64).ToArray());
             var addressHex = new string(OneKey.Skip(64).ToArray());
 

@@ -2,7 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-using TransparentCloudServerProxy.WebDashboard.Services.Windows.Interfaces;
+using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
