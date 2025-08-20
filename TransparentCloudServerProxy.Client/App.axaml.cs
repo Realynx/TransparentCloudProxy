@@ -5,6 +5,8 @@ using Avalonia.Threading;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using SukiUI.Theme.Shadcn;
+
 using TransparentCloudServerProxy.Client.ViewModels.Windows;
 using TransparentCloudServerProxy.Client.Views.Windows;
 
@@ -43,6 +45,7 @@ namespace TransparentCloudServerProxy.Client {
 
                 _ = startupWindowViewModel.InitializeAsync();
             }
+
             base.OnFrameworkInitializationCompleted();
         }
     }

@@ -15,7 +15,7 @@
 				 Background="Transparent"
 				 x:DataType="vm:DashboardWindowViewModel"
 				 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
-				 BackgroundStyle="Flat"
+				 
 				 IsMenuVisible="True"
 				 BackgroundAnimationEnabled="True">
 
@@ -76,7 +76,16 @@
 	<suki:SukiSideMenu>
 		<suki:SukiSideMenu.Items>
 
-			<suki:SukiSideMenuItem Header="Dashboard" Classes="Compact" >
+			<suki:SukiSideMenuItem Header="Remote Servers" Classes="Compact" >
+				<suki:SukiSideMenuItem.Icon>
+					<icons:MaterialIcon Kind="Cloud" />
+				</suki:SukiSideMenuItem.Icon>
+				<suki:SukiSideMenuItem.PageContent>
+					<ContentControl Content="{Binding CurrentPage}" />
+				</suki:SukiSideMenuItem.PageContent>
+			</suki:SukiSideMenuItem>
+
+			<suki:SukiSideMenuItem Header="Local Proxy" Classes="Compact" >
 				<suki:SukiSideMenuItem.Icon>
 					<icons:MaterialIcon Kind="Cloud" />
 				</suki:SukiSideMenuItem.Icon>

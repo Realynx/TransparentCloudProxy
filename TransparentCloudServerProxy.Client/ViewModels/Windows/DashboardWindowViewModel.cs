@@ -1,4 +1,8 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using Avalonia;
+
+using ReactiveUI.Fody.Helpers;
+
+using SukiUI.Theme.Shadcn;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Pages;
