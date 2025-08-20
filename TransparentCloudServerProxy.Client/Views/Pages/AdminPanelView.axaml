@@ -7,5 +7,5 @@
 			 
 			 x:DataType="vm:AdminPanelViewModel"
 			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
-	Welcome to Avalonia!
+    Welcome to Avalonia!
 </UserControl>

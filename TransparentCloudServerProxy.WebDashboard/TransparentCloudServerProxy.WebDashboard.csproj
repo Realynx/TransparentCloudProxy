@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Proxy\" />
     <Folder Include="ReactClient\" />
     <Folder Include="Services\Linux\Interfaces\" />
     <Folder Include="Services\Windows\Interfaces\" />

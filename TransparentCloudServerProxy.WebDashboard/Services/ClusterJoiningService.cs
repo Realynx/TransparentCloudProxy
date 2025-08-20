@@ -6,9 +6,17 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class ClusterJoiningService {
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public ClusterJoiningService(IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
+        public ClusterJoiningService(IDbContextFactory<WebDashboardDbContext> dbContextFactory, IHttpClientFactory httpClientFactory) {
             _dbContextFactory = dbContextFactory;
+            _httpClientFactory = httpClientFactory;
+        }
+
+        public async Task OnboardServer(Uri remoteServer, string adminCredential) {
+            using var httpClient = _httpClientFactory.CreateClient();
+
+            // httpClient.GetAsync();
         }
 
         public async Task JoinCluster(string associationKey) {

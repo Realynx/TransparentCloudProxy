@@ -22,5 +22,15 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
         public IActionResult JoinCluster([FromBody] string associationKey) {
             return Ok(associationKey);
         }
+
+        [HttpPost(nameof(OnboardServer))]
+        public IActionResult OnboardServer() {
+            return Ok();
+        }
+
+        [HttpPost(nameof(OnboardServer))]
+        public IActionResult GenerateAssociatedCredentual() {
+            return Ok();
+        }
     }
 }
