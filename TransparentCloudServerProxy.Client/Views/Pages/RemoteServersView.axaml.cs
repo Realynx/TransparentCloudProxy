@@ -4,13 +4,13 @@ using TransparentCloudServerProxy.Client.ViewModels.Pages;
 
 namespace TransparentCloudServerProxy.Client.Views.Pages;
 
-public partial class UserControlPanelView : UserControl {
-    public UserControlPanelView() {
+public partial class RemoteServersView : UserControl {
+    public RemoteServersView() {
         InitializeComponent();
     }
 
     private void ApplChanges() {
-        if (DataContext is UserControlPanelViewModel vm) {
+        if (DataContext is RemoteServersViewModel vm) {
             vm.ApplyChangesVisible = true;
         }
     }

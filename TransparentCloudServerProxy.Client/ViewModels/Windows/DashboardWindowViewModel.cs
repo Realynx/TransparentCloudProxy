@@ -7,7 +7,7 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
     public class DashboardWindowViewModel : ViewModel {
 
-        private readonly UserControlPanelViewModel _userControlPanelViewModel;
+        private readonly RemoteServersViewModel _userControlPanelViewModel;
         private readonly IPageRouter _pageRouter;
         private readonly IAuthenticationService _authenticationService;
 
@@ -20,7 +20,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
         public ViewModel AppSettingsViewModel { get; }
         public ViewModel AdminPanelViewModel { get; }
 
-        public DashboardWindowViewModel(UserControlPanelViewModel userControlPanelViewModel, IPageRouter pageRouter,
+        public DashboardWindowViewModel(RemoteServersViewModel userControlPanelViewModel, IPageRouter pageRouter,
             IAuthenticationService authenticationService, AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel) {
 
             AppSettingsViewModel = appSettingsViewModel;

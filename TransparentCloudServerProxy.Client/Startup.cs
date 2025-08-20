@@ -27,6 +27,8 @@ namespace TransparentCloudServerProxy.Client {
                 .AddSingleton<IUserApi, UserApi>()
                 .AddSingleton<IProxyApi, ProxyApi>()
                 .AddSingleton<IPageRouter, PageRouter>()
+                .AddSingleton<ICryptoService, CryptoService>()
+                .AddSingleton<ISecureFileStorageService, SecureFileStorageService>()
                 .AddSingleton<ILoginStorageService, LoginStorageService>();
 
             return services;
@@ -38,7 +40,7 @@ namespace TransparentCloudServerProxy.Client {
                 .AddTransient<DashboardWindowViewModel>()
                 .AddTransient<IdleSpinnerViewModel>()
                 .AddTransient<LoginPageViewModel>()
-                .AddTransient<UserControlPanelViewModel>()
+                .AddTransient<RemoteServersViewModel>()
                 .AddTransient<AppSettingsViewModel>()
                 .AddTransient<AdminPanelViewModel>()
 

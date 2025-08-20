@@ -18,7 +18,7 @@ using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
-    public class UserControlPanelViewModel : ViewModel {
+    public class RemoteServersViewModel : ViewModel {
         private readonly IAuthenticationService _authenticationService;
         private readonly IProxyApi _proxyApi;
         private readonly IUserApi _userApi;
@@ -47,7 +47,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
 
 
 
-        public UserControlPanelViewModel(IAuthenticationService authenticationService, IProxyApi proxyApi, IUserApi userApi) {
+        public RemoteServersViewModel(IAuthenticationService authenticationService, IProxyApi proxyApi, IUserApi userApi) {
             _authenticationService = authenticationService;
             _proxyApi = proxyApi;
             _userApi = userApi;

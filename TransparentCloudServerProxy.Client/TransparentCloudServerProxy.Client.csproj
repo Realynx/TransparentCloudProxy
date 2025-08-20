@@ -48,6 +48,9 @@
     <Compile Update="Views\Pages\LoginPageView.axaml.cs">
       <DependentUpon>LoginPageView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\Pages\RemoteServersView.axaml.cs">
+      <DependentUpon>RemoteServersView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Windows\StartupWindowView.axaml.cs">
       <DependentUpon>StartupWindowView.axaml</DependentUpon>
     </Compile>
