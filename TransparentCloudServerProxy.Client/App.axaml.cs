@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,9 +34,11 @@ namespace TransparentCloudServerProxy.Client {
                         DataContext = serviceProvider.GetRequiredService<DashboardWindowViewModel>()
                     };
 
-                    desktop.MainWindow = mainWindow;
-                    startupWindow.IsVisible = false;
-                    mainWindow.Show();
+                    Dispatcher.UIThread.Invoke(() => {
+                        desktop.MainWindow = mainWindow;
+                        mainWindow.Show();
+                        startupWindow.Close();
+                    });
                 };
 
                 _ = startupWindowViewModel.InitializeAsync();
