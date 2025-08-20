@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.WebDashboard.Models;
@@ -9,9 +12,12 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb;
 
 using ProxyConfig = TransparentCloudServerProxy.WebDashboard.Models.ProxyConfig;
 
-namespace TransparentCloudServerProxy.WebDashboard {
-    public class Program {
-        public static void Main(string[] args) {
+namespace TransparentCloudServerProxy.WebDashboard
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Logging.ClearProviders();
@@ -37,6 +43,10 @@ namespace TransparentCloudServerProxy.WebDashboard {
                 .AddSingleton<DashboardConfig>()
                 .AddSingleton<CredentialsService>();
 
+            builder.Services.AddSingleton<CurrentKestralServerConfig>();
+            builder.Services.AddHostedService(sp => sp.GetRequiredService<CurrentKestralServerConfig>());
+
+
             builder.Services
                 .AddHostedService<DefaultUserService>();
 
@@ -48,7 +58,8 @@ namespace TransparentCloudServerProxy.WebDashboard {
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment()) {
+            if (app.Environment.IsDevelopment())
+            {
                 app.MapOpenApi();
             }
 

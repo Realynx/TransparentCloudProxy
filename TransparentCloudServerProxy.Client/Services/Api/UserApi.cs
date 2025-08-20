@@ -16,17 +16,28 @@ namespace TransparentCloudServerProxy.Client.Services.Api {
         }
 
         public async Task<ProxyUser?> Login(Uri endpoint, string credential) {
-            using var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = endpoint;
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Key", credential);
+            try {
+                var handler = new HttpClientHandler {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
 
-            var proxyUserResponse = await httpClient.GetAsync("/User/Get");
-            if (!proxyUserResponse.IsSuccessStatusCode) {
+                using var client = new HttpClient(handler);
+
+                client.BaseAddress = endpoint;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Key", credential);
+
+                var proxyUserResponse = await client.GetAsync("/User/Get");
+                if (!proxyUserResponse.IsSuccessStatusCode) {
+                    return null;
+                }
+
+                var proxyUser = await proxyUserResponse.Content.ReadFromJsonAsync<ProxyUser>();
+                return proxyUser;
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
                 return null;
             }
-
-            var proxyUser = await proxyUserResponse.Content.ReadFromJsonAsync<ProxyUser>();
-            return proxyUser;
         }
     }
 }
