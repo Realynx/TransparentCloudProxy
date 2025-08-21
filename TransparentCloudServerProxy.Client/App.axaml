@@ -3,8 +3,7 @@
              x:Class="TransparentCloudServerProxy.Client.App"
              xmlns:local="using:TransparentCloudServerProxy.Client"
              xmlns:suki="https://github.com/kikipoulet/SukiUI"
-             xmlns:common="clr-namespace:SukiUI.Demo.Common"
-             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 RequestedThemeVariant="Dark">
 
 	<Application.DataTemplates>
@@ -13,5 +12,6 @@
 
 	<Application.Styles>
 		<suki:SukiTheme ThemeColor="Blue"  />
+		<materialIcons:MaterialIconStyles />
 	</Application.Styles>
 </Application>
