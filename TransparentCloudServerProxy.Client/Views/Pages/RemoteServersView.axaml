@@ -12,13 +12,17 @@
 			 xmlns:local="clr-namespace:TransparentCloudServerProxy.Client.Views.Controls"
 			 xmlns:utility="clr-namespace:TransparentCloudServerProxy.Client.Utilities"
 			 xmlns:vmc="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Controls"
-			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
+			 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
 
 	<StackPanel Margin="15" HorizontalAlignment="Left">
 		<TabControl ItemsSource="{Binding ServerDataGrids}">
 			<TabControl.ItemTemplate>
 				<DataTemplate x:DataType="vmc:ProxyDataGridViewModel">
-					<TextBlock Text="{Binding TabName}" />
+					<StackPanel Orientation="Horizontal">
+						<materialIcons:MaterialIcon Kind="Server" Margin="0, 0, 3, 0" />
+						<TextBlock Text="{Binding TabName}" />
+					</StackPanel>
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 
