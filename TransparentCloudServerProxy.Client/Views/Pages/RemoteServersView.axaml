@@ -11,31 +11,32 @@
 			 xmlns:proxyBackend="clr-namespace:TransparentCloudServerProxy.ProxyBackend;assembly=TransparentCloudServerProxy"
 			 xmlns:local="clr-namespace:TransparentCloudServerProxy.Client.Views.Controls"
 			 xmlns:utility="clr-namespace:TransparentCloudServerProxy.Client.Utilities"
+			 xmlns:vmc="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Controls"
 			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
 	<StackPanel Margin="15" HorizontalAlignment="Left">
 		<TabControl ItemsSource="{Binding ServerDataGrids}">
 			<TabControl.ItemTemplate>
-				<DataTemplate>
+				<DataTemplate x:DataType="vmc:ProxyDataGridViewModel">
 					<TextBlock Text="{Binding TabName}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
 
 			<TabControl.ContentTemplate>
-				<DataTemplate>
-					<local:ProxyDataGridView Padding="10" />
+				<DataTemplate x:DataType="vmc:ProxyDataGridViewModel">
+					<local:ProxyDataGridView Padding="10">
+						<local:ProxyDataGridView.ContextMenu>
+							<ContextMenu DataContext="{Binding}">
+								<MenuItem Command="{Binding AddCommand}" Header="Add" />
+								<MenuItem Command="{Binding DeleteCommand}" Header="Delete" />
+								<MenuItem Header="-" />
+								<MenuItem Command="{Binding ResetChanges}" Header="Reset" />
+								<MenuItem Command="{Binding ApplyChanges}" Header="Apply" />
+							</ContextMenu>
+						</local:ProxyDataGridView.ContextMenu>
+					</local:ProxyDataGridView>
 				</DataTemplate>
 			</TabControl.ContentTemplate>
-
 		</TabControl>
-
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="{Binding ApplyChangesVisible}">
-			<!--<Button Content="Apply" Margin="10"
-					Command="{Binding ApplyChanges}" />-->
-
-			<Button Content="Reset" Margin="10"
-					Command="{Binding ResetChanges}" />
-		</StackPanel>
-
 	</StackPanel>
 </UserControl>

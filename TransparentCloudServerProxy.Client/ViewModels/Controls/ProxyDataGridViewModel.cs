@@ -30,25 +30,35 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
         }
 
         public ReactiveCommand<Unit, Unit> AddCommand { get; }
+        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+        public ReactiveCommand<Unit, Unit> ResetChanges { get; }
         public ReactiveCommand<Unit, Unit> ApplyChanges { get; }
+
 
         public ProxyDataGridViewModel(ProxyServer proxyServer) {
             ProxyServer = proxyServer;
             ApplyChanges = ReactiveCommand.CreateFromTask(ApplyChangesAsync);
             AddCommand = ReactiveCommand.CreateFromTask(AddCommandAsync);
+            DeleteCommand = ReactiveCommand.CreateFromTask(DeleteCommandAsync);
+            ResetChanges = ReactiveCommand.CreateFromTask(ResetChangesAsync);
 
-            SyncGridData();
+            _ = SyncGridData();
         }
 
-        public void SyncGridData() {
-            var savedProxies = ProxyServer.ServerUser.UserSavedProxies;
-
+        public async Task SyncGridData() {
+            var currentUser = await ProxyServer.GetUser();
             DataGridProxies.Clear();
+            if (currentUser is null) {
+                return;
+            }
+
+            var savedProxies = currentUser.UserSavedProxies;
             DataGridProxies.AddRange(savedProxies.Select(i => i.GetProxy()));
         }
 
-        public async Task AddCommandAsync() {
+        public Task AddCommandAsync() {
             DataGridProxies.Add(new Proxy(PacketEngine.NativeC, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+            return Task.CompletedTask;
         }
 
         public async Task ApplyChangesAsync() {
@@ -59,6 +69,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
             foreach (var updatedProxy in DataGridProxies) {
                 var effectiveKey = $"{updatedProxy.ListenHost}:{updatedProxy.ListenPort}";
+
                 if (originalProxies.ContainsKey(effectiveKey)) {
                     originalProxies.Remove(effectiveKey);
                 }
@@ -70,7 +81,17 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
                 await ProxyServer.DeleteProxy(deletedProxy);
             }
 
-            SyncGridData();
+            await SyncGridData();
+        }
+
+        public async Task DeleteCommandAsync() {
+            await ProxyServer.DeleteProxy(SelectedProxy);
+
+            await SyncGridData();
+        }
+
+        public async Task ResetChangesAsync() {
+            await SyncGridData();
         }
     }
 }
