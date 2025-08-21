@@ -43,6 +43,9 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             var proxyServerService = _serviceProvider.GetRequiredService<IProxyServerService>();
             var authCredential = _serviceProvider.GetRequiredService<IAuthenticationService>();
 
+            var loadingSavedCredentials = Task.Run(authCredential.LoadAllSavedCredentials);
+            loadingSavedCredentials.Wait();
+
             var validAuth = proxyServerService.GetAllServers().Any(i => i.ServerUser is not null);
             if (validAuth) {
                 CloseWindow();
