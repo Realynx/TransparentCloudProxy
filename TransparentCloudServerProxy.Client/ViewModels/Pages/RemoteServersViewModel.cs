@@ -16,11 +16,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
 
         public ReadOnlyObservableCollection<ProxyDataGridViewModel> ServerDataGrids { get; }
 
-        [Reactive] public bool ApplyChangesVisible { get; set; }
+        [Reactive]
+        public bool ApplyChangesVisible { get; set; }
 
         private readonly IProxyServerService _proxyServerService;
         private readonly SourceList<ProxyServer> _sourceList;
-        private readonly IDisposable _cleanup; // keep subscription alive
+        private readonly IDisposable _cleanup;
 
         public RemoteServersViewModel(IProxyServerService proxyServerService) {
             _proxyServerService = proxyServerService;
@@ -29,7 +30,6 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             _sourceList = new SourceList<ProxyServer>();
             _sourceList.AddRange(Servers);
 
-            // Bind to ReadOnlyObservableCollection
             _cleanup = _sourceList.Connect()
                 .Transform(server => new ProxyDataGridViewModel(server))
                 .Bind(out var serverDataGrids)
@@ -37,7 +37,6 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
 
             ServerDataGrids = serverDataGrids;
 
-            // Keep _sourceList in sync with Servers
             Servers.CollectionChanged += Servers_CollectionChanged;
         }
 
