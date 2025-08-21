@@ -63,6 +63,7 @@ namespace TransparentCloudServerProxy.Client {
                 .AddTransient<AdminPanelViewModel>()
                 .AddTransient<ProxyDataGridViewModel>()
                 .AddTransient<AddServerDialogView>()
+                .AddTransient<LocalProxyViewModel>()
 
                 .AddSingleton<AppSettingsModel>();
 

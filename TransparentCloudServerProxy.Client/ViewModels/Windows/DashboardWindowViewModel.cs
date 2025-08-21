@@ -29,6 +29,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
         [Reactive]
         public ProxyUser CurrentUser { get; set; }
 
+        public ViewModel LocalProxyViewModel { get; }
         public ViewModel AppSettingsViewModel { get; }
         public ViewModel AdminPanelViewModel { get; }
 
@@ -36,11 +37,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
 
 
         public DashboardWindowViewModel(RemoteServersViewModel userControlPanelViewModel, IPageRouter pageRouter,
-            AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel,
+            AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel, LocalProxyViewModel localProxyViewModel,
             IProxyServerService proxyServerService, ILoginStorageService loginStorageService) {
 
             AppSettingsViewModel = appSettingsViewModel;
             AdminPanelViewModel = adminPanelViewModel;
+            LocalProxyViewModel = localProxyViewModel;
             _proxyServerService = proxyServerService;
             _loginStorageService = loginStorageService;
             _userControlPanelViewModel = userControlPanelViewModel;

@@ -110,7 +110,7 @@
 					<icons:MaterialIcon Kind="Proxy" />
 				</suki:SukiSideMenuItem.Icon>
 				<suki:SukiSideMenuItem.PageContent>
-					<ContentControl Content="{Binding CurrentPage}" />
+					<ContentControl Content="{Binding LocalProxyViewModel}" />
 				</suki:SukiSideMenuItem.PageContent>
 			</suki:SukiSideMenuItem>
 
