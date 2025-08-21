@@ -11,5 +11,6 @@ namespace TransparentCloudServerProxy.Client.Services.Interfaces {
         ProxyServer[] GetAllServers();
         ProxyServer? GetServer(string address);
         ObservableCollection<ProxyServer> GetServerObservableCollection();
+        void RemoveServer(ProxyServer proxyServer);
     }
 }
