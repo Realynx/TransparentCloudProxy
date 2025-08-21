@@ -12,6 +12,9 @@ using System.Net.Http;
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.ViewModels.Controls;
+using TransparentCloudServerProxy.Client.Views.Dialogs;
+using SukiUI.Dialogs;
+using SukiUI.Toasts;
 
 namespace TransparentCloudServerProxy.Client {
     internal static class Startup {
@@ -41,7 +44,10 @@ namespace TransparentCloudServerProxy.Client {
                 .AddSingleton<IProxyServerService, ProxyServerService>()
                 .AddSingleton<ICryptoService, CryptoService>()
                 .AddSingleton<ISecureFileStorageService, SecureFileStorageService>()
-                .AddSingleton<ILoginStorageService, LoginStorageService>();
+                .AddSingleton<ILoginStorageService, LoginStorageService>()
+                .AddSingleton<IOneKeyService, OneKeyService>()
+                .AddSingleton<ISukiToastManager, SukiToastManager>()
+                .AddSingleton<ISukiDialogManager, SukiDialogManager>();
 
             return services;
         }
@@ -56,6 +62,7 @@ namespace TransparentCloudServerProxy.Client {
                 .AddTransient<AppSettingsViewModel>()
                 .AddTransient<AdminPanelViewModel>()
                 .AddTransient<ProxyDataGridViewModel>()
+                .AddTransient<AddServerDialogView>()
 
                 .AddSingleton<AppSettingsModel>();
 

@@ -32,6 +32,8 @@ namespace TransparentCloudServerProxy.Client.Services {
         public void StoreModel<T>(string modelKey, T model) {
             if (_configValues.ContainsKey(modelKey)) {
                 _configValues[modelKey] = model;
+                SaveMainConfigFile();
+                return;
             }
 
             _configValues.Add(modelKey, model);

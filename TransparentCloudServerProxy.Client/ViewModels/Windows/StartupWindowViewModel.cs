@@ -54,8 +54,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
 
             var storageService = _serviceProvider.GetRequiredService<ILoginStorageService>();
             var pageRouter = _serviceProvider.GetRequiredService<IPageRouter>();
+            var oneKeyService = _serviceProvider.GetRequiredService<IOneKeyService>();
             var idleSpinnerViewModel = _serviceProvider.GetRequiredService<IdleSpinnerViewModel>();
-            CurrentPage = new LoginPageViewModel(this, authCredential, storageService, pageRouter, idleSpinnerViewModel, proxyServerService);
+
+            CurrentPage = new LoginPageViewModel(this, authCredential, storageService,
+                pageRouter, idleSpinnerViewModel, proxyServerService);
         }
 
     }

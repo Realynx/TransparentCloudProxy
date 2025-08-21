@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TransparentCloudServerProxy.Client.Models;
@@ -19,23 +20,29 @@ namespace TransparentCloudServerProxy.Client.Services.Api {
             }
         }
 
+        public SavedCredential SavedCredential {
+            get {
+                return _savedCredential;
+            }
+        }
+
         public ProxyServer(SavedCredential savedCredential, HttpClient httpClient) {
             _savedCredential = savedCredential;
             _httpClient = httpClient;
         }
 
-        public async Task<bool> UpdateOrAddProxy(Proxy proxy) {
-            var proxyUserResponse = await _httpClient.PostAsJsonAsync("/ProxyApi/AddOrModifyProxy", proxy);
+        public async Task<bool> UpdateOrAddProxy(Proxy proxy, CancellationToken cancellationToken = new()) {
+            var proxyUserResponse = await _httpClient.PostAsJsonAsync("/ProxyApi/AddOrModifyProxy", proxy, cancellationToken);
             return proxyUserResponse.IsSuccessStatusCode;
         }
 
-        public async Task<bool> DeleteProxy(Proxy proxy) {
-            var proxyUserResponse = await _httpClient.PostAsJsonAsync("/ProxyApi/RemoveProxy", proxy);
+        public async Task<bool> DeleteProxy(Proxy proxy, CancellationToken cancellationToken = new()) {
+            var proxyUserResponse = await _httpClient.PostAsJsonAsync("/ProxyApi/RemoveProxy", proxy, cancellationToken);
             return proxyUserResponse.IsSuccessStatusCode;
         }
 
-        public async Task<ProxyUser?> GetUser() {
-            var proxyUserResponse = await _httpClient.GetAsync("/User/Get");
+        public async Task<ProxyUser?> GetUser(CancellationToken cancellationToken = new()) {
+            var proxyUserResponse = await _httpClient.GetAsync("/User/Get", cancellationToken);
             if (!proxyUserResponse.IsSuccessStatusCode) {
                 return null;
             }

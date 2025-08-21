@@ -9,21 +9,29 @@ using TransparentCloudServerProxy.Client.Services.Interfaces;
 namespace TransparentCloudServerProxy.Client.Services {
     public class LoginStorageService : ILoginStorageService {
         private readonly ISecureFileStorageService _secureFileStorageService;
+        private readonly IOneKeyService _oneKeyService;
 
-        public LoginStorageService(ISecureFileStorageService secureFileStorageService) {
+        public LoginStorageService(ISecureFileStorageService secureFileStorageService, IOneKeyService oneKeyService) {
             _secureFileStorageService = secureFileStorageService;
+            _oneKeyService = oneKeyService;
         }
 
         public void StoreLogin(string credential, Uri serverAddress) {
+            var savedCredential = new SavedCredential() {
+                Credential = credential,
+                ReachableAddress = serverAddress.ToString()
+            };
+
+            StoreLogin(savedCredential);
+        }
+
+        public void StoreLogin(SavedCredential savedCredential) {
             var storedServerCredentials = _secureFileStorageService.GetModel<StoredServerCredentials>();
 
             storedServerCredentials ??= new();
             storedServerCredentials.SavedCredentials ??= new List<SavedCredential>();
 
-            storedServerCredentials.SavedCredentials.Add(new SavedCredential() {
-                Credential = credential,
-                ReachableAddress = serverAddress.ToString()
-            });
+            storedServerCredentials.SavedCredentials.Add(savedCredential);
 
             _secureFileStorageService.StoreModel(storedServerCredentials);
         }

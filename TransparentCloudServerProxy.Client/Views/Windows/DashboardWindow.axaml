@@ -38,10 +38,28 @@
 				</MenuItem>
 			</MenuItem>
 
+			<MenuItem Header="-" />
+
 
 			<MenuItem Header="Import Servers">
 				<MenuItem.Icon>
 					<icons:MaterialIcon Kind="ServerAdd" />
+				</MenuItem.Icon>
+			</MenuItem>
+		</MenuItem>
+
+		<MenuItem Header="Server">
+			<MenuItem Command="{Binding AddServer}"
+					  Header="Add Server">
+
+				<MenuItem.Icon>
+					<icons:MaterialIcon Kind="Cloud" />
+				</MenuItem.Icon>
+			</MenuItem>
+			<MenuItem Header="-" />
+			<MenuItem Header="Start Cluster">
+				<MenuItem.Icon>
+					<icons:MaterialIcon Kind="Cloud" />
 				</MenuItem.Icon>
 			</MenuItem>
 		</MenuItem>
@@ -64,6 +82,8 @@
 					<icons:MaterialIcon Kind="Cloud" />
 				</MenuItem.Icon>
 			</MenuItem>
+
+			<MenuItem Header="-" />
 
 			<MenuItem Header="VPS">
 				<MenuItem.Icon>

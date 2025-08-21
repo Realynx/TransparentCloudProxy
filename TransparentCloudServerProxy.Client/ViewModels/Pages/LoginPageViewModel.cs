@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-using TransparentCloudServerProxy.Client.Extentions;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Windows;
 
@@ -33,13 +30,15 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         public ReactiveCommand<Unit, Unit> LocalCommand { get; }
 
         public LoginPageViewModel(StartupWindowViewModel startupWindowViewModel, IAuthenticationService authenticationService,
-            ILoginStorageService loginStorageService, IPageRouter pageRouter, IdleSpinnerViewModel idleSpinnerViewModel, IProxyServerService proxyServerService) {
+            ILoginStorageService loginStorageService, IPageRouter pageRouter, IdleSpinnerViewModel idleSpinnerViewModel,
+            IProxyServerService proxyServerService) {
             _startupWindowViewModel = startupWindowViewModel;
             _authenticationService = authenticationService;
             _loginStorageService = loginStorageService;
             _pageRouter = pageRouter;
             _idleSpinnerViewModel = idleSpinnerViewModel;
             _proxyServerService = proxyServerService;
+
             LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
             LocalCommand = ReactiveCommand.CreateFromTask(LocalSession);
         }
@@ -69,40 +68,16 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             var loginSpeedLimit = _rng.Next(500, 2500);
             await Task.Delay(loginSpeedLimit);
 
-            var credential = new string(OneKey.Take(64).ToArray());
-            var addressHex = new string(OneKey.Skip(64).ToArray());
+            var loginServer = await _proxyServerService.AddServer(OneKey);
 
-            var serverAddressRegex = new Regex(@"https?:\/\/.+?(?=https?:\/\/|$)");
-            var addressesString = Encoding.UTF8.GetString(Convert.FromHexString(addressHex));
-            var addresses = serverAddressRegex.Matches(addressesString).SelectMany(i => i.Captures);
-
-            var validLogin = false;
-            var reachableHost = string.Empty;
-
-            foreach (Capture address in addresses) {
-                if (address.Index == 0) {
-                    continue;
-                }
-
-                var serverLogin = await _proxyServerService.AddServer(new Models.SavedCredential() {
-                    ReachableAddress = address.Value.NormalizeHostUri().ToString(),
-                    Credential = credential
-                });
-
-                if (serverLogin is not null) {
-                    validLogin = true;
-                    reachableHost = address.Value;
-                    break;
-                }
-            }
-
-            if (!validLogin) {
+            if (loginServer is null) {
                 _pageRouter.Navigate(this);
                 ErrorMessage = "Invalid login!";
                 return;
             }
 
-            _loginStorageService.StoreLogin(credential, reachableHost.NormalizeHostUri());
+
+            _loginStorageService.StoreLogin(loginServer.SavedCredential);
             CloseWindow();
         }
     }

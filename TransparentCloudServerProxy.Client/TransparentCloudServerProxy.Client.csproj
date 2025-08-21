@@ -11,8 +11,6 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Styles\" />
-    <Folder Include="ViewModels\Dialogs\" />
-    <Folder Include="Views\Dialogs\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,42 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+				 xmlns:suki="https://github.com/kikipoulet/SukiUI"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 mc:Ignorable="d"
+				 Width="600"
+				 Height="300"
+                 x:Class="TransparentCloudServerProxy.Client.Views.Dialogs.AddServerDialogView"
+		         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Dialogs"
+		         x:DataType="vm:AddServerDialogViewModel"
+                 Title=""
+				 WindowStartupLocation="CenterOwner">
+
+	<StackPanel VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="250" Spacing="10">
+
+		<TextBlock Text="OneKey Login"
+		   HorizontalAlignment="Center"
+		   FontSize="18"
+		   Foreground="White"
+		   FontWeight="Bold"
+		   Margin="0,0,0,10" />
+
+		<TextBox Text="{Binding OneKey, Mode=TwoWay}"
+		 Background="#555"
+		 Foreground="White"
+		 Watermark="OneKey Access Credential"
+		 CornerRadius="6" />
+
+		<Button Classes="Outlined"
+		Content="Login"
+		HorizontalContentAlignment="Center"
+		CornerRadius="6"
+		HorizontalAlignment="Center"
+		Width="80"
+		Margin="10"
+		Command="{Binding LoginCommand}" />
+	</StackPanel>
+
+</suki:SukiWindow>

@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 using DynamicData;
 
@@ -10,31 +12,45 @@ using TransparentCloudServerProxy.Client.ViewModels.Controls;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
     public class RemoteServersViewModel : ViewModel {
-        public ObservableCollection<ProxyServer> Servers { get; } = new();
+        public ObservableCollection<ProxyServer> Servers { get; set; }
 
-        public ObservableCollection<ProxyDataGridViewModel> ServerDataGrids { get; } = new();
+        public ReadOnlyObservableCollection<ProxyDataGridViewModel> ServerDataGrids { get; }
 
-        [Reactive]
-        public bool ApplyChangesVisible { get; set; }
-
+        [Reactive] public bool ApplyChangesVisible { get; set; }
 
         private readonly IProxyServerService _proxyServerService;
+        private readonly SourceList<ProxyServer> _sourceList;
+        private readonly IDisposable _cleanup; // keep subscription alive
+
         public RemoteServersViewModel(IProxyServerService proxyServerService) {
             _proxyServerService = proxyServerService;
+            Servers = _proxyServerService.GetServerObservableCollection();
 
-            SyncServers();
+            _sourceList = new SourceList<ProxyServer>();
+            _sourceList.AddRange(Servers);
+
+            // Bind to ReadOnlyObservableCollection
+            _cleanup = _sourceList.Connect()
+                .Transform(server => new ProxyDataGridViewModel(server))
+                .Bind(out var serverDataGrids)
+                .Subscribe();
+
+            ServerDataGrids = serverDataGrids;
+
+            // Keep _sourceList in sync with Servers
+            Servers.CollectionChanged += Servers_CollectionChanged;
         }
 
-        private void SyncServers() {
-            var servers = _proxyServerService.GetAllServers();
+        private void Servers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (e.NewItems != null) {
+                foreach (ProxyServer server in e.NewItems)
+                    _sourceList.Add(server);
+            }
 
-            Servers.Clear();
-            Servers.AddRange(servers);
-
-            foreach (var proxyServer in Servers) {
-                ServerDataGrids.Add(new ProxyDataGridViewModel(proxyServer));
+            if (e.OldItems != null) {
+                foreach (ProxyServer server in e.OldItems)
+                    _sourceList.Remove(server);
             }
         }
     }
 }
-

@@ -5,27 +5,22 @@ using System.Text;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 
-namespace TransparentCloudServerProxy.WebDashboard.Services
-{
-    public class NetworkInterfaceService : INetworkInterfaceService
-    {
+namespace TransparentCloudServerProxy.WebDashboard.Services {
+    public class NetworkInterfaceService : INetworkInterfaceService {
         private readonly IPublicAddressService _publicAddressService;
         private readonly CurrentKestralServerConfig _currentKestralServerConfig;
 
-        public NetworkInterfaceService(IPublicAddressService publicAddressService, CurrentKestralServerConfig currentKestralServerConfig)
-        {
+        public NetworkInterfaceService(IPublicAddressService publicAddressService, CurrentKestralServerConfig currentKestralServerConfig) {
             _publicAddressService = publicAddressService;
             _currentKestralServerConfig = currentKestralServerConfig;
         }
 
-        public IPAddress[] GetNetworkInterfaceAddresses()
-        {
+        public IPAddress[] GetNetworkInterfaceAddresses() {
             var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces()
                 .Where(i => i.OperationalStatus == OperationalStatus.Up && i.NetworkInterfaceType != NetworkInterfaceType.Loopback);
 
             var myAddresses = new List<IPAddress>();
-            foreach (var networkInterface in networkInterfaces)
-            {
+            foreach (var networkInterface in networkInterfaces) {
                 var localAddresses = networkInterface.GetIPProperties().UnicastAddresses.Select(i => i.Address);
                 myAddresses.AddRange(localAddresses);
             }
@@ -33,11 +28,10 @@ namespace TransparentCloudServerProxy.WebDashboard.Services
             return myAddresses.ToArray();
         }
 
-        public async Task<string> CreateReachableAddressString()
-        {
+        public async Task<string> CreateReachableAddressString() {
             var allLocalAddresses = GetNetworkInterfaceAddresses();
             var publicAddress = await _publicAddressService.GetPublicAddress();
-
+            publicAddress = publicAddress.Remove(publicAddress.Length - 1);
 
             var addressString = string.Join(string.Empty, allLocalAddresses.Select(i => $"https://{i}:{_currentKestralServerConfig.HttpsPort}").ToArray());
             addressString += $"https://{publicAddress}:{_currentKestralServerConfig.HttpsPort}";

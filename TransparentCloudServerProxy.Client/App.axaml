@@ -2,14 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TransparentCloudServerProxy.Client.App"
              xmlns:local="using:TransparentCloudServerProxy.Client"
-			 xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI">
-	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             xmlns:suki="https://github.com/kikipoulet/SukiUI"
+             xmlns:common="clr-namespace:SukiUI.Demo.Common"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 RequestedThemeVariant="Dark">
 
 	<Application.DataTemplates>
 		<local:ViewLocator/>
 	</Application.DataTemplates>
 
 	<Application.Styles>
-		<sukiUi:SukiTheme ThemeColor="Blue"  />
+		<suki:SukiTheme ThemeColor="Blue"  />
 	</Application.Styles>
 </Application>

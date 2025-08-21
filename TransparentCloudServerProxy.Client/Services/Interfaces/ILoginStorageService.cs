@@ -8,5 +8,6 @@ namespace TransparentCloudServerProxy.Client.Services.Interfaces {
         (Uri? serverAddress, string credential) RecoverLogin();
         void RemoveLogin(Uri serverAddress);
         void StoreLogin(string credential, Uri serverAddress);
+        void StoreLogin(SavedCredential savedCredential);
     }
 }
