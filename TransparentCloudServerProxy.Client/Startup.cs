@@ -11,22 +11,34 @@ using Polly;
 using System.Net.Http;
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
+using TransparentCloudServerProxy.Client.ViewModels.Controls;
 
 namespace TransparentCloudServerProxy.Client {
     internal static class Startup {
         public static IServiceCollection ConfigureServices(IServiceCollection services) {
             AddViewModels(services)
-                .AddHttpClient<UserApi>(client => {
+                .AddHttpClient(nameof(IProxyServerFactory), client => {
                     client.DefaultRequestHeaders.Add("Accept", "application/json");
                     client.DefaultRequestHeaders.UserAgent.Clear();
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"RealynxProxy/1.0 {Environment.OSVersion.Platform}; {Environment.OSVersion.Version}");
-                }).AddPolicyHandler(GetRetryPolicy());
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"RealynxProxy/1.0 ({Environment.OSVersion.Platform}; {Environment.OSVersion.Version})");
+                })
+                .ConfigurePrimaryHttpMessageHandler(() => {
+#if DEBUG
+                    return new HttpClientHandler {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+#else
+                    return new HttpClientHandler();
+#endif
+
+                })
+                .AddPolicyHandler(GetRetryPolicy());
 
             services
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
-                .AddSingleton<IUserApi, UserApi>()
-                .AddSingleton<IProxyApi, ProxyApi>()
                 .AddSingleton<IPageRouter, PageRouter>()
+                .AddSingleton<IProxyServerFactory, ProxyServerFactory>()
+                .AddSingleton<IProxyServerService, ProxyServerService>()
                 .AddSingleton<ICryptoService, CryptoService>()
                 .AddSingleton<ISecureFileStorageService, SecureFileStorageService>()
                 .AddSingleton<ILoginStorageService, LoginStorageService>();
@@ -43,6 +55,7 @@ namespace TransparentCloudServerProxy.Client {
                 .AddTransient<RemoteServersViewModel>()
                 .AddTransient<AppSettingsViewModel>()
                 .AddTransient<AdminPanelViewModel>()
+                .AddTransient<ProxyDataGridViewModel>()
 
                 .AddSingleton<AppSettingsModel>();
 

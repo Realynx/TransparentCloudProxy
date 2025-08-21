@@ -43,7 +43,7 @@ namespace TransparentCloudServerProxy.Client {
                     });
                 };
 
-                _ = startupWindowViewModel.InitializeAsync();
+                startupWindowViewModel.Initialize();
             }
 
             base.OnFrameworkInitializationCompleted();

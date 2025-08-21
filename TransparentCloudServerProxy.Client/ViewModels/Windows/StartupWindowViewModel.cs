@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -38,10 +39,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             StartupCompleted?.Invoke();
         }
 
-        public async Task InitializeAsync() {
+        public void Initialize() {
+            var proxyServerService = _serviceProvider.GetRequiredService<IProxyServerService>();
             var authCredential = _serviceProvider.GetRequiredService<IAuthenticationService>();
-            var validAuth = await authCredential.CheckCredential();
 
+            var validAuth = proxyServerService.GetAllServers().Any(i => i.ServerUser is not null);
             if (validAuth) {
                 CloseWindow();
                 return;
@@ -50,7 +52,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             var storageService = _serviceProvider.GetRequiredService<ILoginStorageService>();
             var pageRouter = _serviceProvider.GetRequiredService<IPageRouter>();
             var idleSpinnerViewModel = _serviceProvider.GetRequiredService<IdleSpinnerViewModel>();
-            CurrentPage = new LoginPageViewModel(this, authCredential, storageService, pageRouter, idleSpinnerViewModel);
+            CurrentPage = new LoginPageViewModel(this, authCredential, storageService, pageRouter, idleSpinnerViewModel, proxyServerService);
         }
 
     }

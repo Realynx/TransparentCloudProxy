@@ -15,30 +15,49 @@ namespace TransparentCloudServerProxy.Client.Services {
         }
 
         public void StoreLogin(string credential, Uri serverAddress) {
-            var storedServerCredentuals = _secureFileStorageService.GetModel<StoredServerCredentials>();
-            if (storedServerCredentuals is null) {
-                storedServerCredentuals = new();
-            }
+            var storedServerCredentials = _secureFileStorageService.GetModel<StoredServerCredentials>();
 
-            if (storedServerCredentuals.SavedCredentials is null) {
-                storedServerCredentuals.SavedCredentials = new List<SavedCredential>();
-            }
+            storedServerCredentials ??= new();
+            storedServerCredentials.SavedCredentials ??= new List<SavedCredential>();
 
-            storedServerCredentuals.SavedCredentials.Add(new SavedCredential() {
+            storedServerCredentials.SavedCredentials.Add(new SavedCredential() {
                 Credential = credential,
                 ReachableAddress = serverAddress.ToString()
             });
 
-            _secureFileStorageService.StoreModel(storedServerCredentuals);
+            _secureFileStorageService.StoreModel(storedServerCredentials);
+        }
+
+        public void RemoveLogin(Uri serverAddress) {
+            var storedServerCredentials = _secureFileStorageService.GetModel<StoredServerCredentials>();
+            if (storedServerCredentials is null || storedServerCredentials.SavedCredentials is null) {
+                return;
+            }
+
+            var existingCredential = storedServerCredentials.SavedCredentials.FirstOrDefault(i => i.ReachableAddress == serverAddress.ToString());
+            if (existingCredential is null) {
+                return;
+            }
+
+            storedServerCredentials.SavedCredentials.Remove(existingCredential);
+            _secureFileStorageService.StoreModel(storedServerCredentials);
+        }
+
+        public SavedCredential[] GetAllLogins() {
+            var storedServerCredentials = _secureFileStorageService.GetModel<StoredServerCredentials>();
+
+            return storedServerCredentials is null || storedServerCredentials.SavedCredentials is null
+                ? Array.Empty<SavedCredential>()
+                : storedServerCredentials.SavedCredentials.ToArray();
         }
 
         public (Uri? serverAddress, string credential) RecoverLogin() {
-            var storedServerCredentuals = _secureFileStorageService.GetModel<StoredServerCredentials?>();
-            if (storedServerCredentuals is null) {
+            var storedServerCredentials = _secureFileStorageService.GetModel<StoredServerCredentials?>();
+            if (storedServerCredentials is null) {
                 return (null, string.Empty);
             }
 
-            var firstSavedCredential = storedServerCredentuals.SavedCredentials.First();
+            var firstSavedCredential = storedServerCredentials.SavedCredentials.First();
             return (firstSavedCredential.ReachableAddress.NormalizeHostUri(), firstSavedCredential.Credential);
         }
     }

@@ -1,84 +1,46 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Hosting.Server.Features;
+﻿using System.Threading.Tasks;
 
 using TransparentCloudServerProxy.Client.Extentions;
+using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
-using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.Services {
     public class AuthenticationService : IAuthenticationService {
-        private readonly IUserApi _userApi;
         private readonly ILoginStorageService _loginStorageService;
+        private readonly IProxyServerService _proxyServerService;
 
-        private ProxyUser? _currentUser = null;
-        private string? _userCredential = null;
-        private Uri? _authServer = null;
-
-        public AuthenticationService(IUserApi userApi, ILoginStorageService loginStorageService) {
-            _userApi = userApi;
+        public AuthenticationService(ILoginStorageService loginStorageService, IProxyServerService proxyServerService) {
             _loginStorageService = loginStorageService;
+            _proxyServerService = proxyServerService;
         }
 
-        public bool ValidCredentials {
-            get {
-                return _currentUser is not null;
-            }
-        }
-
-        public ProxyUser? GetCurrentUser() {
-            return _currentUser;
-        }
-
-        public async Task<bool> LoginAsync(string server, string credential) {
+        public bool Login(string server, string credential) {
             var serverUri = server.NormalizeHostUri();
             if (serverUri is null) {
                 return false;
             }
 
-            var proxyUser = await _userApi.Login(serverUri, credential);
-            if (proxyUser is null) {
+            var proxyServer = _proxyServerService.AddServer(new SavedCredential() {
+                Credential = credential,
+                ReachableAddress = serverUri.ToString()
+            });
+
+            if (proxyServer is null) {
                 return false;
             }
 
-            _currentUser = proxyUser;
-            _userCredential = credential;
-            _authServer = serverUri;
             return true;
         }
 
-        public (Uri?, string?) GetCurrentCredentials() {
-            return (_authServer, _userCredential);
-        }
+        public async Task LoadAllSavedCredentials() {
+            var allSavedLogins = _loginStorageService.GetAllLogins();
 
-        public async Task<bool> CheckCredential() {
-            if (string.IsNullOrWhiteSpace(_userCredential) || _authServer is null) {
-
-                (var serverAddress, var credential) = _loginStorageService.RecoverLogin();
-                if (string.IsNullOrWhiteSpace(credential) || serverAddress is null) {
-                    return false;
+            foreach (var savedLogin in allSavedLogins) {
+                var proxyServer = await _proxyServerService.AddServer(savedLogin);
+                if (proxyServer is null) {
+                    continue;
                 }
-
-                var recoveredProxyUser = await _userApi.Login(serverAddress, credential);
-                if (recoveredProxyUser is null) {
-                    return false;
-                }
-
-                _authServer = serverAddress;
-                _userCredential = credential;
-                _currentUser = recoveredProxyUser;
             }
-
-            var proxyUser = await _userApi.Login(_authServer, _userCredential);
-            if (proxyUser is null) {
-                return false;
-            }
-
-            _currentUser = proxyUser;
-            return true;
         }
-
     }
 }

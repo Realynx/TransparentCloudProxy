@@ -12,8 +12,6 @@
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Styles\" />
     <Folder Include="ViewModels\Dialogs\" />
-    <Folder Include="ViewModels\Controls\" />
-    <Folder Include="Views\Controls\" />
     <Folder Include="Views\Dialogs\" />
   </ItemGroup>
 
@@ -42,6 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\Controls\ProxyDataGridView.axaml.cs">
+      <DependentUpon>ProxyDataGridView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Pages\IdleSpinnerView.axaml.cs">
       <DependentUpon>IdleSpinnerView.axaml</DependentUpon>
     </Compile>

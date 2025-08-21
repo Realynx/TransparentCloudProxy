@@ -1,8 +1,6 @@
-﻿using Avalonia;
+﻿using System.Linq;
 
 using ReactiveUI.Fody.Helpers;
-
-using SukiUI.Theme.Shadcn;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Pages;
@@ -13,7 +11,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
 
         private readonly RemoteServersViewModel _userControlPanelViewModel;
         private readonly IPageRouter _pageRouter;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IProxyServerService _proxyServerService;
 
         [Reactive]
         public ViewModel CurrentPage { get; set; }
@@ -25,17 +23,19 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
         public ViewModel AdminPanelViewModel { get; }
 
         public DashboardWindowViewModel(RemoteServersViewModel userControlPanelViewModel, IPageRouter pageRouter,
-            IAuthenticationService authenticationService, AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel) {
+            AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel, IProxyServerService proxyServerService) {
 
             AppSettingsViewModel = appSettingsViewModel;
             AdminPanelViewModel = adminPanelViewModel;
+            _proxyServerService = proxyServerService;
             _userControlPanelViewModel = userControlPanelViewModel;
             _pageRouter = pageRouter;
-            _authenticationService = authenticationService;
             _pageRouter.OnNavigatePage += (newPage) => CurrentPage = newPage;
             CurrentPage = _userControlPanelViewModel;
 
-            var loggedInUser = _authenticationService.GetCurrentUser();
+            var firstServer = _proxyServerService.GetAllServers().FirstOrDefault(i => i.ServerUser is not null);
+            var loggedInUser = firstServer?.ServerUser;
+
             if (loggedInUser is null) {
                 return;
             }

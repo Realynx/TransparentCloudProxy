@@ -21,6 +21,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         private readonly ILoginStorageService _loginStorageService;
         private readonly IPageRouter _pageRouter;
         private readonly IdleSpinnerViewModel _idleSpinnerViewModel;
+        private readonly IProxyServerService _proxyServerService;
 
         [Reactive]
         public string OneKey { get; set; }
@@ -32,12 +33,13 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         public ReactiveCommand<Unit, Unit> LocalCommand { get; }
 
         public LoginPageViewModel(StartupWindowViewModel startupWindowViewModel, IAuthenticationService authenticationService,
-            ILoginStorageService loginStorageService, IPageRouter pageRouter, IdleSpinnerViewModel idleSpinnerViewModel) {
+            ILoginStorageService loginStorageService, IPageRouter pageRouter, IdleSpinnerViewModel idleSpinnerViewModel, IProxyServerService proxyServerService) {
             _startupWindowViewModel = startupWindowViewModel;
             _authenticationService = authenticationService;
             _loginStorageService = loginStorageService;
             _pageRouter = pageRouter;
             _idleSpinnerViewModel = idleSpinnerViewModel;
+            _proxyServerService = proxyServerService;
             LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
             LocalCommand = ReactiveCommand.CreateFromTask(LocalSession);
         }
@@ -47,14 +49,21 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         }
 
         public async Task LocalSession() {
-
+            _pageRouter.Navigate(_idleSpinnerViewModel);
+            CloseWindow();
         }
 
         private async Task LoginAsync() {
             _pageRouter.Navigate(_idleSpinnerViewModel);
 
-            if (_authenticationService.ValidCredentials) {
+            var loadTask = Task.Run(_authenticationService.LoadAllSavedCredentials);
+            loadTask.Wait();
+
+            var allSetupServers = _proxyServerService.GetAllServers();
+
+            if (allSetupServers.Any(i => i.ServerUser != null)) {
                 CloseWindow();
+                return;
             }
 
             var loginSpeedLimit = _rng.Next(500, 2500);
@@ -69,13 +78,19 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
 
             var validLogin = false;
             var reachableHost = string.Empty;
+
             foreach (Capture address in addresses) {
                 if (address.Index == 0) {
                     continue;
                 }
 
-                validLogin = await _authenticationService.LoginAsync(address.Value, credential);
-                if (validLogin) {
+                var serverLogin = await _proxyServerService.AddServer(new Models.SavedCredential() {
+                    ReachableAddress = address.Value.NormalizeHostUri().ToString(),
+                    Credential = credential
+                });
+
+                if (serverLogin is not null) {
+                    validLogin = true;
                     reachableHost = address.Value;
                     break;
                 }
