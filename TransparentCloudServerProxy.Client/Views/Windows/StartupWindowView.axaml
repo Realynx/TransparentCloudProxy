@@ -14,7 +14,7 @@
                  Background="Transparent"
 		         x:DataType="vm:StartupWindowViewModel"
 		         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
-				 IsTitleBarVisible="False" CanMove="True" >
+				 CanMove="True" >
 
 
 	<Border Background="Transparent"
