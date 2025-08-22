@@ -13,5 +13,7 @@
 	<Application.Styles>
 		<suki:SukiTheme ThemeColor="Blue"  />
 		<materialIcons:MaterialIconStyles />
+
+		<StyleInclude Source="avares://SukiUI/Theme/Shadcn/ShadDarkStyles.axaml" />
 	</Application.Styles>
 </Application>

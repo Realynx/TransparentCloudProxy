@@ -12,6 +12,7 @@
                  ExtendClientAreaToDecorationsHint="True"
                  ExtendClientAreaChromeHints="NoChrome"
                  Background="Transparent"
+				 BackgroundShaderFile="backgroundshadcn"
 		         x:DataType="vm:StartupWindowViewModel"
 		         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
 				 CanMove="True" >

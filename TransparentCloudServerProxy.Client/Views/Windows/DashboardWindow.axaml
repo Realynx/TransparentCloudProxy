@@ -15,7 +15,8 @@
 				 Background="Transparent"
 				 x:DataType="vm:DashboardWindowViewModel"
 				 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
-				 
+				 BackgroundShaderFile="backgroundshadcn"
+				 BackgroundStyle="Flat"
 				 IsMenuVisible="True"
 				 BackgroundAnimationEnabled="True">
 
