@@ -55,6 +55,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         }
 
         private async Task LoginAsync() {
+            if (string.IsNullOrWhiteSpace(OneKey)) {
+                ErrorMessage = "Empty OneKey";
+                return;
+            }
+
             _pageRouter.Navigate(_idleSpinnerViewModel);
 
             var loadTask = Task.Run(_authenticationService.LoadAllSavedCredentials);

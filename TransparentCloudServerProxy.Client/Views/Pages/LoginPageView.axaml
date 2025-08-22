@@ -43,7 +43,7 @@
 					HorizontalAlignment="Center"
 					Width="80"
 					Margin="10"
-					Command="{Binding LoginCommand}" />
+					Command="{Binding LocalCommand}" />
 		</StackPanel>
 
 		<TextBlock Text="{Binding ErrorMessage}"
