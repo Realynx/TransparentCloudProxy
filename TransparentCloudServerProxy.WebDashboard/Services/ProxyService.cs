@@ -15,11 +15,9 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb;
 namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class ProxyService : IProxyService {
         private readonly List<IProxy> _proxies = new();
-        private readonly IProxyConfig _proxyConfig;
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
 
         public ProxyService(IProxyConfig proxyConfig, IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
-            _proxyConfig = proxyConfig;
             _dbContextFactory = dbContextFactory;
             ResetLowLevelPacketFiltering();
 
