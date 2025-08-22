@@ -34,6 +34,19 @@ namespace TransparentCloudServerProxy.Services {
             AddProxy(proxy);
         }
 
+        public void AddOrUodateProxyEntry(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
+            if (existingProxy is not null) {
+                StopProxy(existingProxy as Proxy);
+                _proxies.Remove(existingProxy);
+
+                AddProxy(proxy);
+                return;
+            }
+
+            AddProxy(proxy);
+        }
+
         private void AddProxy(Proxy proxy) {
             IProxy proxyImplementation;
             switch (proxy.PacketEngine) {

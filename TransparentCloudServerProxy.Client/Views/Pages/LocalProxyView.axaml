@@ -3,8 +3,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:local="clr-namespace:TransparentCloudServerProxy.Client.Views.Controls"
              x:Class="TransparentCloudServerProxy.Client.Views.Pages.LocalProxyView"
 	         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages"
 	         x:DataType="vm:LocalProxyViewModel">
-	Welcome to Avalonia!
+
+	<StackPanel>
+		<local:ProxyDataGridView Padding="10" DataContext="{Binding LocalProxyDataGridViewModel}">
+			<local:ProxyDataGridView.ContextMenu>
+				<ContextMenu DataContext="{Binding}">
+					<MenuItem Command="{Binding AddCommand}" Header="Add" />
+					<MenuItem Command="{Binding DeleteCommand}" Header="Delete" />
+					<MenuItem Header="-" />
+					<MenuItem Command="{Binding ResetChanges}" Header="Reset" />
+					<MenuItem Command="{Binding ApplyChanges}" Header="Apply" />
+				</ContextMenu>
+			</local:ProxyDataGridView.ContextMenu>
+		</local:ProxyDataGridView>
+	</StackPanel>
 </UserControl>

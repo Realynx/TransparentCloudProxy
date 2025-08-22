@@ -47,9 +47,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             _startupWindowViewModel.CloseWindow();
         }
 
-        public async Task LocalSession() {
+        public Task LocalSession() {
             _pageRouter.Navigate(_idleSpinnerViewModel);
             CloseWindow();
+
+            return Task.CompletedTask;
         }
 
         private async Task LoginAsync() {

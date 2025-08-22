@@ -15,6 +15,7 @@ using TransparentCloudServerProxy.Client.ViewModels.Controls;
 using TransparentCloudServerProxy.Client.Views.Dialogs;
 using SukiUI.Dialogs;
 using SukiUI.Toasts;
+using TransparentCloudServerProxy.Services;
 
 namespace TransparentCloudServerProxy.Client {
     internal static class Startup {
@@ -38,6 +39,7 @@ namespace TransparentCloudServerProxy.Client {
                 .AddPolicyHandler(GetRetryPolicy());
 
             services
+                .AddSingleton<IProxyService, ProxyService>()
                 .AddSingleton<IAuthenticationService, AuthenticationService>()
                 .AddSingleton<IPageRouter, PageRouter>()
                 .AddSingleton<IProxyServerFactory, ProxyServerFactory>()

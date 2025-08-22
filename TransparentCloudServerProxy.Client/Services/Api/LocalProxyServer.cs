@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
+using TransparentCloudServerProxy.Services;
 using TransparentCloudServerProxy.SystemTools;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.Services.Api {
     public class LocalProxyServer : IProxyServer {
-        private readonly List<IProxy> _proxies = new();
-        public LocalProxyServer() {
+        private readonly IProxyService _proxyService;
+
+        public LocalProxyServer(IProxyService proxyService) {
             ResetLowLevelPacketFiltering();
+            _proxyService = proxyService;
         }
 
         public string Address {
@@ -35,11 +36,7 @@ namespace TransparentCloudServerProxy.Client.Services.Api {
         public ProxyUser ServerUser { get; set; }
 
         public Task<bool> DeleteProxy(Proxy proxy, CancellationToken cancellationToken = default) {
-            if (!_proxies.Contains(proxy)) {
-                return Task.FromResult(false);
-            }
-
-            _proxies.Remove(proxy);
+            _proxyService.RemoveProxyEntry(proxy);
             return Task.FromResult(true);
         }
 
@@ -57,23 +54,27 @@ namespace TransparentCloudServerProxy.Client.Services.Api {
         }
 
         public Task<bool> UpdateOrAddProxy(Proxy proxy, CancellationToken cancellationToken = default) {
-            if (_proxies.Contains(proxy)) {
-                _proxies.Remove(proxy);
-                _proxies.Add(proxy);
-                return Task.FromResult(true);
-            }
-
-            _proxies.Add(proxy);
+            _proxyService.AddOrUodateProxyEntry(proxy);
             return Task.FromResult(true);
         }
 
+        public IProxy[] GetProxies() {
+            return _proxyService.GetProxies();
+        }
+
         private void ResetLowLevelPacketFiltering() {
-            if (_proxies.Any(i => i.PacketEngine == PacketEngine.WindowsPF)) {
+            try {
                 new Netsh().ResetState();
             }
+            catch {
 
-            if (_proxies.Any(i => i.PacketEngine == PacketEngine.NetFilter)) {
+            }
+
+            try {
                 new NetFilter().ResetTables();
+            }
+            catch {
+
             }
         }
     }

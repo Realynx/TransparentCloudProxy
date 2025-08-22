@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -11,17 +12,19 @@ using ReactiveUI.Fody.Helpers;
 
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.ProxyBackend;
+using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
     public class ProxyDataGridViewModel : ViewModel {
         [Reactive]
         public ObservableCollection<Proxy> DataGridProxies { get; set; } = new();
+        public Proxy[] _previousProxies;
 
         [Reactive]
         public Proxy SelectedProxy { get; set; }
 
         [Reactive]
-        public ProxyServer ProxyServer { get; set; }
+        public IProxyServer ProxyServer { get; set; }
 
         public string TabName {
             get {
@@ -35,7 +38,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
         public ReactiveCommand<Unit, Unit> ApplyChanges { get; }
 
 
-        public ProxyDataGridViewModel(ProxyServer proxyServer) {
+        public ProxyDataGridViewModel(IProxyServer proxyServer) {
             ProxyServer = proxyServer;
             ApplyChanges = ReactiveCommand.CreateFromTask(ApplyChangesAsync);
             AddCommand = ReactiveCommand.CreateFromTask(AddCommandAsync);
@@ -47,7 +50,16 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
         public async Task SyncGridData() {
             var currentUser = await ProxyServer.GetUser();
+            _previousProxies = DataGridProxies.ToArray();
             DataGridProxies.Clear();
+
+            if (ProxyServer is LocalProxyServer localServer) {
+                var localProxies = localServer.GetProxies();
+                // TODO: This needs to go lol. Use ICloneable
+                DataGridProxies.AddRange(localProxies.Select(i => new SavedProxy((Proxy)i, Guid.Empty).GetProxy()));
+                return;
+            }
+
             if (currentUser is null) {
                 return;
             }
@@ -63,13 +75,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
         public async Task ApplyChangesAsync() {
             var originalProxies = new Dictionary<string, Proxy>();
-            foreach (var proxy in ProxyServer.ServerUser.UserSavedProxies.Select(i => i.GetProxy())) {
+            foreach (var proxy in _previousProxies) {
                 originalProxies.Add($"{proxy.ListenHost}:{proxy.ListenPort}", proxy);
             }
 
             foreach (var updatedProxy in DataGridProxies) {
                 var effectiveKey = $"{updatedProxy.ListenHost}:{updatedProxy.ListenPort}";
-
                 if (originalProxies.ContainsKey(effectiveKey)) {
                     originalProxies.Remove(effectiveKey);
                 }
