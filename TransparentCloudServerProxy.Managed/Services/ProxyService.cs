@@ -1,46 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using TransparentCloudServerProxy.Managed.Models;
-using TransparentCloudServerProxy.ProxyBackend;
+﻿using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
+using TransparentCloudServerProxy.Services.Exceptions;
 using TransparentCloudServerProxy.SystemTools;
-using TransparentCloudServerProxy.WebDashboard.Services.Exceptions;
-using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
-using TransparentCloudServerProxy.WebDashboard.SqlDb;
 
-namespace TransparentCloudServerProxy.WebDashboard.Services {
+namespace TransparentCloudServerProxy.Services {
     public class ProxyService : IProxyService {
         private readonly List<IProxy> _proxies = new();
-        private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
 
-        public ProxyService(IProxyConfig proxyConfig, IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
-            _dbContextFactory = dbContextFactory;
+        public ProxyService() {
             ResetLowLevelPacketFiltering();
-
-            for (uint x = 0; x < proxyConfig.Proxies?.Length; x++) {
-                var proxy = proxyConfig.Proxies[x];
-                Console.WriteLine($"[{proxy.PacketEngine}] {proxy.ToString()}");
-                AddProxy(proxy);
-            }
-
-            using var dbContext = _dbContextFactory.CreateDbContext();
-            var dbProxies = dbContext.Proxies.Select(i => i.GetProxy()).ToArray();
-            if (dbProxies is null) {
-                return;
-            }
-
-            foreach (var proxy in dbProxies) {
-                if (proxy is null) {
-                    continue;
-                }
-
-                Console.WriteLine($"[{proxy.PacketEngine}] {proxy.ToString()}");
-                AddProxy(proxy);
-            }
         }
 
         private void ResetLowLevelPacketFiltering() {
@@ -51,6 +23,15 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             if (_proxies.Any(i => i.PacketEngine == PacketEngine.NetFilter)) {
                 new NetFilter().ResetTables();
             }
+        }
+
+        public void AddProxyEntry(Proxy proxy) {
+            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
+            if (existingProxy is not null) {
+                throw new ProxyExistsException($"The proxy {proxy} already exists");
+            }
+
+            AddProxy(proxy);
         }
 
         private void AddProxy(Proxy proxy) {
@@ -100,15 +81,6 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             }
 
             existingProxy.Stop();
-        }
-
-        public void AddProxyEntry(Proxy proxy) {
-            var existingProxy = _proxies.SingleOrDefault(i => (Proxy)i == proxy);
-            if (existingProxy is not null) {
-                throw new ProxyExistsException($"The proxy {proxy} already exists");
-            }
-
-            AddProxy(proxy);
         }
 
         public void RemoveProxyEntry(Proxy proxy) {

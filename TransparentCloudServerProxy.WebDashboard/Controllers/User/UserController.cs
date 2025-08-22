@@ -15,11 +15,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers.User {
     public class UserController : ControllerBase {
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
         private readonly CredentialsService _credentialsService;
-        private readonly IProxyService _proxyService;
+        private readonly IDatabaseProxyService _proxyService;
         private readonly IUserService _userService;
 
         public UserController(IDbContextFactory<WebDashboardDbContext> dbContextFactory, CredentialsService credentialsService,
-            IProxyService proxyService, IUserService userService) {
+            IDatabaseProxyService proxyService, IUserService userService) {
             _dbContextFactory = dbContextFactory;
             _credentialsService = credentialsService;
             _proxyService = proxyService;

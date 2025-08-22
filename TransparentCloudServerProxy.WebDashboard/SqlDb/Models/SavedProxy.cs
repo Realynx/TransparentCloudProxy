@@ -14,17 +14,17 @@ namespace TransparentCloudServerProxy.WebDashboard.SqlDb.Models {
         [JsonIgnore]
         public ProxyUser ProxyUserOwner { get; set; } = default!;
 
-        public string ProxyBase64Json { get; set; }
+        public string SavedProxyJson { get; set; }
 
         public Proxy? GetProxy() {
-            return JsonSerializer.Deserialize<Proxy>(ProxyBase64Json);
+            return JsonSerializer.Deserialize<Proxy>(SavedProxyJson);
         }
 
         public SavedProxy(Proxy proxy, Guid proxyUserId) {
             Id = GuidExtentions.FromSeed($"{proxy.ListenHost}:{proxy.ListenPort}");
             ProxyUserId = proxyUserId;
 
-            ProxyBase64Json = JsonSerializer.Serialize(proxy);
+            SavedProxyJson = JsonSerializer.Serialize(proxy);
         }
     }
 }

@@ -8,7 +8,7 @@ using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.Services.Api {
-    public class ProxyServer {
+    public class ProxyServer : IProxyServer {
         private readonly SavedCredential _savedCredential;
         private readonly HttpClient _httpClient;
 

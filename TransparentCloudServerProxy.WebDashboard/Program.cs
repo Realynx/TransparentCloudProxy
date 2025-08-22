@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Services;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
@@ -12,12 +13,9 @@ using TransparentCloudServerProxy.WebDashboard.SqlDb;
 
 using ProxyConfig = TransparentCloudServerProxy.WebDashboard.Models.ProxyConfig;
 
-namespace TransparentCloudServerProxy.WebDashboard
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
+namespace TransparentCloudServerProxy.WebDashboard {
+    public class Program {
+        public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Logging.ClearProviders();
@@ -37,6 +35,7 @@ namespace TransparentCloudServerProxy.WebDashboard
                 .AddSingleton<IConfigurationRoot>(builder.Configuration)
                 .AddSingleton<IProxyConfig, ProxyConfig>()
                 .AddSingleton<IProxyService, ProxyService>()
+                .AddSingleton<IDatabaseProxyService, DatabaseProxyService>()
                 .AddSingleton<IPublicAddressService, PublicAddressService>()
                 .AddSingleton<INetworkInterfaceService, NetworkInterfaceService>()
                 .AddSingleton<IUserService, UserService>()
@@ -58,8 +57,7 @@ namespace TransparentCloudServerProxy.WebDashboard
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
-            {
+            if (app.Environment.IsDevelopment()) {
                 app.MapOpenApi();
             }
 

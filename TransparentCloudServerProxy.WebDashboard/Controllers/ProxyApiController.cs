@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using TransparentCloudServerProxy.ProxyBackend;
-using TransparentCloudServerProxy.WebDashboard.Services;
 using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
 using TransparentCloudServerProxy.WebDashboard.SqlDb;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
@@ -16,10 +15,10 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
     [Authorize(AuthenticationSchemes = "UserKeyToken")]
     public class ProxyApiController : ControllerBase {
         private readonly ILogger<ProxyApiController> _logger;
-        private readonly IProxyService _proxyService;
+        private readonly IDatabaseProxyService _proxyService;
         private readonly IDbContextFactory<WebDashboardDbContext> _dbContextFactory;
 
-        public ProxyApiController(ILogger<ProxyApiController> logger, IProxyService proxyService, IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
+        public ProxyApiController(ILogger<ProxyApiController> logger, IDatabaseProxyService proxyService, IDbContextFactory<WebDashboardDbContext> dbContextFactory) {
             _logger = logger;
             _proxyService = proxyService;
             _dbContextFactory = dbContextFactory;
@@ -128,25 +127,11 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             try {
                 using var dbContext = _dbContextFactory.CreateDbContext();
                 var currentUser = await GetCurrentUserAsync(dbContext);
-                if (currentUser is null) {
+                if (currentUser is not ProxyUser proxyUser) {
                     return BadRequest();
                 }
 
-                var savedProxy = new SavedProxy(proxy, currentUser.Id);
-                var existingProxy = dbContext.Proxies.Find(savedProxy.Id);
-                if (existingProxy is not null) {
-                    _proxyService.RemoveProxyEntry(existingProxy.GetProxy()!);
-                    _proxyService.AddProxyEntry(proxy);
-
-                    existingProxy.ProxyBase64Json = savedProxy.ProxyBase64Json;
-                    dbContext.SaveChanges();
-                    return Ok(existingProxy);
-                }
-
-                dbContext.Proxies.Add(savedProxy);
-                dbContext.SaveChanges();
-
-                _proxyService.AddProxyEntry(proxy);
+                _proxyService.AddProxyEntry(proxy, proxyUser.Id);
             }
             catch (Exception e) {
                 return BadRequestError(e);
@@ -160,14 +145,15 @@ namespace TransparentCloudServerProxy.WebDashboard.Controllers {
             try {
                 using var dbContext = _dbContextFactory.CreateDbContext();
                 var currentUser = await GetCurrentUserAsync(dbContext);
-                if (currentUser is null) {
+                if (currentUser is not ProxyUser proxyUser) {
                     return BadRequest();
                 }
+
 
                 var savedProxy = new SavedProxy(proxy, currentUser.Id);
                 var existingRule = currentUser.UserSavedProxies.Single(i => i.Id == savedProxy.Id);
 
-                _proxyService.RemoveProxyEntry(proxy);
+                await _proxyService.RemoveProxyEntry(proxy, proxyUser);
                 currentUser.UserSavedProxies.Remove(existingRule);
                 dbContext.SaveChanges();
             }
