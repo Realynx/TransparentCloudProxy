@@ -96,7 +96,7 @@
 	<suki:SukiSideMenu>
 		<suki:SukiSideMenu.Items>
 
-			<suki:SukiSideMenuItem Header="Cloud Servers" Classes="Compact" >
+			<suki:SukiSideMenuItem IsVisible="{Binding CloudServersVisible}" Header="Cloud Servers" Classes="Compact" >
 				<suki:SukiSideMenuItem.Icon>
 					<icons:MaterialIcon Kind="Cloud" />
 				</suki:SukiSideMenuItem.Icon>

@@ -8,6 +8,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Dialogs;
 using TransparentCloudServerProxy.Client.ViewModels.Pages;
@@ -35,6 +36,9 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
 
         public ReactiveCommand<Unit, Unit> AddServer { get; }
 
+        [Reactive]
+        public bool CloudServersVisible { get; set; }
+
 
         public DashboardWindowViewModel(RemoteServersViewModel userControlPanelViewModel, IPageRouter pageRouter,
             AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel, LocalProxyViewModel localProxyViewModel,
@@ -52,6 +56,12 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
 
             _pageRouter.OnNavigatePage += (newPage) => CurrentPage = newPage;
             CurrentPage = _userControlPanelViewModel;
+
+            CloudServersVisible = _proxyServerService.GetServerObservableCollection().Count > 0;
+
+            _proxyServerService.GetServerObservableCollection().CollectionChanged += (s, e) => {
+                CloudServersVisible = _proxyServerService.GetServerObservableCollection().Count > 0;
+            };
 
             var firstServer = _proxyServerService.GetAllServers().FirstOrDefault(i => i.ServerUser is not null);
             var loggedInUser = firstServer?.ServerUser;
