@@ -10,14 +10,15 @@
 			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Pages">
 
 	<UserControl.Resources>
-		<suki:PropertyGridTemplateSelector x:Key="PropertyGridTemplateSelector" UseSukiHost="False" />
+		<suki:PropertyGridTemplateSelector x:Key="PropertyGridTemplateSelector" UseSukiHost="True" />
 	</UserControl.Resources>
 
 	<ScrollViewer>
-		<suki:PropertyGrid Item="{Binding AppSettingsModel}" HorizontalAlignment="Stretch">
+		<suki:PropertyGrid Item="{Binding AppSettingsModel}" Padding="0 5 0 0">
 			<suki:PropertyGrid.DataTemplates>
 				<StaticResource ResourceKey="PropertyGridTemplateSelector" />
 			</suki:PropertyGrid.DataTemplates>
 		</suki:PropertyGrid>
 	</ScrollViewer>
+
 </UserControl>

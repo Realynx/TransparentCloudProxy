@@ -96,21 +96,21 @@
 	<suki:SukiSideMenu>
 		<suki:SukiSideMenu.Items>
 
-			<suki:SukiSideMenuItem IsVisible="{Binding CloudServersVisible}" Header="Cloud Servers" Classes="Compact" >
-				<suki:SukiSideMenuItem.Icon>
-					<icons:MaterialIcon Kind="Cloud" />
-				</suki:SukiSideMenuItem.Icon>
-				<suki:SukiSideMenuItem.PageContent>
-					<ContentControl Content="{Binding CurrentPage}" />
-				</suki:SukiSideMenuItem.PageContent>
-			</suki:SukiSideMenuItem>
-
 			<suki:SukiSideMenuItem Header="Local Proxy" Classes="Compact" >
 				<suki:SukiSideMenuItem.Icon>
 					<icons:MaterialIcon Kind="Proxy" />
 				</suki:SukiSideMenuItem.Icon>
 				<suki:SukiSideMenuItem.PageContent>
 					<ContentControl Content="{Binding LocalProxyViewModel}" />
+				</suki:SukiSideMenuItem.PageContent>
+			</suki:SukiSideMenuItem>
+
+			<suki:SukiSideMenuItem IsVisible="{Binding CloudServersVisible}" Header="Cloud Servers" Classes="Compact" >
+				<suki:SukiSideMenuItem.Icon>
+					<icons:MaterialIcon Kind="Cloud" />
+				</suki:SukiSideMenuItem.Icon>
+				<suki:SukiSideMenuItem.PageContent>
+					<ContentControl Content="{Binding CurrentPage}" />
 				</suki:SukiSideMenuItem.PageContent>
 			</suki:SukiSideMenuItem>
 
