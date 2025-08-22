@@ -6,6 +6,7 @@ using DynamicData;
 
 using ReactiveUI.Fody.Helpers;
 
+using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Controls;
@@ -23,7 +24,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         private readonly SourceList<ProxyServer> _sourceList;
         private readonly IDisposable _cleanup;
 
-        public RemoteServersViewModel(IProxyServerService proxyServerService) {
+        public RemoteServersViewModel(IProxyServerService proxyServerService, AppSettingsModel appSettingsModel) {
             _proxyServerService = proxyServerService;
             Servers = _proxyServerService.GetServerObservableCollection();
 
@@ -31,7 +32,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             _sourceList.AddRange(Servers);
 
             _cleanup = _sourceList.Connect()
-                .Transform(server => new ProxyDataGridViewModel(server))
+                .Transform(server => new ProxyDataGridViewModel(server, appSettingsModel))
                 .Bind(out var serverDataGrids)
                 .Subscribe();
 

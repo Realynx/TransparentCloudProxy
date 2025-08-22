@@ -5,7 +5,7 @@ using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
-namespace TransparentCloudServerProxy.Client.Services.Api {
+namespace TransparentCloudServerProxy.Client.Services.Interfaces {
     public interface IProxyServer {
         string Address { get; }
         SavedCredential SavedCredential { get; }

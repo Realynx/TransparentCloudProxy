@@ -6,11 +6,14 @@ using System.Reactive;
 using System.Threading.Tasks;
 
 using DynamicData;
+using DynamicData.Kernel;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
+using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
@@ -19,6 +22,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
         [Reactive]
         public ObservableCollection<Proxy> DataGridProxies { get; set; } = new();
         public Proxy[] _previousProxies;
+        private readonly AppSettingsModel _appSettingsModel;
 
         [Reactive]
         public Proxy SelectedProxy { get; set; }
@@ -38,8 +42,9 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
         public ReactiveCommand<Unit, Unit> ApplyChanges { get; }
 
 
-        public ProxyDataGridViewModel(IProxyServer proxyServer) {
+        public ProxyDataGridViewModel(IProxyServer proxyServer, AppSettingsModel appSettingsModel) {
             ProxyServer = proxyServer;
+            _appSettingsModel = appSettingsModel;
             ApplyChanges = ReactiveCommand.CreateFromTask(ApplyChangesAsync);
             AddCommand = ReactiveCommand.CreateFromTask(AddCommandAsync);
             DeleteCommand = ReactiveCommand.CreateFromTask(DeleteCommandAsync);
@@ -55,8 +60,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
             if (ProxyServer is LocalProxyServer localServer) {
                 var localProxies = localServer.GetProxies();
-                // TODO: This needs to go lol. Use ICloneable
-                DataGridProxies.AddRange(localProxies.Select(i => new SavedProxy((Proxy)i, Guid.Empty).GetProxy()));
+
+                DataGridProxies.AddRange(localProxies.Cast<Proxy>().Select(i => i.Clone() as Proxy).ToArray());
                 return;
             }
 
@@ -69,7 +74,13 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
         }
 
         public Task AddCommandAsync() {
-            DataGridProxies.Add(new Proxy(PacketEngine.NativeC, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+            if (ProxyServer is LocalProxyServer) {
+                DataGridProxies.Add(new Proxy(_appSettingsModel.LocalDefaultEngine, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+            }
+            else {
+                DataGridProxies.Add(new Proxy(_appSettingsModel.DefaultCloudEngine, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+            }
+
             return Task.CompletedTask;
         }
 

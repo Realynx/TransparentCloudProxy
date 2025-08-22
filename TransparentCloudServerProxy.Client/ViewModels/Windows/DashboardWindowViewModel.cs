@@ -74,9 +74,6 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             dialog.DataContext = vm;
 
             await dialog.ShowDialog(mainWindow);
-
         }
-
-
     }
 }

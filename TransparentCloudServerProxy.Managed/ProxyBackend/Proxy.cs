@@ -1,12 +1,14 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 using TransparentCloudServerProxy.Managed.Models;
 using TransparentCloudServerProxy.ProxyBackend.Exceptions;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 
 namespace TransparentCloudServerProxy.ProxyBackend {
-    public class Proxy : IProxy, IDisposable {
+    public class Proxy : IProxy, IDisposable, ICloneable {
         [JsonIgnore]
         public IPEndPoint ListenEndpoint {
             get {
@@ -65,6 +67,14 @@ namespace TransparentCloudServerProxy.ProxyBackend {
         }
 
         public virtual void Dispose() {
+        }
+
+        public object Clone() {
+            var clonedProxy = new Proxy(PacketEngine, SocketType, ListenHost, ListenPort, TargetHost, TargetPort) {
+                Enabled = Enabled
+            };
+
+            return clonedProxy;
         }
 
         public static bool operator ==(Proxy left, Proxy right) {

@@ -11,15 +11,11 @@ namespace TransparentCloudServerProxy.Client.Models {
 
         }
 
-        [Reactive, Category("App Settings"), DisplayName("Theme")]
-        public string Theme { get; set; } = "Red";
-
+        [Reactive, Category("App Settings"), DisplayName("Display Name")]
+        public string DisplayName { get; set; } = "Local User";
 
         [Reactive, Category("App Settings"), DisplayName("Save Logins")]
         public bool SaveLogins { get; set; } = true;
-
-        [Reactive, Category("App Settings"), DisplayName("Saved Login Location")]
-        public string LoginCacheFile { get; set; } = "./config.bin";
 
 
         [Reactive, Category("Local Proxy"), DisplayName("Default Local Packet Engine")]
@@ -33,7 +29,23 @@ namespace TransparentCloudServerProxy.Client.Models {
         public string AwsAccessKey { get; set; } = "";
 
         [Reactive, Category("Cloud Proxy"), DisplayName("Default Cloud Packet Engine")]
-        public PacketEngine DefaultEngine { get; set; } = PacketEngine.NetFilter;
+        public PacketEngine DefaultCloudEngine { get; set; } = PacketEngine.NetFilter;
 
+
+        [Reactive, Category("Theme"), DisplayName("ThemeName")]
+        public string ThemeName { get; set; } = "Red";
+
+        [Reactive, Category("Theme"), DisplayName("Style")]
+        public string ThemeStyle { get; set; } = "flat";
+
+        [Reactive, Category("Theme"), DisplayName("ShadCn")]
+        public bool ShadCd { get; set; } = false;
+
+
+        [Reactive, Category("Security"), DisplayName("Config File Location")]
+        public string LoginCacheFile { get; set; } = "./config.bin";
+
+        [Reactive, Category("Security"), DisplayName("The password to encrypt the config file with. Empty means auto/gen")]
+        public string ConfigPassword { get; set; } = "";
     }
 }

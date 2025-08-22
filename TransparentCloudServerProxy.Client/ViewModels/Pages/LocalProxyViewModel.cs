@@ -1,4 +1,5 @@
-﻿using TransparentCloudServerProxy.Client.Services.Api;
+﻿using TransparentCloudServerProxy.Client.Models;
+using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.ViewModels.Controls;
 using TransparentCloudServerProxy.Services;
 
@@ -7,10 +8,10 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         private readonly IProxyService _proxyService;
 
         public ProxyDataGridViewModel LocalProxyDataGridViewModel { get; set; }
-        public LocalProxyViewModel(IProxyService proxyService) {
+        public LocalProxyViewModel(IProxyService proxyService, AppSettingsModel appSettingsModel) {
             _proxyService = proxyService;
 
-            LocalProxyDataGridViewModel = new ProxyDataGridViewModel(new LocalProxyServer(_proxyService));
+            LocalProxyDataGridViewModel = new ProxyDataGridViewModel(new LocalProxyServer(_proxyService), appSettingsModel);
         }
     }
 }
