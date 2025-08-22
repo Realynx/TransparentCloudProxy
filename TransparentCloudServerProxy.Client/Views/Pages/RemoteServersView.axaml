@@ -15,7 +15,7 @@
 			 xmlns:suki="https://github.com/kikipoulet/SukiUI"
 			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
 
-	<StackPanel Margin="15" HorizontalAlignment="Left">
+	<StackPanel Margin="15">
 		<TabControl ItemsSource="{Binding ServerDataGrids}">
 			<TabControl.ItemTemplate>
 				<DataTemplate x:DataType="vmc:ProxyDataGridViewModel">

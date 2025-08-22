@@ -14,8 +14,6 @@
 			 xmlns:suki="https://github.com/kikipoulet/SukiUI">
 
 	<DataGrid SelectedItem="{Binding SelectedProxy, Mode=TwoWay}"
-			  MinWidth="350"
-			  MaxHeight="200"
 			  CanUserResizeColumns="True"
 			  ItemsSource="{Binding DataGridProxies}"
 			  Margin="5">
