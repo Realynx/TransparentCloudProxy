@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy", "TransparentCloudServerProxy.Managed\TransparentCloudServerProxy.csproj", "{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy", "TransparentCloudServerProxy\TransparentCloudServerProxy.csproj", "{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Cli", "TransparentCloudServerProxy.Cli\TransparentCloudServerProxy.Cli.csproj", "{9B5939E2-1E58-4CFA-867E-460E25259CEC}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TransparentCloudServerProxy.CNative", "TransparentCloudServerProxy.CNative\TransparentCloudServerProxy.CNative.vcxproj", "{B5A0D367-FB4E-49A5-85F1-029D5C63E367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Tests", "TransparentCloudServerProxy.Managed.Tests\TransparentCloudServerProxy.Tests.csproj", "{47F36296-69C7-4074-92D4-655610B12451}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentCloudServerProxy.Tests", "TransparentCloudServerProxy.Tests\TransparentCloudServerProxy.Tests.csproj", "{47F36296-69C7-4074-92D4-655610B12451}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{750D954D-47DA-43E6-823C-7596051BD529}"
 EndProject
