@@ -5,13 +5,12 @@ using Moq;
 
 using TestingShared;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.Testables;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ProxyListenerTests {
+namespace TransparentCloudServerProxy.Tests.ProxyListenerTests {
     public class Using_ProxyListener : SpecAutoMocker<IProxyListener, ProxyListener> {
         protected CancellationTokenSource _cancellationTokenSource;
         protected Mock<ITestableSocket> _testableSocket;

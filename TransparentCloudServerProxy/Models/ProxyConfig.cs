@@ -1,6 +1,7 @@
-﻿using TransparentCloudServerProxy.ProxyBackend;
+﻿using TransparentCloudServerProxy.Interfaces;
+using TransparentCloudServerProxy.ProxyBackend;
 
-namespace TransparentCloudServerProxy.Managed.Models {
+namespace TransparentCloudServerProxy.Models {
     public class ProxyConfig : IProxyConfig {
         public ProxyConfig() {
         }

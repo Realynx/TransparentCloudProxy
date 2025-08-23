@@ -1,15 +1,15 @@
-﻿using Moq;
+﻿using System.Net;
+using System.Net.Sockets;
+
+using Moq;
 
 using TestingShared;
 
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.Testables.Interfaces;
-using TransparentCloudServerProxy.Testables;
-using System.Net.Sockets;
-using System.Net;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests {
+namespace TransparentCloudServerProxy.Tests.NativeCProxyTests {
     public class Using_NativeCProxy : SpecAutoMocker<IProxy, NativeCProxy> {
         protected Mock<ITestableSocket> _testableSocket;
         protected Mock<IProxyListener> _mockedListener;

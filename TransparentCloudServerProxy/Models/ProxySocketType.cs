@@ -1,4 +1,4 @@
-﻿namespace TransparentCloudServerProxy.Managed.Models {
+﻿namespace TransparentCloudServerProxy.Models {
     public enum ProxySocketType {
         Tcp,
         Udp,

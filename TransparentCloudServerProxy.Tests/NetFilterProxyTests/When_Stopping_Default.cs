@@ -1,9 +1,8 @@
 ﻿using Moq;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+namespace TransparentCloudServerProxy.Tests.NetFilterProxyTests {
     public class When_Stopping_Default : Using_NetFilterProxy {
         protected override void Setup() {
             MockSystemProgram();

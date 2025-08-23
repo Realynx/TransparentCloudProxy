@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 
 namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
     public interface IProxy {

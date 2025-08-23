@@ -1,5 +1,5 @@
-﻿using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.Managed.Models;
+﻿using TransparentCloudServerProxy.Interfaces;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.SystemTools;
 

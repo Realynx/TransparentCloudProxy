@@ -1,10 +1,9 @@
-﻿using System.Net.Sockets;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.NativeC {
+namespace TransparentCloudServerProxy.ProxyBackend.NativeC {
     public partial class NativeCProxyNetworkPipe : IProxyNetworkPipe {
         private const string LIB_NAME = "TransparentCloudServerProxy.CNative";
 

@@ -32,7 +32,7 @@ namespace TransparentCloudServerProxy.Client {
                 desktop.MainWindow = startupWindow;
                 var startupWindowViewModel = (StartupWindowViewModel)startupWindow.DataContext;
                 startupWindowViewModel.StartupCompleted += () => {
-                    var mainWindow = new DashboardWindow {
+                    var mainWindow = new Views.Windows.DashboardWindow {
                         DataContext = serviceProvider.GetRequiredService<DashboardWindowViewModel>()
                     };
 

@@ -1,13 +1,12 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 using Moq;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ProxyListenerTests {
+namespace TransparentCloudServerProxy.Tests.ProxyListenerTests {
     public class When_StopListen_Tcp : Using_ProxyListener {
         protected override void Setup() {
             _cancellationTokenSource = new();

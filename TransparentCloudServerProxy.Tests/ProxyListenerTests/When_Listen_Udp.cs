@@ -3,10 +3,10 @@ using System.Net.Sockets;
 
 using Moq;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ProxyListenerTests {
+namespace TransparentCloudServerProxy.Tests.ProxyListenerTests {
     public class When_Listen_Udp : Using_ProxyListener {
         protected override void Setup() {
             MockListenSocket();

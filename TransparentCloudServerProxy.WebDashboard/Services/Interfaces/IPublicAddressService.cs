@@ -1,5 +1,5 @@
 ﻿
-namespace TransparentCloudServerProxy.WebDashboard.Services {
+namespace TransparentCloudServerProxy.WebDashboard.Services.Interfaces {
     public interface IPublicAddressService {
         Task<string> GetPublicAddress();
     }

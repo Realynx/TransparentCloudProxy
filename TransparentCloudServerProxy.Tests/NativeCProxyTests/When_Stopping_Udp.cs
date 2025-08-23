@@ -1,11 +1,11 @@
-﻿using Moq;
+﻿using System.Net;
 
-using System.Net;
+using Moq;
 
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests {
+namespace TransparentCloudServerProxy.Tests.NativeCProxyTests {
     public class When_Stopping_Udp : Using_NativeCProxy {
         protected override void Setup() {
             MockFactories();

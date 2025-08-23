@@ -1,11 +1,8 @@
-using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Input;
 
 using SukiUI.Controls;
-using SukiUI.Theme.Shadcn;
 
-namespace TransparentCloudServerProxy.Client;
+namespace TransparentCloudServerProxy.Client.Views.Windows;
 
 public partial class DashboardWindow : SukiWindow {
     public DashboardWindow() {

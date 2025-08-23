@@ -1,4 +1,6 @@
-﻿namespace TransparentCloudServerProxy.WebDashboard.Services {
+﻿using TransparentCloudServerProxy.WebDashboard.Services.Interfaces;
+
+namespace TransparentCloudServerProxy.WebDashboard.Services {
     public class PublicAddressService : IPublicAddressService {
         private readonly IHttpClientFactory _httpClientFactory;
 

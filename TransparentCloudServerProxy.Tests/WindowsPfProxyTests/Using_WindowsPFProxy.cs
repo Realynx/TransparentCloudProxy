@@ -2,11 +2,11 @@
 
 using TestingShared;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 
-namespace TransparentCloudServerProxy.Managed.Tests.WindowsPfProxyTests {
+namespace TransparentCloudServerProxy.Tests.WindowsPfProxyTests {
     public class Using_WindowsPFProxy : SpecAutoMocker<IProxy, WindowsPFProxy> {
         protected Mock<ISystemProgram> _netshService;
 

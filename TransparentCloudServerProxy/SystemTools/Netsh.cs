@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 
 namespace TransparentCloudServerProxy.SystemTools {
     public class Netsh : ISystemProgram {
