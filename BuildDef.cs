@@ -18,35 +18,51 @@ namespace BuildAgent.Script {
                 Directory.Delete(buildResultDir.FullName, true);
             }
 
-            var dotnetProjects = GetDotnetProjects(includeTestProjects: false);
-            foreach (var dotnetProject in dotnetProjects) {
-                Console.WriteLine($"Publishing project: {dotnetProject}");
-
-                var outputFolder = Path.Combine(buildResultDir.FullName, Path.GetFileNameWithoutExtension(dotnetProject));
-                var buildResult = Shell.Run(
-                        "dotnet",
-                        "publish",
-                        "-c", "Release",
-                        "-o", outputFolder,
-                        "-p:ExcludeCNativeCompile=true",
-                        dotnetProject);
-
-
-                var zipFilePath = $"{outputFolder}.zip";
-
-                if (File.Exists(zipFilePath)) {
-                    File.Delete(zipFilePath);
-                }
-                ZipFile.CreateFromDirectory(outputFolder, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
-            }
+            PublishDotNet(buildResultDir);
 
             Console.WriteLine("Done!");
         }
 
-        private static string[] GetDotnetProjects(bool includeTestProjects) {
+        private static void PublishDotNet(DirectoryInfo buildResultDir)
+        {
+            var dotnetProjects = GetDotnetProjects(includeTestProjects: false);
+            foreach (var dotnetProject in dotnetProjects)
+            {
+                Console.WriteLine($"Publishing project: {dotnetProject}");
+
+                PublishDotnetZip("windows", buildResultDir, dotnetProject);
+                PublishDotnetZip("linux", buildResultDir, dotnetProject);
+            }
+        }
+
+        private static void PublishDotnetZip(string platform, DirectoryInfo buildResultDir, string dotnetProject)
+        {
+            var outputFolder = Path.Combine(buildResultDir.FullName, platform, Path.GetFileNameWithoutExtension(dotnetProject));
+            var rArgument = platform == "windows" ? "win-x64" : "linux-x64";
+
+            var buildResult = Shell.Run(
+                    "dotnet",
+                    "publish",
+                    "-c", "Release",
+                    "-o", outputFolder,
+                    "-p:ExcludeCNativeCompile=true",
+                    "-r", rArgument,
+                    dotnetProject);
+
+                var zipFilePath = $"{outputFolder}.zip";
+                if (File.Exists(zipFilePath)) {
+                    File.Delete(zipFilePath);
+                }
+
+                ZipFile.CreateFromDirectory(outputFolder, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
+        }
+
+        private static string[] GetDotnetProjects(bool includeTestProjects)
+        {
             var dotnetProjects = Directory.GetFiles(".", "*.csproj", new EnumerationOptions { RecurseSubdirectories = true, MaxRecursionDepth = 1 });
 
-            if (!includeTestProjects) {
+            if (!includeTestProjects)
+            {
                 dotnetProjects = dotnetProjects.Where(i => !i.Contains("Test")).ToArray();
             }
 
