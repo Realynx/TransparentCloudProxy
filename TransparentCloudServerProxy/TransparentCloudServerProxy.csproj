@@ -7,7 +7,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
-	<PropertyGroup>
+	<PropertyGroup Condition="'$(ExcludeCNativeCompile)' != 'true'">
 		<IsWindows Condition="'$(OS)' == 'Windows_NT'">true</IsWindows>
 
 		<DefineConstants Condition="'$(IsWindows)' == 'true'">$(DefineConstants);WINDOWS</DefineConstants>
