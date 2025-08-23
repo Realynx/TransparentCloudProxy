@@ -1,1 +1,20 @@
-# runs-on: self-hosted
+name: Run C# BuildDef
+
+on:
+  push:
+    branches:
+      - *
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 
+      - self-hosted
+      - RealynxBuildAgent
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run BuildDef.cs
+      run: dotnet run BuildDef.cs

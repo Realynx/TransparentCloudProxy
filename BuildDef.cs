@@ -44,14 +44,21 @@ public static class Program {
 }
 
 public static class Shell {
-    public static string Run(string program, params string[] arguments) {
+    public static string Run(string program, params string[] arguments) => RunInternal(program, arguments, false);
+    
+    public static string RunSensitive(string program, params string[] arguments) => RunInternal(program, arguments, true);
+
+    private static string RunInternal(string program, string[] arguments, bool sensitive) {
         try {
             var programPath = FindProgramPath(program);
             if (string.IsNullOrWhiteSpace(programPath)) {
                 throw new FileNotFoundException($"Failed to find '{program}'");
             }
 
-            Console.WriteLine($"Running {programPath} with args: {CombineArguments(arguments)}");
+            if (!sensitive)
+                Console.WriteLine($"Running {programPath} with args: {CombineArguments(arguments)}");
+            else
+                Console.WriteLine($"Running {programPath} with sensitive args");
             
             var outputBuilder = new StringBuilder();
             var process = Process.Start(new ProcessStartInfo(program, arguments) {
@@ -61,8 +68,7 @@ public static class Shell {
             });
 
             process.OutputDataReceived += (s, e) => {
-                if (e.Data != null)
-                {
+                if (e.Data != null) {
                     var message = e.Data.TrimEnd();
 
                     outputBuilder.AppendLine(message);
@@ -82,8 +88,9 @@ public static class Shell {
 
         static string CombineArguments(IEnumerable<string> args) {
             return string.Join(' ', args.Select(x => {
-                if (!x.StartsWith('"') && !x.StartsWith('\'') && x.Contains(' '))
+                if (!x.StartsWith('"') && !x.StartsWith('\'') && x.Contains(' ')) {
                     return $"\"{x}\"";
+                }
 
                 return x;
             }));
