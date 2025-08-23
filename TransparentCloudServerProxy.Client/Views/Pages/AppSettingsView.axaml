@@ -14,7 +14,7 @@
 	</UserControl.Resources>
 
 	<ScrollViewer>
-		<suki:PropertyGrid Item="{Binding AppSettingsModel}" Padding="0 5 0 0">
+		<suki:PropertyGrid Item="{Binding AppSettingsModel}" Padding="5 5 0 0">
 			<suki:PropertyGrid.DataTemplates>
 				<StaticResource ResourceKey="PropertyGridTemplateSelector" />
 			</suki:PropertyGrid.DataTemplates>
