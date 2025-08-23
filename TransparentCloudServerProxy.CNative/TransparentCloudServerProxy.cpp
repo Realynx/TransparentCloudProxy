@@ -122,8 +122,8 @@ extern "C" {
 		::shutdown(proxyPipe->client, SD_BOTH);
 		::shutdown(proxyPipe->target, SD_BOTH);
 #else
-		::shutdown(p->client, SHUT_RDWR);
-		::shutdown(p->target, SHUT_RDWR);
+		::shutdown(proxyPipe->client, SHUT_RDWR);
+		::shutdown(proxyPipe->target, SHUT_RDWR);
 #endif
 		if (was) {
 			if (proxyPipe->sendDataThread.joinable()) proxyPipe->sendDataThread.join();

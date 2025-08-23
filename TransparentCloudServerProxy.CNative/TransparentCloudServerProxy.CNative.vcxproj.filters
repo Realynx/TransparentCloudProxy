@@ -36,4 +36,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="GccCompile.sh" />
+  </ItemGroup>
 </Project>

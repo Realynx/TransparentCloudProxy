@@ -153,6 +153,9 @@
     </ClCompile>
     <ClCompile Include="TransparentCloudServerProxy.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="GccCompile.sh" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
