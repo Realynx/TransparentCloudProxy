@@ -1,7 +1,7 @@
-﻿using TransparentCloudServerProxy.Managed.Models;
+﻿using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 
-namespace TransparentCloudServerProxy.Managed.Tests.WindowsPfProxyTests {
+namespace TransparentCloudServerProxy.Tests.WindowsPfProxyTests {
     public class When_Starting_Udp : Using_WindowsPFProxy {
         protected override void Setup() {
             MockSystemProgram();

@@ -1,6 +1,7 @@
 ﻿using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.ViewModels.Controls;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.Services;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {

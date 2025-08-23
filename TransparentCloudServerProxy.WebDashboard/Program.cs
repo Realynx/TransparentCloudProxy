@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.Services;
 using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;

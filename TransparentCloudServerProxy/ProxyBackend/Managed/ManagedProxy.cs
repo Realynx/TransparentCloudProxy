@@ -1,8 +1,7 @@
 ﻿using System.Net.Sockets;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.ManagedCode;
 using TransparentCloudServerProxy.Testables;
 using TransparentCloudServerProxy.Testables.Interfaces;
 

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend.Exceptions;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 

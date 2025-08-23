@@ -1,4 +1,4 @@
-﻿namespace TransparentCloudServerProxy.Managed.Interfaces {
+﻿namespace TransparentCloudServerProxy.Interfaces {
     public interface IProxyNetworkPipe {
         TimeSpan Latency { get; }
         void Dispose();

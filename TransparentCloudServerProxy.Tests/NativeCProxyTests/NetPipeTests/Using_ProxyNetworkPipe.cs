@@ -2,11 +2,11 @@
 
 using TestingShared;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
-using TransparentCloudServerProxy.ProxyBackend.ManagedCode;
+using TransparentCloudServerProxy.Interfaces;
+using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests.NetPipeTests {
+namespace TransparentCloudServerProxy.Tests.NativeCProxyTests.NetPipeTests {
     public class Using_ProxyNetworkPipe : SpecAutoMocker<IProxyNetworkPipe, ProxyNetworkPipe> {
         protected Mock<ITestableSocket> _testClientSocket;
         protected Mock<ITestableSocket> _testTargetSocket;

@@ -2,7 +2,7 @@
 
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+namespace TransparentCloudServerProxy.Tests.NetFilterProxyTests {
     public class When_Starting_Default : Using_NetFilterProxy {
         protected override void Setup() {
             MockSystemProgram();

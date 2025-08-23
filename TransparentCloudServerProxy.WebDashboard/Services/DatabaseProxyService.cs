@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.Services;

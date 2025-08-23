@@ -1,6 +1,6 @@
 ﻿using TransparentCloudServerProxy.ProxyBackend;
 
-namespace TransparentCloudServerProxy.Managed.Models {
+namespace TransparentCloudServerProxy.Interfaces {
     public interface IProxyConfig {
         Proxy[] Proxies { get; set; }
     }

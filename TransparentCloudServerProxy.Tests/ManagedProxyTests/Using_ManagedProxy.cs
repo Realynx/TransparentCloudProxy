@@ -7,10 +7,9 @@ using TestingShared;
 
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.Managed;
-using TransparentCloudServerProxy.Testables;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ManagedProxyTests {
+namespace TransparentCloudServerProxy.Tests.ManagedProxyTests {
     public class Using_ManagedProxy : SpecAutoMocker<IProxy, ManagedProxy> {
         protected Mock<ITestableSocket> _testableSocket;
         protected Mock<IProxyListener> _mockedListener;

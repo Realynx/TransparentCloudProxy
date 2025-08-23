@@ -1,7 +1,7 @@
 ﻿using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 
-namespace TransparentCloudServerProxy.Services {
+namespace TransparentCloudServerProxy.Interfaces {
     public interface IProxyService {
         void AddOrUodateProxyEntry(Proxy proxy);
         void AddProxyEntry(Proxy proxy);

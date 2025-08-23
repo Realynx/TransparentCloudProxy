@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Interfaces;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.Managed;

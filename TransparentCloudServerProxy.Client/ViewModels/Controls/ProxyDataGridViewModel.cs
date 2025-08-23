@@ -14,6 +14,7 @@ using ReactiveUI.Fody.Helpers;
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
+using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
@@ -75,10 +76,10 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
         public Task AddCommandAsync() {
             if (ProxyServer is LocalProxyServer) {
-                DataGridProxies.Add(new Proxy(_appSettingsModel.LocalDefaultEngine, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+                DataGridProxies.Add(new Proxy(_appSettingsModel.LocalDefaultEngine, ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
             }
             else {
-                DataGridProxies.Add(new Proxy(_appSettingsModel.DefaultCloudEngine, Managed.Models.ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
+                DataGridProxies.Add(new Proxy(_appSettingsModel.DefaultCloudEngine, ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
             }
 
             return Task.CompletedTask;

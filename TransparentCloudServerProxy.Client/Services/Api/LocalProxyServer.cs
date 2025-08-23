@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.Services;

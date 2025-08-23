@@ -5,7 +5,7 @@ using Moq;
 using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.Managed.Tests.ManagedProxyTests {
+namespace TransparentCloudServerProxy.Tests.ManagedProxyTests {
     public class When_Starting_Udp : Using_ManagedProxy {
         protected override void Setup() {
             MockFactories();

@@ -2,10 +2,10 @@
 using System.Net.Sockets;
 using System.Threading.Channels;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
-namespace TransparentCloudServerProxy.ProxyBackend.ManagedCode {
+namespace TransparentCloudServerProxy.ProxyBackend.Managed {
     public class ProxyNetworkPipe : IProxyNetworkPipe {
         private const int BUFFER_SIZE = 4096;
 

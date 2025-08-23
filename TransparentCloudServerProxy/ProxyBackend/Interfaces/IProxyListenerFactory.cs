@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-using TransparentCloudServerProxy.Managed.Models;
+using TransparentCloudServerProxy.Models;
 
 namespace TransparentCloudServerProxy.ProxyBackend.Interfaces {
     public interface IProxyListenerFactory {

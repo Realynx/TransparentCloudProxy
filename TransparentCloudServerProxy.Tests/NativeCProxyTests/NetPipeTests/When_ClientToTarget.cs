@@ -1,6 +1,6 @@
-﻿using TransparentCloudServerProxy.ProxyBackend.ManagedCode;
+﻿using TransparentCloudServerProxy.ProxyBackend.Managed;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NativeCProxyTests.NetPipeTests {
+namespace TransparentCloudServerProxy.Tests.NativeCProxyTests.NetPipeTests {
     public class When_ClientToTarget : Using_ProxyNetworkPipe {
         protected override void Setup() {
             MockSockets();

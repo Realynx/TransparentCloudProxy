@@ -2,11 +2,11 @@
 
 using TestingShared;
 
-using TransparentCloudServerProxy.Managed.Interfaces;
+using TransparentCloudServerProxy.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.Interfaces;
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
-namespace TransparentCloudServerProxy.Managed.Tests.NetFilterProxyTests {
+namespace TransparentCloudServerProxy.Tests.NetFilterProxyTests {
     public class Using_NetFilterProxy : SpecAutoMocker<IProxy, NetFilterProxy> {
         protected Mock<ISystemProgram> _netFilterService;
 
