@@ -59,7 +59,7 @@ public static class Shell {
                 Console.WriteLine($"Running {programPath} with args: {CombineArguments(arguments)}");
             else
                 Console.WriteLine($"Running {programPath} with sensitive args");
-            
+
             var outputBuilder = new StringBuilder();
             var process = Process.Start(new ProcessStartInfo(program, arguments) {
                 RedirectStandardOutput = true,
