@@ -59,6 +59,9 @@ namespace TransparentCloudServerProxy.Cli {
                 proxyImplementation.Start();
             }
 
+
+
+
             Console.WriteLine($"Proxy is running...");
             Console.WriteLine($"Type 'exit' to turn off forwarding.");
 
