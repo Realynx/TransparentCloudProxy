@@ -371,3 +371,5 @@ FodyWeavers.xsd
 /TransparentCloudServerProxy.WebDashboard/proxy.db
 /TransparentCloudServerProxy.WebDashboard/proxy.db-shm
 /TransparentCloudServerProxy.WebDashboard/proxy.db-wal
+
+/BuildResult
