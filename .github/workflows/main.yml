@@ -1,5 +1,4 @@
 name: Run C# BuildDef
-runs-on: self-hosted
 
 on:
   push:
@@ -9,6 +8,8 @@ on:
 
 jobs:
   build:
+    runs-on: self-hosted
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
