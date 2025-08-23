@@ -8,13 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: 
-      - self-hosted
-      - RealynxBuildAgent
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
 
     - name: Run BuildDef.cs
       run: dotnet run BuildDef.cs
