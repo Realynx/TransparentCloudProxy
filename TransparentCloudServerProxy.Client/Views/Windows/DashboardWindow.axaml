@@ -18,6 +18,7 @@
 				 BackgroundShaderFile="backgroundshadcn"
 				 BackgroundStyle="Flat"
 				 IsMenuVisible="True"
+				 Icon="..\..\Assets\realynx.ico"
 				 BackgroundAnimationEnabled="True">
 
 	<suki:SukiWindow.MenuItems>

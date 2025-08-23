@@ -15,8 +15,8 @@
 				 BackgroundShaderFile="backgroundshadcn"
 		         x:DataType="vm:StartupWindowViewModel"
 		         xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Windows"
-				 CanMove="True" >
-
+				 Icon="..\..\Assets\realynx.ico"
+				 CanMove="True">
 
 	<Border Background="Transparent"
 		PointerPressed="DragWindow">
