@@ -1,6 +1,7 @@
 ﻿
 using System.IO.Compression;
 
+using Realynx.CatTail;
 using Realynx.CatTail.Attributes;
 using Realynx.CatTail.Services;
 using Realynx.CatTail.Services.Interfaces;
@@ -9,28 +10,23 @@ namespace Build {
     internal class BuildDotNet : IBuildScript {
         private readonly IShell _shell;
         private readonly ISolutionFileReader _solutionFileReader;
-        private CancellationToken _cancellationToken;
 
         public BuildDotNet(IShell shell, ISolutionFileReader solutionFileReader) {
             _shell = shell;
             _solutionFileReader = solutionFileReader;
         }
 
-        public void ConfigureBuild(object configure) {
-
+        public void ConfigureBuild(BuildOptions configure) {
+            configure
+                .WithStageName("Build")
+                .WithStep(nameof(CompileWindows));
         }
 
-        public Task StartAsync(CancellationToken cancellationToken, DirectoryInfo outputDirectory) {
-            _cancellationToken = cancellationToken;
-
+        public void CompileWindows() {
             var dotnetProjects = _solutionFileReader.GetDotNetProjects();
             foreach (var project in dotnetProjects) {
                 PublishPlatform("windows", );
             }
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken) {
-
         }
 
         private void PublishPlatform(string platform, string buildResultDir, string dotnetProject) {

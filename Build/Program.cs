@@ -9,7 +9,11 @@ namespace Build {
         public static void Main(string[] args) {
             var builderHost = new HostBuilder();
 
-            builderHost.UseCatTail();
+            builderHost
+                .UseCatTail()
+                .AddBuildStage("Test")
+                .AddBuildStage("Compile")
+                .AddBuildStage("Pack");
 
             builderHost.UseConsoleLifetime();
             var host = builderHost.Build();
