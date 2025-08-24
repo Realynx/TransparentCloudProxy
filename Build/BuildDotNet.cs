@@ -23,16 +23,9 @@ namespace Build {
             //     .Stage("Build")
             //     .Description("This builds all the .NET projects")
             //     .DependsOn(typeof(OtherJob), typeof(AnotherJob))
-            //     .Step(step => {
-            //         step
-            //             .Name("Step 1")
-            //             .Method(nameof(Step1));
-            //     })
-            //     .Step(step => {
-            //         step
-            //             .Method(nameof(Step2));
-            //     });
-
+            //     .RequireWindows(onFailure: Skip|Fail) // Nice to have
+            //     .Step("Step 1", nameof(Step1))
+            //     .CommandStep("Step 2", "echo \"Hello, world!\""); // <--- This is inlined into the yaml, replacing the C# call
             _outputDirectory = configure.outputDirectory;
 
             configure
