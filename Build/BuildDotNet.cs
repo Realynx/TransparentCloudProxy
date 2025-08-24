@@ -20,6 +20,22 @@ namespace Build {
         public void ConfigureBuild(BuildOptions configure) {
             _outputDirectory = configure.OutputDirectory;
 
+            // Configuration concept:
+            // configure
+            //     .Name("Build .NET")
+            //     .Stage("Build")
+            //     .Description("This builds all the .NET projects")
+            //     .DependsOn(typeof(OtherJob), typeof(AnotherJob))
+            //     .Step(step => {
+            //         step
+            //             .Name("Step 1")
+            //             .Method(nameof(Step1));
+            //     })
+            //     .Step(step => {
+            //         step
+            //             .Method(nameof(Step2));
+            //     });
+
             configure
                 .WithStageName("Build")
                 .WithStep(nameof(CompileWindows));
