@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TransparentCloudServerProxy.slnLaunch.user = TransparentCloudServerProxy.slnLaunch.user
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{B2FC9AA7-A83A-4859-9819-18076463E5D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatTail", "CatTail\CatTail.csproj", "{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,8 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B2FC9AA7-A83A-4859-9819-18076463E5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2FC9AA7-A83A-4859-9819-18076463E5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8ABDF1F-6CAA-4059-A89F-54576D8F1E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,6 +70,10 @@ Global
 		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
