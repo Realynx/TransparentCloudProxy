@@ -118,26 +118,6 @@ namespace BuildAgent.Script {
             }
         }
 
-        private static void PublishPlatform(string platform, string buildResultDir, string dotnetProject) {
-            var outputFolder = Path.Combine(buildResultDir, platform, Path.GetFileNameWithoutExtension(dotnetProject));
-            var rArgument = platform == "windows" ? "win-x64" : "linux-x64";
-
-            var buildResult = Shell.Run(
-                    "dotnet",
-                    "publish",
-                    "-c", "Release",
-                    "-o", outputFolder,
-                    "-p:ExcludeCNativeCompile=true",
-                    "-r", rArgument,
-                    dotnetProject);
-
-            var zipFilePath = $"{outputFolder}.zip";
-            if (File.Exists(zipFilePath)) {
-                File.Delete(zipFilePath);
-            }
-
-            ZipFile.CreateFromDirectory(outputFolder, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
-        }
 
         private static string[] GetDotnetProjects(bool includeTestProjects) {
             var dotnetProjects = Directory.GetFiles(".", "*.csproj", new EnumerationOptions { RecurseSubdirectories = true, MaxRecursionDepth = 1 });
