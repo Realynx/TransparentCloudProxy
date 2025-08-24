@@ -3,7 +3,6 @@ using System.IO.Compression;
 
 using Realynx.CatTail;
 using Realynx.CatTail.Attributes;
-using Realynx.CatTail.Services;
 using Realynx.CatTail.Services.Interfaces;
 
 namespace Build {
@@ -33,10 +32,11 @@ namespace Build {
             //         step
             //             .Method(nameof(Step2));
             //     });
+
             _outputDirectory = configure.outputDirectory;
 
             configure
-                .StageName("Build")
+                .Stage("Build")
                 .Step(nameof(CompileWindows));
         }
 

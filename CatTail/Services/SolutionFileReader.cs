@@ -11,5 +11,9 @@ namespace Realynx.CatTail.Services {
         public string[] GetDotNetProjects() {
             return Array.Empty<string>();
         }
+
+        public string[] GetNativeProjects() {
+            return Array.Empty<string>();
+        }
     }
 }

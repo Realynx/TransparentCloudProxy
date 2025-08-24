@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 
 using Realynx.CatTail.Services;
+using Realynx.CatTail.Services.Interfaces;
 
 namespace Realynx.CatTail {
     public static partial class HostBuilderExtentions {
@@ -10,9 +11,8 @@ namespace Realynx.CatTail {
                 services
                     .AddSingleton<IShell, Shell>()
                     .AddSingleton(new SolutionFileReader(""));
-
-                return new CatTailOptions();
             });
+            return new CatTailOptions();
         }
     }
 }

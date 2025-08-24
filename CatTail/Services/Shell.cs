@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text;
 
+using Realynx.CatTail.Services.Interfaces;
+
 namespace Realynx.CatTail.Services {
     public class Shell : IShell {
         public string Run(string program, params string[] arguments) => RunInternal(program, arguments, false);

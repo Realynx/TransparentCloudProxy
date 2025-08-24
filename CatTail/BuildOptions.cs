@@ -6,7 +6,7 @@ namespace Realynx.CatTail {
         public DirectoryInfo outputDirectory;
 
 
-        public BuildOptions StageName(string name) {
+        public BuildOptions Stage(string name) {
             stageName = name;
             return this;
         }
