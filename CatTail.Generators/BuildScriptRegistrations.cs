@@ -7,7 +7,6 @@ namespace Realynx.CatTail.Generators {
     [Generator]
     public class BuildScriptRegistrations : IIncrementalGenerator {
         public void Initialize(IncrementalGeneratorInitializationContext context) {
-
             // Grab all class symbols with a base list
             var classDeclarations = context.SyntaxProvider
                 .CreateSyntaxProvider(
