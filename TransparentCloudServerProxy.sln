@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatTail", "CatTail\CatTail.csproj", "{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "Build\Build.csproj", "{64BB75C5-9F85-40F9-B54F-355219260C16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{873D96E1-BEAD-407B-8B70-F2BCE6D53ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64BB75C5-9F85-40F9-B54F-355219260C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64BB75C5-9F85-40F9-B54F-355219260C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64BB75C5-9F85-40F9-B54F-355219260C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64BB75C5-9F85-40F9-B54F-355219260C16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
