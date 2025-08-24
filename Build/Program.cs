@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 
 using Realynx.CatTail;
-using Realynx.CatTail.Attributes;
 
 namespace Build {
     internal class Program {
