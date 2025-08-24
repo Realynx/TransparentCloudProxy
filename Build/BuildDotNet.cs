@@ -10,6 +10,7 @@ namespace Build {
     internal class BuildDotNet : IBuildScript {
         private readonly IShell _shell;
         private readonly ISolutionFileReader _solutionFileReader;
+        private DirectoryInfo _outputDirectory;
 
         public BuildDotNet(IShell shell, ISolutionFileReader solutionFileReader) {
             _shell = shell;
@@ -17,6 +18,8 @@ namespace Build {
         }
 
         public void ConfigureBuild(BuildOptions configure) {
+            _outputDirectory = configure.OutputDirectory;
+
             configure
                 .WithStageName("Build")
                 .WithStep(nameof(CompileWindows));
@@ -25,7 +28,7 @@ namespace Build {
         public void CompileWindows() {
             var dotnetProjects = _solutionFileReader.GetDotNetProjects();
             foreach (var project in dotnetProjects) {
-                PublishPlatform("windows", );
+                PublishPlatform("windows", _outputDirectory.FullName, project);
             }
         }
 

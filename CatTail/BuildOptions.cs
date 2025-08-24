@@ -1,8 +1,9 @@
 ﻿
 namespace Realynx.CatTail {
     public class BuildOptions {
-        public string StageName { get; set; }
-        public List<string> Steps { get; set; }
+        public string StageName { get; private set; }
+        public List<string> Steps { get; private set; }
+        public DirectoryInfo OutputDirectory { get; private set; }
 
         public BuildOptions WithBuildDef() {
             return this;
@@ -19,6 +20,11 @@ namespace Realynx.CatTail {
 
         public BuildOptions WithStep(string stepName) {
             Steps.Add(stepName);
+            return this;
+        }
+
+        public BuildOptions WithOutputDirectory(DirectoryInfo directoryInfo) {
+            OutputDirectory = directoryInfo;
             return this;
         }
     }
