@@ -1,6 +1,6 @@
 ﻿namespace Realynx.CatTail {
     public class CatTailOptions {
-        public CatTailOptions AddBuildStage() {
+        public CatTailOptions AddBuildStage(string stageName) {
             return this;
         }
     }
