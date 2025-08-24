@@ -1,30 +1,23 @@
 ﻿
 namespace Realynx.CatTail {
     public class BuildOptions {
-        public string StageName { get; private set; }
-        public List<string> Steps { get; private set; }
-        public DirectoryInfo OutputDirectory { get; private set; }
+        internal List<string> steps;
+        public string stageName;
+        public DirectoryInfo outputDirectory;
 
-        public BuildOptions WithBuildDef() {
+
+        public BuildOptions StageName(string name) {
+            stageName = name;
             return this;
         }
 
-        public BuildOptions WithCompillation() {
+        public BuildOptions Step(string stepName) {
+            steps.Add(stepName);
             return this;
         }
 
-        public BuildOptions WithStageName(string name) {
-            StageName = name;
-            return this;
-        }
-
-        public BuildOptions WithStep(string stepName) {
-            Steps.Add(stepName);
-            return this;
-        }
-
-        public BuildOptions WithOutputDirectory(DirectoryInfo directoryInfo) {
-            OutputDirectory = directoryInfo;
+        public BuildOptions OutputDirectory(DirectoryInfo directoryInfo) {
+            outputDirectory = directoryInfo;
             return this;
         }
     }

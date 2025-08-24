@@ -18,8 +18,6 @@ namespace Build {
         }
 
         public void ConfigureBuild(BuildOptions configure) {
-            _outputDirectory = configure.OutputDirectory;
-
             // Configuration concept:
             // configure
             //     .Name("Build .NET")
@@ -35,10 +33,11 @@ namespace Build {
             //         step
             //             .Method(nameof(Step2));
             //     });
+            _outputDirectory = configure.outputDirectory;
 
             configure
-                .WithStageName("Build")
-                .WithStep(nameof(CompileWindows));
+                .StageName("Build")
+                .Step(nameof(CompileWindows));
         }
 
         public void CompileWindows() {
