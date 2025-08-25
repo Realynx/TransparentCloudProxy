@@ -26,6 +26,11 @@ namespace Build {
             //     .RequireWindows(onFailure: Skip|Fail) // Nice to have
             //     .Step("Step 1", nameof(Step1))
             //     .CommandStep("Step 2", "echo \"Hello, world!\""); // <--- This is inlined into the yaml, replacing the C# call
+            //
+            // Alternative step concept:
+            //     .Step("Step 1", Dotnet.Install.Sdk("9.0.x"))
+            //     .Step("Step 2", nameof(Step1))
+            //     .Step("Step 3", Shell("echo \"Hello, world!\""))
             _outputDirectory = configure.outputDirectory;
 
             configure
