@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 
 using Realynx.CatTail;
-using Realynx.CatTail.Attributes;
+using Realynx.CatTail.Interfaces;
 using Realynx.CatTail.Services.Interfaces;
 
 namespace Build {

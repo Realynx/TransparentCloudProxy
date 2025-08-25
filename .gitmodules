@@ -1,0 +1,3 @@
+[submodule "External/CatTail"]
+	path = External/CatTail
+	url = https://github.com/Realynx/CatTail.git

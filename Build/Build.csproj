@@ -12,8 +12,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CatTail.Generators\CatTail.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="..\CatTail\CatTail.csproj" />
+		<ProjectReference Include="..\External\CatTail\CatTail.Generators\CatTail.Generators.csproj" />
+		<ProjectReference Include="..\External\CatTail\CatTail\CatTail.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
