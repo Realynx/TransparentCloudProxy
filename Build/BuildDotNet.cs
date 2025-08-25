@@ -1,5 +1,6 @@
 ﻿
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 using Realynx.CatTail;
 using Realynx.CatTail.Interfaces;
@@ -41,13 +42,13 @@ namespace Build {
         public void CompileWindows() {
             var dotnetProjects = _solutionFileReader.GetDotNetProjects();
             foreach (var project in dotnetProjects) {
-                PublishPlatform("windows", _outputDirectory.FullName, project);
+                PublishPlatform(OSPlatform.Windows, _outputDirectory.FullName, project);
             }
         }
 
-        private void PublishPlatform(string platform, string buildResultDir, string dotnetProject) {
-            var outputFolder = Path.Combine(buildResultDir, platform, Path.GetFileNameWithoutExtension(dotnetProject));
-            var rArgument = platform == "windows" ? "win-x64" : "linux-x64";
+        private void PublishPlatform(OSPlatform platform, string buildResultDir, string dotnetProject) {
+            var outputFolder = Path.Combine(buildResultDir, platform.ToString().ToLower(), Path.GetFileNameWithoutExtension(dotnetProject));
+            var runtimeIdentifier = platform == OSPlatform.Windows ? "win-x64" : "linux-x64";
 
             var buildResult = _shell.Run(
                     "dotnet",
@@ -55,7 +56,7 @@ namespace Build {
                     "-c", "Release",
                     "-o", outputFolder,
                     "-p:ExcludeCNativeCompile=true",
-                    "-r", rArgument,
+                    "-r", runtimeIdentifier,
                     dotnetProject);
 
             var zipFilePath = $"{outputFolder}.zip";

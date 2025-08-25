@@ -1,8 +1,8 @@
 ﻿#:package Microsoft.Build.Locator@1.9.1
 
-
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using Microsoft.Build.Locator;
@@ -113,11 +113,31 @@ namespace BuildAgent.Script {
             foreach (var dotnetProject in dotnetProjects) {
                 Console.WriteLine($"Publishing project: {dotnetProject}");
 
-                PublishPlatform("windows", buildResultDir, dotnetProject);
-                PublishPlatform("linux", buildResultDir, dotnetProject);
+                PublishPlatform(OSPlatform.Windows, buildResultDir, dotnetProject);
+                PublishPlatform(OSPlatform.Linux, buildResultDir, dotnetProject);
             }
         }
 
+        private static void PublishPlatform(OSPlatform platform, string buildResultDir, string dotnetProject) {
+            var outputFolder = Path.Combine(buildResultDir, platform.ToString().ToLower(), Path.GetFileNameWithoutExtension(dotnetProject));
+            var runtimeIdentifier = platform == OSPlatform.Windows ? "win-x64" : "linux-x64";
+
+            var buildResult = Shell.Run(
+                "dotnet",
+                "publish",
+                "-c", "Release",
+                "-o", outputFolder,
+                "-p:ExcludeCNativeCompile=true",
+                "-r", runtimeIdentifier,
+                dotnetProject);
+
+            var zipFilePath = $"{outputFolder}.zip";
+            if (File.Exists(zipFilePath)) {
+                File.Delete(zipFilePath);
+            }
+
+            ZipFile.CreateFromDirectory(outputFolder, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory: true);
+        }
 
         private static string[] GetDotnetProjects(bool includeTestProjects) {
             var dotnetProjects = Directory.GetFiles(".", "*.csproj", new EnumerationOptions { RecurseSubdirectories = true, MaxRecursionDepth = 1 });
