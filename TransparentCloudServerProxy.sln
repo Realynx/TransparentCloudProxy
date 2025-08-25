@@ -35,6 +35,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Build", "Build\Build.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatTail.Generators", "CatTail.Generators\CatTail.Generators.csproj", "{DB31A46C-445F-4985-8AD0-2EF6556FC331}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installers", "Installers", "{53D986C5-2738-4F6E-9853-D59FFD86BAC6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{766EA039-FF79-44C0-99BF-00372C4A3544}"
+	ProjectSection(SolutionItems) = preProject
+		InstallServer.ps1 = InstallServer.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{91B6B811-6C80-4A32-B7BF-E504BF565D07}"
+	ProjectSection(SolutionItems) = preProject
+		InstallServer.sh = InstallServer.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,5 +107,8 @@ Global
 		{AA3574FF-AB86-403A-B6F3-D7A6F4B2FCFC} = {750D954D-47DA-43E6-823C-7596051BD529}
 		{7E463119-744E-4FED-AB78-4FB0A8EDD0E3} = {14A82392-2940-4AB8-8AE3-2D6AC5C144CC}
 		{8F3AD45D-BBCF-42AC-8987-80324CCE8B81} = {750D954D-47DA-43E6-823C-7596051BD529}
+		{53D986C5-2738-4F6E-9853-D59FFD86BAC6} = {4A89DCF8-A9FB-45A9-81D6-709809B62373}
+		{766EA039-FF79-44C0-99BF-00372C4A3544} = {53D986C5-2738-4F6E-9853-D59FFD86BAC6}
+		{91B6B811-6C80-4A32-B7BF-E504BF565D07} = {53D986C5-2738-4F6E-9853-D59FFD86BAC6}
 	EndGlobalSection
 EndGlobal
