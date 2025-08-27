@@ -12,7 +12,7 @@ namespace TransparentCloudServerProxy.Client.Services.Deploy {
             using var client = new SshClient("sftp.foo.com", "guest", new PrivateKeyFile("path/to/my/key"));
             client.Connect();
 
-            using var cmd = client.RunCommand("echo 'Hello World!'");
+            using var cmd = client.RunCommand("wget https://github.com/Realynx/TransparentCloudProxy/releases/latest/download/Server-linux-x64.zip");
             Console.WriteLine(cmd.Result);
         }
     }
