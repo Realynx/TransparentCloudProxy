@@ -10,7 +10,7 @@ using Microsoft.Build.Locator;
 namespace BuildAgent.Script {
     internal class Program {
         public static void Main(string[] args) {
-            Environment.CurrentDirectory = "C:\\Users\\poofi\\source\\repos\\TransparentCloudProxy";
+            Environment.CurrentDirectory = Path.GetDirectoryName((string)AppContext.GetData("EntryPointFilePath"));
             var buildResultDir = Directory.CreateDirectory("./BuildResult");
             Console.WriteLine($"Using output directory: {buildResultDir.FullName}");
 
@@ -85,7 +85,7 @@ namespace BuildAgent.Script {
             var outputFolder = Path.Combine(buildResultDir, "windows", Path.GetFileNameWithoutExtension(project));
             var mostRecentVsStudio = MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First();
 
-            var msBuild = "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Current\\Bin\\amd64\\msbuild.exe";
+            var msBuild = @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\amd64\msbuild.exe";
 
             var buildResult = Shell.Run(
                 msBuild,
