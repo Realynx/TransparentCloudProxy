@@ -1,12 +1,9 @@
-﻿#:package Microsoft.Build.Locator@1.11.2
-#:package Spectre.Console@0.54.0
+﻿#:package Spectre.Console@0.54.0
 
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
-
-using Microsoft.Build.Locator;
 
 using Spectre.Console;
 
@@ -107,14 +104,13 @@ namespace BuildAgent.Script {
     public class MSBuildPublisher : Publisher {
         public Publisher Publish(DirectoryInfo buildResultDir, string project) {
             outputFolder = Path.Combine(buildResultDir.FullName, "windows", Path.GetFileNameWithoutExtension(project));
-            var mostRecentVsStudio = MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First();
 
-			const string VS2026_BASE_PATH = @"C:\Program Files\Microsoft Visual Studio\18";
-			const string VS2026_MSBUILD_PATH = @"MSBuild\Current\Bin\amd64\MSBuild.exe";
-			var vsEdition = Directory.GetDirectories(VS2026_BASE_PATH)[0];
-            var msBuild = Path.Combine(VS2026_BASE_PATH, vsEdition, VS2026_MSBUILD_PATH);
+			const string VS_BASE_PATH = @"C:\Program Files\Microsoft Visual Studio\2022";
+			const string VS_MSBUILD_PATH = @"MSBuild\Current\Bin\amd64\MSBuild.exe";
+			var vsEdition = Directory.GetDirectories(VS_BASE_PATH)[0];
+            var msBuild = Path.Combine(VS_BASE_PATH, vsEdition, VS_MSBUILD_PATH);
 
-            var buildResult = Shell.Run(
+            Shell.Run(
                 msBuild,
                 project,
                 "/t:Build",
