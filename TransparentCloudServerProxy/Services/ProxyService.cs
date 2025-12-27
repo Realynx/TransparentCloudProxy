@@ -60,7 +60,6 @@ namespace TransparentCloudServerProxy.Services {
                 case PacketEngine.WindowsPF:
                     proxyImplementation = WindowsPFProxy.FromInstance(proxy);
                     break;
-
                 default:
                     proxy.PacketEngine = PacketEngine.Managed;
                     proxyImplementation = ManagedProxy.FromInstance(proxy);
