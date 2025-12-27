@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Avalonia;
-using Avalonia.ReactiveUI;
 
 namespace TransparentCloudServerProxy.Client {
     internal sealed class Program {
@@ -17,7 +16,6 @@ namespace TransparentCloudServerProxy.Client {
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace()
-                .UseReactiveUI();
+                .LogToTrace();
     }
 }

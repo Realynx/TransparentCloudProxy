@@ -1,6 +1,6 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TransparentCloudServerProxy.Client.ViewModels {
-    public class ViewModel : ReactiveObject {
+    public abstract class ViewModel : ObservableObject {
     }
 }

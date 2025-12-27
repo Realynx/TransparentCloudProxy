@@ -1,51 +1,50 @@
 ﻿using System.ComponentModel;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 using TransparentCloudServerProxy.ProxyBackend;
 
 namespace TransparentCloudServerProxy.Client.Models {
-    public class AppSettingsModel : ReactiveObject {
+    public partial class AppSettingsModel : ObservableObject {
         public AppSettingsModel() {
 
         }
 
-        [Reactive, Category("App Settings"), DisplayName("Display Name")]
-        public string DisplayName { get; set; } = "Local User";
+        [ObservableProperty, Category("App Settings"), DisplayName("Display Name")]
+        public partial string DisplayName { get; set; } = "Local User";
 
-        [Reactive, Category("App Settings"), DisplayName("Save Logins")]
-        public bool SaveLogins { get; set; } = true;
-
-
-        [Reactive, Category("Local Proxy"), DisplayName("Default Local Packet Engine")]
-        public PacketEngine LocalDefaultEngine { get; set; } = PacketEngine.NativeC;
+        [ObservableProperty, Category("App Settings"), DisplayName("Save Logins")]
+        public partial bool SaveLogins { get; set; } = true;
 
 
-        [Reactive, Category("Cloud Proxy"), DisplayName("Azure PAT Credential")]
-        public string AzurePAT { get; set; } = "";
-
-        [Reactive, Category("Cloud Proxy"), DisplayName("Aws Access Key Credential")]
-        public string AwsAccessKey { get; set; } = "";
-
-        [Reactive, Category("Cloud Proxy"), DisplayName("Default Cloud Packet Engine")]
-        public PacketEngine DefaultCloudEngine { get; set; } = PacketEngine.NetFilter;
+        [ObservableProperty, Category("Local Proxy"), DisplayName("Default Local Packet Engine")]
+        public partial PacketEngine LocalDefaultEngine { get; set; } = PacketEngine.NativeC;
 
 
-        [Reactive, Category("Theme"), DisplayName("ThemeName")]
-        public string ThemeName { get; set; } = "Red";
+        [ObservableProperty, Category("Cloud Proxy"), DisplayName("Azure PAT Credential")]
+        public partial string AzurePAT { get; set; } = "";
 
-        [Reactive, Category("Theme"), DisplayName("Style")]
-        public string ThemeStyle { get; set; } = "flat";
+        [ObservableProperty, Category("Cloud Proxy"), DisplayName("Aws Access Key Credential")]
+        public partial string AwsAccessKey { get; set; } = "";
 
-        [Reactive, Category("Theme"), DisplayName("ShadCn")]
-        public bool ShadCd { get; set; } = false;
+        [ObservableProperty, Category("Cloud Proxy"), DisplayName("Default Cloud Packet Engine")]
+        public partial PacketEngine DefaultCloudEngine { get; set; } = PacketEngine.NetFilter;
 
 
-        [Reactive, Category("Security"), DisplayName("Config File Location")]
-        public string LoginCacheFile { get; set; } = "./config.bin";
+        [ObservableProperty, Category("Theme"), DisplayName("ThemeName")]
+        public partial string ThemeName { get; set; } = "Red";
 
-        [Reactive, Category("Security"), DisplayName("The password to encrypt the config file with. Empty means auto/gen")]
-        public string ConfigPassword { get; set; } = "";
+        [ObservableProperty, Category("Theme"), DisplayName("Style")]
+        public partial string ThemeStyle { get; set; } = "flat";
+
+        [ObservableProperty, Category("Theme"), DisplayName("ShadCn")]
+        public partial bool ShadCd { get; set; } = false;
+
+
+        [ObservableProperty, Category("Security"), DisplayName("Config File Location")]
+        public partial string LoginCacheFile { get; set; } = "./config.bin";
+
+        [ObservableProperty, Category("Security"), DisplayName("The password to encrypt the config file with. Empty means auto/gen")]
+        public partial string ConfigPassword { get; set; } = "";
     }
 }

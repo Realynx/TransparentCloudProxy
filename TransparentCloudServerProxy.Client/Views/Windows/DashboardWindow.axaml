@@ -51,7 +51,7 @@
 		</MenuItem>
 
 		<MenuItem Header="Server">
-			<MenuItem Command="{Binding AddServer}"
+			<MenuItem Command="{Binding ShowAddServerCommand}"
 					  Header="Add Server">
 
 				<MenuItem.Icon>

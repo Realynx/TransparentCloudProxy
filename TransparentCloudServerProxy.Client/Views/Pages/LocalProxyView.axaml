@@ -11,12 +11,12 @@
 	<StackPanel>
 		<local:ProxyDataGridView Padding="10" DataContext="{Binding LocalProxyDataGridViewModel}">
 			<local:ProxyDataGridView.ContextMenu>
-				<ContextMenu DataContext="{Binding}">
+				<ContextMenu>
 					<MenuItem Command="{Binding AddCommand}" Header="Add" />
 					<MenuItem Command="{Binding DeleteCommand}" Header="Delete" />
 					<MenuItem Header="-" />
-					<MenuItem Command="{Binding ResetChanges}" Header="Reset" />
-					<MenuItem Command="{Binding ApplyChanges}" Header="Apply" />
+					<MenuItem Command="{Binding ResetChangesCommand}" Header="Reset" />
+					<MenuItem Command="{Binding ApplyChangesCommand}" Header="Apply" />
 				</ContextMenu>
 			</local:ProxyDataGridView.ContextMenu>
 		</local:ProxyDataGridView>

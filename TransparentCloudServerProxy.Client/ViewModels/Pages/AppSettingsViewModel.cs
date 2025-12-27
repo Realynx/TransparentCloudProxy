@@ -1,12 +1,12 @@
-﻿using ReactiveUI.Fody.Helpers;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 using TransparentCloudServerProxy.Client.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
-    public class AppSettingsViewModel : ViewModel {
+    public partial class AppSettingsViewModel : ViewModel {
 
-        [Reactive]
-        public AppSettingsModel AppSettingsModel { get; set; }
+        [ObservableProperty]
+        public partial AppSettingsModel AppSettingsModel { get; set; }
 
         public AppSettingsViewModel(AppSettingsModel appSettingsModel) {
             AppSettingsModel = appSettingsModel;

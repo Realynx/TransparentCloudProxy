@@ -3,14 +3,14 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Windows;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
-    public class LoginPageViewModel : ViewModel {
+    public partial class LoginPageViewModel : ViewModel {
         private readonly Random _rng = new();
 
         private readonly StartupWindowViewModel _startupWindowViewModel;
@@ -20,14 +20,11 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
         private readonly IdleSpinnerViewModel _idleSpinnerViewModel;
         private readonly IProxyServerService _proxyServerService;
 
-        [Reactive]
-        public string OneKey { get; set; }
+        [ObservableProperty]
+        public partial string OneKey { get; set; }
 
-        [Reactive]
-        public string ErrorMessage { get; set; }
-
-        public ReactiveCommand<Unit, Unit> LoginCommand { get; }
-        public ReactiveCommand<Unit, Unit> LocalCommand { get; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; }
 
         public LoginPageViewModel(StartupWindowViewModel startupWindowViewModel, IAuthenticationService authenticationService,
             ILoginStorageService loginStorageService, IPageRouter pageRouter, IdleSpinnerViewModel idleSpinnerViewModel,
@@ -38,22 +35,21 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Pages {
             _pageRouter = pageRouter;
             _idleSpinnerViewModel = idleSpinnerViewModel;
             _proxyServerService = proxyServerService;
-
-            LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
-            LocalCommand = ReactiveCommand.CreateFromTask(LocalSession);
         }
 
         public void CloseWindow() {
             _startupWindowViewModel.CloseWindow();
         }
 
-        public Task LocalSession() {
+        [RelayCommand]
+        private Task LocalSession() {
             _pageRouter.Navigate(_idleSpinnerViewModel);
             CloseWindow();
 
             return Task.CompletedTask;
         }
 
+        [RelayCommand]
         private async Task LoginAsync() {
             if (string.IsNullOrWhiteSpace(OneKey)) {
                 ErrorMessage = "Empty OneKey";

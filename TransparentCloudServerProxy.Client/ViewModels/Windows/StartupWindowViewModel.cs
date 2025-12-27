@@ -2,30 +2,22 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.DependencyInjection;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-using ReactiveUI;
+using Microsoft.Extensions.DependencyInjection;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Client.ViewModels.Pages;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
-    public class StartupWindowViewModel : ViewModel {
+    public partial class StartupWindowViewModel : ViewModel {
         private readonly IServiceProvider _serviceProvider;
         private readonly IPageRouter _pageRouter;
 
         public event Action? StartupCompleted;
 
-        private ViewModel _currentPage;
-        public ViewModel CurrentPage {
-            get {
-                return _currentPage;
-            }
-
-            set {
-                this.RaiseAndSetIfChanged(ref _currentPage, value);
-            }
-        }
+        [ObservableProperty]
+        public partial ViewModel CurrentPage { get; set; }
 
         public StartupWindowViewModel(IServiceProvider serviceProvider, IPageRouter pageRouter) {
             _pageRouter = pageRouter;

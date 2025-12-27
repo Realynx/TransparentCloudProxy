@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
@@ -16,29 +16,25 @@ using TransparentCloudServerProxy.Client.Views.Dialogs;
 using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
-    public class DashboardWindowViewModel : ViewModel {
+    public partial class DashboardWindowViewModel : ViewModel {
 
         private readonly RemoteServersViewModel _userControlPanelViewModel;
         private readonly IPageRouter _pageRouter;
         private readonly IProxyServerService _proxyServerService;
         private readonly ILoginStorageService _loginStorageService;
 
+        [ObservableProperty]
+        public partial ViewModel CurrentPage { get; set; }
 
-        [Reactive]
-        public ViewModel CurrentPage { get; set; }
-
-        [Reactive]
-        public ProxyUser CurrentUser { get; set; }
+        [ObservableProperty]
+        public partial ProxyUser CurrentUser { get; set; }
 
         public ViewModel LocalProxyViewModel { get; }
         public ViewModel AppSettingsViewModel { get; }
         public ViewModel AdminPanelViewModel { get; }
 
-        public ReactiveCommand<Unit, Unit> AddServer { get; }
-
-        [Reactive]
-        public bool CloudServersVisible { get; set; }
-
+        [ObservableProperty]
+        public partial bool CloudServersVisible { get; set; }
 
         public DashboardWindowViewModel(RemoteServersViewModel userControlPanelViewModel, IPageRouter pageRouter,
             AppSettingsViewModel appSettingsViewModel, AdminPanelViewModel adminPanelViewModel, LocalProxyViewModel localProxyViewModel,
@@ -51,8 +47,6 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             _loginStorageService = loginStorageService;
             _userControlPanelViewModel = userControlPanelViewModel;
             _pageRouter = pageRouter;
-
-            AddServer = ReactiveCommand.CreateFromTask(ShowAddServerDialog);
 
             _pageRouter.OnNavigatePage += (newPage) => CurrentPage = newPage;
             CurrentPage = _userControlPanelViewModel;
@@ -73,7 +67,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Windows {
             CurrentUser = loggedInUser;
         }
 
-        public async Task ShowAddServerDialog() {
+        [RelayCommand]
+        private async Task ShowAddServer() {
             var mainWindow = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (mainWindow == null) {
                 return;

@@ -1,35 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
 
-using DynamicData;
-using DynamicData.Kernel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using DynamicData;
 
 using TransparentCloudServerProxy.Client.Models;
 using TransparentCloudServerProxy.Client.Services.Api;
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 using TransparentCloudServerProxy.Models;
 using TransparentCloudServerProxy.ProxyBackend;
-using TransparentCloudServerProxy.WebDashboard.SqlDb.Models;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
-    public class ProxyDataGridViewModel : ViewModel {
-        [Reactive]
-        public ObservableCollection<Proxy> DataGridProxies { get; set; } = new();
-        public Proxy[] _previousProxies;
+    public partial class ProxyDataGridViewModel : ViewModel {
         private readonly AppSettingsModel _appSettingsModel;
 
-        [Reactive]
-        public Proxy SelectedProxy { get; set; }
+        public Proxy[] _previousProxies;
 
-        [Reactive]
-        public IProxyServer ProxyServer { get; set; }
+        public ObservableCollection<Proxy> DataGridProxies { get; } = new();
+
+        [ObservableProperty]
+        public partial Proxy SelectedProxy { get; set; }
+
+        [ObservableProperty]
+        public partial IProxyServer ProxyServer { get; set; }
 
         public string TabName {
             get {
@@ -37,19 +34,9 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
             }
         }
 
-        public ReactiveCommand<Unit, Unit> AddCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-        public ReactiveCommand<Unit, Unit> ResetChanges { get; }
-        public ReactiveCommand<Unit, Unit> ApplyChanges { get; }
-
-
         public ProxyDataGridViewModel(IProxyServer proxyServer, AppSettingsModel appSettingsModel) {
             ProxyServer = proxyServer;
             _appSettingsModel = appSettingsModel;
-            ApplyChanges = ReactiveCommand.CreateFromTask(ApplyChangesAsync);
-            AddCommand = ReactiveCommand.CreateFromTask(AddCommandAsync);
-            DeleteCommand = ReactiveCommand.CreateFromTask(DeleteCommandAsync);
-            ResetChanges = ReactiveCommand.CreateFromTask(ResetChangesAsync);
 
             _ = SyncGridData();
         }
@@ -74,7 +61,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
             DataGridProxies.AddRange(savedProxies.Select(i => i.GetProxy()));
         }
 
-        public Task AddCommandAsync() {
+        [RelayCommand]
+        private Task AddAsync() {
             if (ProxyServer is LocalProxyServer) {
                 DataGridProxies.Add(new Proxy(_appSettingsModel.LocalDefaultEngine, ProxySocketType.Tcp, "0.0.0.0", 443, "10.0.0.1", 443));
             }
@@ -85,7 +73,8 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
             return Task.CompletedTask;
         }
 
-        public async Task ApplyChangesAsync() {
+        [RelayCommand]
+        private async Task ApplyChangesAsync() {
             var originalProxies = new Dictionary<string, Proxy>();
             foreach (var proxy in _previousProxies) {
                 originalProxies.Add($"{proxy.ListenHost}:{proxy.ListenPort}", proxy);
@@ -93,9 +82,7 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
 
             foreach (var updatedProxy in DataGridProxies) {
                 var effectiveKey = $"{updatedProxy.ListenHost}:{updatedProxy.ListenPort}";
-                if (originalProxies.ContainsKey(effectiveKey)) {
-                    originalProxies.Remove(effectiveKey);
-                }
+                originalProxies.Remove(effectiveKey);
 
                 await ProxyServer.UpdateOrAddProxy(updatedProxy);
             }
@@ -107,13 +94,15 @@ namespace TransparentCloudServerProxy.Client.ViewModels.Controls {
             await SyncGridData();
         }
 
-        public async Task DeleteCommandAsync() {
+        [RelayCommand]
+        private async Task DeleteAsync() {
             await ProxyServer.DeleteProxy(SelectedProxy);
 
             await SyncGridData();
         }
 
-        public async Task ResetChangesAsync() {
+        [RelayCommand]
+        private async Task ResetChangesAsync() {
             await SyncGridData();
         }
     }

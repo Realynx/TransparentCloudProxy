@@ -1,36 +1,32 @@
-﻿using System.Reactive;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Avalonia.Controls;
 
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using TransparentCloudServerProxy.Client.Services.Interfaces;
 
 namespace TransparentCloudServerProxy.Client.ViewModels.Dialogs {
-    public class AddServerDialogViewModel : ReactiveObject {
+    public partial class AddServerDialogViewModel : ViewModel {
         private readonly Window _window;
         private readonly IProxyServerService _proxyServerService;
         private readonly ILoginStorageService _loginStorageService;
 
-        [Reactive]
-        public string OneKey { get; set; }
+        [ObservableProperty]
+        public partial string OneKey { get; set; }
 
-        [Reactive]
-        public string ErrorMessage { get; set; }
-
-        public ReactiveCommand<Unit, Unit> LoginCommand { get; }
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; }
 
         public AddServerDialogViewModel(Window window, IProxyServerService proxyServerService, ILoginStorageService loginStorageService) {
             _window = window;
             _proxyServerService = proxyServerService;
             _loginStorageService = loginStorageService;
-            LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync);
         }
 
-        public async Task LoginAsync() {
+        [RelayCommand]
+        private async Task LoginAsync() {
             var loginServer = await _proxyServerService.AddServer(OneKey);
 
             if (loginServer is null) {
