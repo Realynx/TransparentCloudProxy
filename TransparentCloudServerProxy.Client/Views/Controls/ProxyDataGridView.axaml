@@ -3,11 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-			 
+
              x:Class="TransparentCloudServerProxy.Client.Views.Controls.ProxyDataGridView"
 			 xmlns:vm="clr-namespace:TransparentCloudServerProxy.Client.ViewModels.Controls"
 			 x:DataType="vm:ProxyDataGridViewModel"
-			 
+
 			 xmlns:proxyBackend="clr-namespace:TransparentCloudServerProxy.ProxyBackend;assembly=TransparentCloudServerProxy"
 			 xmlns:local="clr-namespace:TransparentCloudServerProxy.Client.Views.Controls;assembly=TransparentCloudServerProxy.Client"
 			 xmlns:utility="clr-namespace:TransparentCloudServerProxy.Client.Utilities"
@@ -42,17 +42,21 @@
 			<DataGridTextColumn SortMemberPath="ListenHost" Binding="{Binding ListenHost, Mode=TwoWay}" Header="Listen Host" />
 
 			<DataGridTemplateColumn Header="Listen Port" SortMemberPath="ListenPortColumn">
-				<DataTemplate>
-					<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort, Mode=TwoWay}" />
-				</DataTemplate>
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+				    	<NumericUpDown Padding="5" FormatString="F0" Value="{Binding ListenPort, Mode=TwoWay}" />
+				    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
 			</DataGridTemplateColumn>
 
 			<DataGridTextColumn SortMemberPath="TargetHost" Binding="{Binding TargetHost, Mode=TwoWay}" Header="Target Host" />
 
 			<DataGridTemplateColumn Header="Target Port" SortMemberPath="TargetPortColumn">
-				<DataTemplate>
-					<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort, Mode=TwoWay}" />
-				</DataTemplate>
+                <DataGridTemplateColumn.CellTemplate>
+		    		<DataTemplate>
+	    				<NumericUpDown Padding="5" FormatString="F0" Value="{Binding TargetPort, Mode=TwoWay}" />
+    				</DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
 			</DataGridTemplateColumn>
 		</DataGrid.Columns>
 	</DataGrid>
