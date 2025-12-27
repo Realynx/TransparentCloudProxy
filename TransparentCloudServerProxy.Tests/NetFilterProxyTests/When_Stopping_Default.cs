@@ -1,5 +1,6 @@
 ﻿using Moq;
 
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.UnixNetfilter;
 
 namespace TransparentCloudServerProxy.Tests.NetFilterProxyTests {
@@ -7,7 +8,7 @@ namespace TransparentCloudServerProxy.Tests.NetFilterProxyTests {
         protected override void Setup() {
             MockSystemProgram();
 
-            TestableImplementation = new NetFilterProxy("NetFilter", Models.ProxySocketType.Any, _listenAddress, _listenPort, _targetAddress, _targetPort);
+            TestableImplementation = new NetFilterProxy(PacketEngine.NetFilter, Models.ProxySocketType.Any, _listenAddress, _listenPort, _targetAddress, _targetPort);
             TestableImplementation.NetFilterProgram = _netFilterService.Object;
         }
 

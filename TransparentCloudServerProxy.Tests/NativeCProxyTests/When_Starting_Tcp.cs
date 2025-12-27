@@ -2,6 +2,7 @@
 
 using Moq;
 
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.NativeC;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
@@ -9,7 +10,7 @@ namespace TransparentCloudServerProxy.Tests.NativeCProxyTests {
     public class When_Starting_Tcp : Using_NativeCProxy {
         protected override void Setup() {
             MockFactories();
-            TestableImplementation = new NativeCProxy("NativeC", Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
+            TestableImplementation = new NativeCProxy(PacketEngine.NativeC, Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
                 _targetAddress, _targetPort, _socketFactory.Object, _listenerFactory.Object);
         }
 

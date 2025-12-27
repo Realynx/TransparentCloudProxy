@@ -1,4 +1,5 @@
 ﻿using TransparentCloudServerProxy.Models;
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.WindowsPF;
 
 namespace TransparentCloudServerProxy.Tests.WindowsPfProxyTests {
@@ -9,7 +10,7 @@ namespace TransparentCloudServerProxy.Tests.WindowsPfProxyTests {
 
         [Fact]
         public void Was_Error() {
-            Assert.ThrowsAny<Exception>(() => new WindowsPFProxy("WindowsPF", ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort));
+            Assert.ThrowsAny<Exception>(() => new WindowsPFProxy(PacketEngine.WindowsPF, ProxySocketType.Udp, _listenAddress, _listenPort, _targetAddress, _targetPort));
         }
     }
 }

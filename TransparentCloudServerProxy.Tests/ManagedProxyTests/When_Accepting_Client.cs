@@ -3,6 +3,7 @@ using System.Net.Sockets;
 
 using Moq;
 
+using TransparentCloudServerProxy.ProxyBackend;
 using TransparentCloudServerProxy.ProxyBackend.Managed;
 using TransparentCloudServerProxy.Testables.Interfaces;
 
@@ -17,7 +18,7 @@ namespace TransparentCloudServerProxy.Tests.ManagedProxyTests {
                     action(_testableSocket.Object);
                 });
 
-            TestableImplementation = new ManagedProxy("Managed", Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
+            TestableImplementation = new ManagedProxy(PacketEngine.Managed, Models.ProxySocketType.Tcp, _listenAddress, _listenPort,
                 _targetAddress, _targetPort, _socketFactory.Object, _listenerFactory.Object);
         }
 
