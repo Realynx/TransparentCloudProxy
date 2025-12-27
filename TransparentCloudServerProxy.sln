@@ -41,11 +41,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installers", "Installers", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{766EA039-FF79-44C0-99BF-00372C4A3544}"
 	ProjectSection(SolutionItems) = preProject
+		InstallClient.ps1 = InstallClient.ps1
+		InstallClient.bat = InstallClient.bat
+		InstallServer.bat = InstallServer.bat
 		InstallServer.ps1 = InstallServer.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{91B6B811-6C80-4A32-B7BF-E504BF565D07}"
 	ProjectSection(SolutionItems) = preProject
+		InstallClient.sh = InstallClient.sh
 		InstallServer.sh = InstallServer.sh
 	EndProjectSection
 EndProject

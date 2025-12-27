@@ -12,11 +12,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\External\CatTail\CatTail.Generators\CatTail.Generators.csproj" />
-		<ProjectReference Include="..\External\CatTail\CatTail\CatTail.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Folder Include="Services\" />
 	</ItemGroup>
 
