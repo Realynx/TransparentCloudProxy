@@ -13,20 +13,19 @@ using TransparentCloudServerProxy.SystemTools;
 namespace TransparentCloudServerProxy.Cli {
     internal class Program {
         static async Task Main(string[] args) {
-            IProxyConfig proxyConfig;
             Console.WriteLine("Welcome to Cloud Proxy.");
 
+            IProxyConfig? proxyConfig = null;
             if (File.Exists(Path.GetFullPath("appsettings.json"))) {
-                var jsonConfig = File.ReadAllText(Path.GetFullPath("appsettings.json"));
+                var jsonConfig = await File.ReadAllTextAsync(Path.GetFullPath("appsettings.json"));
 
                 Console.WriteLine(Path.GetFullPath("appsettings.json"));
                 Console.WriteLine(jsonConfig);
 
                 proxyConfig = JsonSerializer.Deserialize<ProxyConfig>(jsonConfig);
             }
-            else {
-                proxyConfig = new ProxyConfig();
-            }
+
+            proxyConfig ??= new ProxyConfig();
 
             ResetLowLevelPacketFiltering(proxyConfig);
 
@@ -48,7 +47,6 @@ namespace TransparentCloudServerProxy.Cli {
                     case PacketEngine.WindowsPF:
                         proxyImplementation = WindowsPFProxy.FromInstance(proxy);
                         break;
-
                     default:
                         proxy.PacketEngine = PacketEngine.Managed;
                         proxyImplementation = ManagedProxy.FromInstance(proxy);
@@ -58,9 +56,6 @@ namespace TransparentCloudServerProxy.Cli {
                 proxies.Add(proxyImplementation);
                 proxyImplementation.Start();
             }
-
-
-
 
             Console.WriteLine($"Proxy is running...");
             Console.WriteLine($"Type 'exit' to turn off forwarding.");
