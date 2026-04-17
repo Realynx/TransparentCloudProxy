@@ -65,6 +65,12 @@ For update checks and update downloads, use GitHub Releases metadata:
 curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-serverproxy.sh | sudo bash
 ```
 
+## 🐧 Ubuntu / Debian one-line install (ReactServer)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-reactserver.sh | sudo bash
+```
+
 ---
 
 ## 🖼️ Screenshots  

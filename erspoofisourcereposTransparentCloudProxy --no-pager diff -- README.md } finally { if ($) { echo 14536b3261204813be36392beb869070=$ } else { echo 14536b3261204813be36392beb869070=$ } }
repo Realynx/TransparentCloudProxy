@@ -1,0 +1,17 @@
+[1mdiff --git a/README.md b/README.md[m
+[1mindex fe01b02..f3a71cb 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -65,6 +65,12 @@[m [mFor update checks and update downloads, use GitHub Releases metadata:[m
+ curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-serverproxy.sh | sudo bash[m
+ ```[m
+ [m
+[32m+[m[32m## 🐧 Ubuntu / Debian one-line install (ReactServer)[m
+[32m+[m
+[32m+[m[32m```bash[m
+[32m+[m[32mcurl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-reactserver.sh | sudo bash[m
+[32m+[m[32m```[m
+[32m+[m
+ ---[m
+ [m
+ ## 🖼️ Screenshots  [m
