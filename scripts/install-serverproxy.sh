@@ -78,6 +78,8 @@ ExecStart=/opt/realynx-serverproxy/bin/TransparentCloudServerProxy.WebDashboard
 Restart=always
 RestartSec=5
 Environment=ASPNETCORE_URLS=http://0.0.0.0:8080
+Environment=Kestrel__Endpoints__Http__Url=http://0.0.0.0:8080
+Environment=Kestrel__Endpoints__Https__Url=http://127.0.0.1:0
 
 [Install]
 WantedBy=multi-user.target

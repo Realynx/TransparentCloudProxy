@@ -33,13 +33,19 @@ namespace TransparentCloudServerProxy.WebDashboard.Services {
             var publicAddress = await _publicAddressService.GetPublicAddress();
             publicAddress = publicAddress.Remove(publicAddress.Length - 1);
 
-            var addressString = string.Join(string.Empty, allLocalAddresses.Select(i => $"https://{i}:{_currentKestralServerConfig.HttpsPort}").ToArray());
-            addressString += $"https://{publicAddress}:{_currentKestralServerConfig.HttpsPort}";
+            var addressBuilder = new StringBuilder();
 
-            addressString += string.Join(string.Empty, allLocalAddresses.Select(i => $"http://{i}:{_currentKestralServerConfig.HttpPort}").ToArray());
-            addressString += $"http://{publicAddress}:{_currentKestralServerConfig.HttpPort}";
+            if (_currentKestralServerConfig.HttpsPort > 0) {
+                addressBuilder.Append(string.Join(string.Empty, allLocalAddresses.Select(i => $"https://{i}:{_currentKestralServerConfig.HttpsPort}").ToArray()));
+                addressBuilder.Append($"https://{publicAddress}:{_currentKestralServerConfig.HttpsPort}");
+            }
 
-            var hexInterfaceAddress = Convert.ToHexString(Encoding.UTF8.GetBytes(addressString));
+            if (_currentKestralServerConfig.HttpPort > 0) {
+                addressBuilder.Append(string.Join(string.Empty, allLocalAddresses.Select(i => $"http://{i}:{_currentKestralServerConfig.HttpPort}").ToArray()));
+                addressBuilder.Append($"http://{publicAddress}:{_currentKestralServerConfig.HttpPort}");
+            }
+
+            var hexInterfaceAddress = Convert.ToHexString(Encoding.UTF8.GetBytes(addressBuilder.ToString()));
             return hexInterfaceAddress;
         }
     }
