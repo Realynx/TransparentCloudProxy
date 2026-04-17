@@ -71,12 +71,6 @@ curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/maste
 curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-serverproxy.sh | sudo bash -s -- --uninstall
 ```
 
-Alternative syntax:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-serverproxy.sh | sudo bash -- --uninstall
-```
-
 ## 🐧 Ubuntu / Debian one-line install (ReactServer)
 
 ```bash
@@ -87,12 +81,6 @@ curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/maste
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-reactserver.sh | sudo bash -s -- --uninstall
-```
-
-Alternative syntax:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-reactserver.sh | sudo bash -- --uninstall
 ```
 
 ---

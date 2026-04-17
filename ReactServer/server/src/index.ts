@@ -35,7 +35,17 @@ type OneKeyStore = {
 type OneKeyImportResult = {
   created: SavedCredential[]
   skipped: string[]
+  attemptedAddresses: string[]
+  unreachableAddresses: string[]
+  connectedAddress: string | null
   createdAt: string
+}
+
+type AddressProbeResult = {
+  address: string
+  ok: boolean
+  status?: number
+  error?: string
 }
 
 const nowIso = (): string => new Date().toISOString()
@@ -47,6 +57,8 @@ const createOneKeySchema = z.object({
     .min(65, 'OneKey must contain at least a 64-char credential and encoded addresses'),
   displayName: z.string().trim().min(2).max(80).default('Remote Proxy'),
 })
+
+const probeTimeoutMs = Number(process.env.ONEKEY_PROBE_TIMEOUT_MS ?? 3000)
 
 const oneKeyPath = path.resolve(process.cwd(), 'server', 'data', 'onekeys.json')
 
@@ -104,6 +116,61 @@ const ensureStoreDirectory = async (): Promise<void> => {
   await fs.promises.mkdir(directory, { recursive: true })
 }
 
+const probeRemoteAddress = async (
+  address: string,
+  credential: string,
+): Promise<AddressProbeResult> => {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => {
+    controller.abort()
+  }, probeTimeoutMs)
+
+  try {
+    const endpoint = new URL('User/Get', address).toString()
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        Authorization: `Key ${credential}`,
+        Accept: 'application/json',
+      },
+      signal: controller.signal,
+    })
+
+    return {
+      address,
+      ok: response.ok,
+      status: response.status,
+      error: response.ok ? undefined : `HTTP ${response.status}`,
+    }
+  } catch (error) {
+    return {
+      address,
+      ok: false,
+      error: error instanceof Error ? error.message : 'Unknown connectivity error',
+    }
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+const findReachableAddress = async (
+  addresses: string[],
+  credential: string,
+): Promise<{ selectedAddress: string | null; attempts: AddressProbeResult[] }> => {
+  const attempts: AddressProbeResult[] = []
+
+  for (const address of addresses) {
+    const result = await probeRemoteAddress(address, credential)
+    attempts.push(result)
+
+    if (result.ok) {
+      return { selectedAddress: address, attempts }
+    }
+  }
+
+  return { selectedAddress: null, attempts }
+}
+
 const loadStore = async (): Promise<void> => {
   await ensureStoreDirectory()
 
@@ -129,48 +196,73 @@ const persistStore = async (): Promise<void> => {
   await fs.promises.writeFile(oneKeyPath, JSON.stringify(store, null, 2), 'utf8')
 }
 
-const buildOneKeyEntries = (
+const buildOneKeyEntries = async (
   displayName: string,
   oneKey: string,
-): OneKeyImportResult => {
+): Promise<OneKeyImportResult> => {
   const normalizedOneKey = oneKey.trim()
   const { credential, addresses } = decodeOneKey(oneKey)
   const dedupedAddresses = [...new Set(addresses)]
 
-  const created: SavedCredential[] = []
-  const skipped: string[] = []
+  const { selectedAddress, attempts } = await findReachableAddress(
+    dedupedAddresses,
+    credential,
+  )
 
-  dedupedAddresses.forEach((reachableAddress, index) => {
-    const exists = store.savedCredentials.some(
-      (entry) =>
-        entry.credential === credential &&
-        entry.reachableAddress.toLowerCase() === reachableAddress.toLowerCase(),
-    )
+  const attemptedAddresses = attempts.map((entry) => entry.address)
+  const unreachableAddresses = attempts
+    .filter((entry) => !entry.ok)
+    .map((entry) => entry.address)
 
-    if (exists) {
-      skipped.push(reachableAddress)
-      return
+  if (!selectedAddress) {
+    return {
+      created: [],
+      skipped: [],
+      attemptedAddresses,
+      unreachableAddresses,
+      connectedAddress: null,
+      createdAt: nowIso(),
     }
+  }
 
-    const timestamp = nowIso()
-    const label = dedupedAddresses.length === 1 ? displayName : `${displayName} #${index + 1}`
+  const exists = store.savedCredentials.some(
+    (entry) =>
+      entry.credential === credential &&
+      entry.reachableAddress.toLowerCase() === selectedAddress.toLowerCase(),
+  )
 
-    created.push({
+  if (exists) {
+    return {
+      created: [],
+      skipped: [selectedAddress],
+      attemptedAddresses,
+      unreachableAddresses,
+      connectedAddress: selectedAddress,
+      createdAt: nowIso(),
+    }
+  }
+
+  const timestamp = nowIso()
+  const created: SavedCredential[] = [
+    {
       id: randomUUID(),
-      displayName: label,
+      displayName,
       credential,
-      reachableAddress,
+      reachableAddress: selectedAddress,
       sourceOneKeySuffix: normalizedOneKey
         .slice(Math.max(0, normalizedOneKey.length - 12))
         .toUpperCase(),
       createdAt: timestamp,
       updatedAt: timestamp,
-    })
-  })
+    },
+  ]
 
   return {
     created,
-    skipped,
+    skipped: [],
+    attemptedAddresses,
+    unreachableAddresses,
+    connectedAddress: selectedAddress,
     createdAt: nowIso(),
   }
 }
@@ -200,11 +292,24 @@ app.post('/api/credentials', async (req, res) => {
   }
 
   try {
-    const importResult = buildOneKeyEntries(parsed.data.displayName, parsed.data.oneKey)
+    const importResult = await buildOneKeyEntries(parsed.data.displayName, parsed.data.oneKey)
+
+    if (!importResult.connectedAddress) {
+      res.status(502).json({
+        error:
+          'Unable to connect to any address embedded in this OneKey. Tried each address in order.',
+        attemptedAddresses: importResult.attemptedAddresses,
+        unreachableAddresses: importResult.unreachableAddresses,
+      })
+      return
+    }
+
     if (importResult.created.length === 0) {
       res.status(409).json({
-        error: 'All reachable addresses from this OneKey are already stored',
+        error: 'The first reachable address for this OneKey is already stored',
         skipped: importResult.skipped,
+        connectedAddress: importResult.connectedAddress,
+        attemptedAddresses: importResult.attemptedAddresses,
       })
       return
     }

@@ -16,6 +16,9 @@ export type SaveOneKeyDraft = {
 export type OneKeyImportResult = {
   created: SavedCredential[]
   skipped: string[]
+  attemptedAddresses: string[]
+  unreachableAddresses: string[]
+  connectedAddress: string | null
   createdAt: string
 }
 

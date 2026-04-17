@@ -86,8 +86,15 @@ function App() {
     try {
       const result = await saveOneKey(draft)
       setDraft(defaultDraft)
+
       if (result.skipped.length > 0) {
-        setNotice(`${result.created.length} credential(s) added, ${result.skipped.length} duplicate address(es) skipped.`)
+        setNotice(
+          `${result.created.length} credential(s) added, ${result.skipped.length} duplicate address(es) skipped.`,
+        )
+      } else if (result.unreachableAddresses.length > 0 && result.connectedAddress) {
+        setNotice(
+          `${result.created.length} credential(s) added. Connected via ${result.connectedAddress} after ${result.unreachableAddresses.length} unreachable address(es).`,
+        )
       } else {
         setNotice(`${result.created.length} credential(s) added successfully.`)
       }
