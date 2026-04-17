@@ -6,7 +6,10 @@ bin_dir="${install_root}/bin"
 archive_path="/tmp/serverproxy-linux-x64"
 service_name="realynx-serverproxy"
 service_file="/etc/systemd/system/${service_name}.service"
+service_wants_link="/etc/systemd/system/multi-user.target.wants/${service_name}.service"
+state_dir="/var/lib/realynx-serverproxy"
 server_binary_path=""
+credentials_wait_seconds="${REALYNX_CREDENTIAL_WAIT_SECONDS:-10}"
 
 spinner_chars='|/-\\'
 color_red=''
@@ -153,7 +156,8 @@ print_startup_summary_from_service() {
     printf 'Waiting for startup credentials '
   fi
 
-  for i in {1..30}; do
+  local i
+  for ((i=1; i<=credentials_wait_seconds; i++)); do
     logs="$(journalctl -u "${service_name}" -n 300 --no-pager 2>/dev/null || true)"
     root_cred="$(extract_root_cred "${logs}")"
     onekey="$(extract_onekey "${logs}")"
@@ -183,8 +187,8 @@ print_startup_summary_from_service() {
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
-    echo "Failed to detect RootCredential/OneKey from service logs."
-    echo "Run: journalctl -u ${service_name} --no-pager | grep -E 'Root Cred:|OneKey Pass:'"
+    echo "Service started. No startup credentials were detected in logs."
+    echo "This server build may not emit OneKey output."
   fi
 }
 
@@ -212,7 +216,8 @@ run_manual_and_print_credentials_only() {
     printf 'Waiting for startup credentials '
   fi
 
-  for i in {1..30}; do
+  local i
+  for ((i=1; i<=credentials_wait_seconds; i++)); do
     if [[ -s "${manual_log}" ]]; then
       root_cred="$(extract_root_cred "$(cat "${manual_log}")")"
       onekey="$(extract_onekey "$(cat "${manual_log}")")"
@@ -247,7 +252,7 @@ run_manual_and_print_credentials_only() {
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
-    echo "Failed to detect RootCredential/OneKey from manual startup logs."
+    echo "No startup credentials detected from manual startup logs."
   fi
 
   if kill -0 "${server_pid}" >/dev/null 2>&1; then
@@ -296,16 +301,17 @@ esac
 if [[ "${mode}" == "uninstall" ]]; then
   if command -v systemctl >/dev/null 2>&1; then
     run_with_spinner "Stopping service" systemctl disable --now "${service_name}" || true
-  fi
-
-  rm -f "${service_file}"
-
-  if command -v systemctl >/dev/null 2>&1; then
     run_with_spinner "Reloading systemd" systemctl daemon-reload || true
     systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
   fi
 
-  rm -rf "${install_root}"
+  rm -f "${service_file}" "${service_wants_link}"
+
+  pkill -f '/opt/realynx-serverproxy/bin/TransparentCloudServerProxy' >/dev/null 2>&1 || true
+  pkill -f 'TransparentCloudServerProxy.WebDashboard' >/dev/null 2>&1 || true
+  pkill -f 'TransparentCloudServerProxy.Server' >/dev/null 2>&1 || true
+
+  rm -rf "${install_root}" "${state_dir}"
   rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
 
   echo "Uninstall complete."
