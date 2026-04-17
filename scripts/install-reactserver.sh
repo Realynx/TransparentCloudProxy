@@ -1,9 +1,60 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+install_root="/opt/realynx-reactserver"
+archive_path="/tmp/reactserver"
+service_name="realynx-reactserver"
+service_file="/etc/systemd/system/${service_name}.service"
+
+usage() {
+  cat <<'USAGE'
+Usage: install-reactserver.sh [--uninstall|-u]
+
+  (no args)        Install/upgrade ReactServer
+  --uninstall, -u  Stop and remove ReactServer service and files
+USAGE
+}
+
 if [[ "${EUID}" -ne 0 ]]; then
   echo "Please run as root (use sudo)."
   exit 1
+fi
+
+mode="install"
+case "${1:-}" in
+  "")
+    ;;
+  --uninstall|-u)
+    mode="uninstall"
+    ;;
+  --help|-h)
+    usage
+    exit 0
+    ;;
+  *)
+    echo "Unknown argument: ${1}"
+    usage
+    exit 1
+    ;;
+esac
+
+if [[ "${mode}" == "uninstall" ]]; then
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl disable --now "${service_name}" >/dev/null 2>&1 || true
+  fi
+
+  rm -f "${service_file}"
+
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload || true
+    systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
+  fi
+
+  rm -rf "${install_root}"
+  rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
+
+  echo "Uninstalled ${service_name} and removed ${install_root}."
+  exit 0
 fi
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
@@ -28,9 +79,6 @@ if [[ -z "${ARCHIVE_URL}" ]]; then
   echo "Could not find reactserver release asset (.zip or .tar.gz)."
   exit 1
 fi
-
-install_root="/opt/realynx-reactserver"
-archive_path="/tmp/reactserver"
 
 mkdir -p "${install_root}"
 rm -rf "${install_root:?}"/*
@@ -86,7 +134,7 @@ else
 fi
 
 if [[ "${setup_service}" == "yes" ]]; then
-  cat >/etc/systemd/system/realynx-reactserver.service <<'SERVICE'
+  cat >"${service_file}" <<'SERVICE'
 [Unit]
 Description=Realynx ReactServer
 After=network.target
@@ -105,12 +153,12 @@ WantedBy=multi-user.target
 SERVICE
 
   systemctl daemon-reload
-  systemctl enable --now realynx-reactserver
+  systemctl enable --now "${service_name}"
 
-  echo "Installed and started realynx-reactserver.service"
+  echo "Installed and started ${service_name}.service"
   printf '\nRecent startup logs:\n\n'
   sleep 2
-  journalctl -u realynx-reactserver -n 80 --no-pager || true
+  journalctl -u "${service_name}" -n 80 --no-pager || true
 else
   echo "Install complete. Systemd service was not configured."
   echo "Run manually: cd ${install_root} && npm start"
