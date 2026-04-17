@@ -22,7 +22,22 @@ if [[ "${EUID}" -ne 0 ]]; then
 fi
 
 mode="install"
-case "${1:-}" in
+
+# Support both:
+#   bash -s -- --uninstall   (normal stdin args)
+#   bash -- --uninstall      (arg may become $0)
+first_arg="${1:-}"
+if [[ -z "${first_arg}" && "${0:-}" == "--uninstall" ]]; then
+  first_arg="--uninstall"
+elif [[ -z "${first_arg}" && "${0:-}" == "-u" ]]; then
+  first_arg="-u"
+elif [[ -z "${first_arg}" && "${0:-}" == "--help" ]]; then
+  first_arg="--help"
+elif [[ -z "${first_arg}" && "${0:-}" == "-h" ]]; then
+  first_arg="-h"
+fi
+
+case "${first_arg}" in
   "")
     ;;
   --uninstall|-u)
@@ -33,7 +48,7 @@ case "${1:-}" in
     exit 0
     ;;
   *)
-    echo "Unknown argument: ${1}"
+    echo "Unknown argument: ${first_arg}"
     usage
     exit 1
     ;;
