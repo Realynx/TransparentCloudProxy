@@ -7,6 +7,17 @@ archive_path="/tmp/serverproxy-linux-x64"
 service_name="realynx-serverproxy"
 service_file="/etc/systemd/system/${service_name}.service"
 
+spinner_chars='|/-\\'
+color_red=''
+color_green=''
+color_reset=''
+
+if [[ -t 1 ]]; then
+  color_red=$'\033[31m'
+  color_green=$'\033[32m'
+  color_reset=$'\033[0m'
+fi
+
 usage() {
   cat <<'USAGE'
 Usage: install-serverproxy.sh [--uninstall|-u]
@@ -14,6 +25,39 @@ Usage: install-serverproxy.sh [--uninstall|-u]
   (no args)        Install/upgrade ServerProxy
   --uninstall, -u  Stop and remove ServerProxy service and files
 USAGE
+}
+
+run_with_spinner() {
+  local message="$1"
+  shift
+
+  if [[ ! -t 1 ]]; then
+    "$@"
+    return $?
+  fi
+
+  printf '%s ' "${message}"
+  "$@" >/dev/null 2>&1 &
+  local pid=$!
+  local i=0
+
+  while kill -0 "${pid}" >/dev/null 2>&1; do
+    local char="${spinner_chars:i%${#spinner_chars}:1}"
+    printf '\r%s [%s]' "${message}" "${char}"
+    i=$((i + 1))
+    sleep 0.1
+  done
+
+  wait "${pid}"
+  local status=$?
+
+  if [[ ${status} -eq 0 ]]; then
+    printf '\r%s ${color_green}done${color_reset}\n' "${message}"
+  else
+    printf '\r%s ${color_red}failed${color_reset}\n' "${message}"
+  fi
+
+  return ${status}
 }
 
 read_interactive() {
@@ -76,7 +120,11 @@ print_startup_summary_from_service() {
   local root_cred=""
   local onekey=""
 
-  for _ in {1..30}; do
+  if [[ -t 1 ]]; then
+    printf 'Waiting for startup credentials '
+  fi
+
+  for i in {1..30}; do
     logs="$(journalctl -u "${service_name}" -n 300 --no-pager 2>/dev/null || true)"
     root_cred="$(extract_root_cred "${logs}")"
     onekey="$(extract_onekey "${logs}")"
@@ -85,15 +133,24 @@ print_startup_summary_from_service() {
       break
     fi
 
+    if [[ -t 1 ]]; then
+      local char="${spinner_chars:i%${#spinner_chars}:1}"
+      printf '\rWaiting for startup credentials [%s]' "${char}"
+    fi
+
     sleep 1
   done
+
+  if [[ -t 1 ]]; then
+    printf '\r%-60s\r' ''
+  fi
 
   if [[ -n "${root_cred}" ]]; then
     echo "RootCredential: ${root_cred}"
   fi
 
   if [[ -n "${onekey}" ]]; then
-    echo "OneKey: ${onekey}"
+    echo "OneKey: ${color_red}${onekey}${color_reset}"
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
@@ -122,7 +179,11 @@ run_manual_and_print_credentials_only() {
   }
   trap cleanup_manual EXIT INT TERM
 
-  for _ in {1..30}; do
+  if [[ -t 1 ]]; then
+    printf 'Waiting for startup credentials '
+  fi
+
+  for i in {1..30}; do
     if [[ -s "${manual_log}" ]]; then
       root_cred="$(extract_root_cred "$(cat "${manual_log}")")"
       onekey="$(extract_onekey "$(cat "${manual_log}")")"
@@ -136,15 +197,24 @@ run_manual_and_print_credentials_only() {
       break
     fi
 
+    if [[ -t 1 ]]; then
+      local char="${spinner_chars:i%${#spinner_chars}:1}"
+      printf '\rWaiting for startup credentials [%s]' "${char}"
+    fi
+
     sleep 1
   done
+
+  if [[ -t 1 ]]; then
+    printf '\r%-60s\r' ''
+  fi
 
   if [[ -n "${root_cred}" ]]; then
     echo "RootCredential: ${root_cred}"
   fi
 
   if [[ -n "${onekey}" ]]; then
-    echo "OneKey: ${onekey}"
+    echo "OneKey: ${color_red}${onekey}${color_reset}"
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
@@ -196,29 +266,33 @@ esac
 
 if [[ "${mode}" == "uninstall" ]]; then
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl disable --now "${service_name}" >/dev/null 2>&1 || true
+    run_with_spinner "Stopping service" systemctl disable --now "${service_name}" || true
   fi
 
   rm -f "${service_file}"
 
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl daemon-reload >/dev/null 2>&1 || true
+    run_with_spinner "Reloading systemd" systemctl daemon-reload || true
     systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
   fi
 
   rm -rf "${install_root}"
   rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
 
+  echo "Uninstall complete."
   exit 0
 fi
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then
-  apt-get update -y >/dev/null 2>&1
-  apt-get install -y curl tar unzip >/dev/null 2>&1
+  run_with_spinner "Updating apt package index" apt-get update -y
+  run_with_spinner "Installing required packages" apt-get install -y curl tar unzip
 fi
 
 REPO="Realynx/TransparentCloudProxy"
-release_json="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest")"
+release_json_file="$(mktemp /tmp/realynx-serverproxy-release.XXXXXX.json)"
+run_with_spinner "Fetching latest release metadata" curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" -o "${release_json_file}"
+release_json="$(cat "${release_json_file}")"
+rm -f "${release_json_file}"
 ARCHIVE_URL="$(printf '%s' "${release_json}" | sed -n 's/.*"browser_download_url": "\([^"]*serverproxy-linux-x64\.zip\)".*/\1/p' | head -n1)"
 
 if [[ -z "${ARCHIVE_URL}" ]]; then
@@ -235,12 +309,12 @@ rm -rf "${bin_dir:?}"/*
 
 if [[ "${ARCHIVE_URL}" == *.zip ]]; then
   archive_path+=".zip"
-  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
-  unzip -oq "${archive_path}" -d "${bin_dir}"
+  run_with_spinner "Downloading serverproxy package" curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  run_with_spinner "Extracting package" unzip -oq "${archive_path}" -d "${bin_dir}"
 else
   archive_path+=".tar.gz"
-  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
-  tar -xzf "${archive_path}" -C "${bin_dir}"
+  run_with_spinner "Downloading serverproxy package" curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  run_with_spinner "Extracting package" tar -xzf "${archive_path}" -C "${bin_dir}"
 fi
 
 chmod +x "${bin_dir}/TransparentCloudServerProxy.WebDashboard"
@@ -267,8 +341,8 @@ Environment=Kestrel__Endpoints__Https__Url=http://127.0.0.1:0
 WantedBy=multi-user.target
 SERVICE
 
-  systemctl daemon-reload >/dev/null 2>&1
-  systemctl enable --now "${service_name}" >/dev/null 2>&1
+  run_with_spinner "Reloading systemd" systemctl daemon-reload
+  run_with_spinner "Starting service" systemctl enable --now "${service_name}"
 
   print_startup_summary_from_service
 else

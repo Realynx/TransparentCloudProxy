@@ -19,7 +19,6 @@ namespace TransparentCloudServerProxy.Client.Services {
             var addressesString = Encoding.UTF8.GetString(Convert.FromHexString(addressHex));
             var addresses = serverAddressRegex.Matches(addressesString)
                 .SelectMany(i => i.Captures)
-                .Skip(1)
                 .Select(i => i.Value);
 
             return (addresses, credential);

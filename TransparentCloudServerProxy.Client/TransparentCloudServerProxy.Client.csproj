@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TransparentCloudServerProxy\TransparentCloudServerProxy.csproj" />
-    <ProjectReference Include="..\TransparentCloudServerProxy.WebDashboard\TransparentCloudServerProxy.WebDashboard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

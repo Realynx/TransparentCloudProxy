@@ -6,6 +6,17 @@ archive_path="/tmp/reactserver"
 service_name="realynx-reactserver"
 service_file="/etc/systemd/system/${service_name}.service"
 
+spinner_chars='|/-\\'
+color_red=''
+color_green=''
+color_reset=''
+
+if [[ -t 1 ]]; then
+  color_red=$'\033[31m'
+  color_green=$'\033[32m'
+  color_reset=$'\033[0m'
+fi
+
 usage() {
   cat <<'USAGE'
 Usage: install-reactserver.sh [--uninstall|-u]
@@ -13,6 +24,39 @@ Usage: install-reactserver.sh [--uninstall|-u]
   (no args)        Install/upgrade ReactServer
   --uninstall, -u  Stop and remove ReactServer service and files
 USAGE
+}
+
+run_with_spinner() {
+  local message="$1"
+  shift
+
+  if [[ ! -t 1 ]]; then
+    "$@"
+    return $?
+  fi
+
+  printf '%s ' "${message}"
+  "$@" >/dev/null 2>&1 &
+  local pid=$!
+  local i=0
+
+  while kill -0 "${pid}" >/dev/null 2>&1; do
+    local char="${spinner_chars:i%${#spinner_chars}:1}"
+    printf '\r%s [%s]' "${message}" "${char}"
+    i=$((i + 1))
+    sleep 0.1
+  done
+
+  wait "${pid}"
+  local status=$?
+
+  if [[ ${status} -eq 0 ]]; then
+    printf '\r%s ${color_green}done${color_reset}\n' "${message}"
+  else
+    printf '\r%s ${color_red}failed${color_reset}\n' "${message}"
+  fi
+
+  return ${status}
 }
 
 read_interactive() {
@@ -100,34 +144,38 @@ esac
 
 if [[ "${mode}" == "uninstall" ]]; then
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl disable --now "${service_name}" >/dev/null 2>&1 || true
+    run_with_spinner "Stopping service" systemctl disable --now "${service_name}" || true
   fi
 
   rm -f "${service_file}"
 
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl daemon-reload >/dev/null 2>&1 || true
+    run_with_spinner "Reloading systemd" systemctl daemon-reload || true
     systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
   fi
 
   rm -rf "${install_root}"
   rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
 
+  echo "Uninstall complete."
   exit 0
 fi
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
-  apt-get update -y >/dev/null 2>&1
-  apt-get install -y curl unzip tar >/dev/null 2>&1
+  run_with_spinner "Updating apt package index" apt-get update -y
+  run_with_spinner "Installing archive tools" apt-get install -y curl unzip tar
 fi
 
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-  apt-get update -y >/dev/null 2>&1
-  apt-get install -y nodejs npm >/dev/null 2>&1
+  run_with_spinner "Updating apt package index" apt-get update -y
+  run_with_spinner "Installing Node.js and npm" apt-get install -y nodejs npm
 fi
 
 REPO="Realynx/TransparentCloudProxy"
-release_json="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest")"
+release_json_file="$(mktemp /tmp/realynx-reactserver-release.XXXXXX.json)"
+run_with_spinner "Fetching latest release metadata" curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" -o "${release_json_file}"
+release_json="$(cat "${release_json_file}")"
+rm -f "${release_json_file}"
 ARCHIVE_URL="$(printf '%s' "${release_json}" | sed -n 's/.*"browser_download_url": "\([^"]*reactserver\.zip\)".*/\1/p' | head -n1)"
 
 if [[ -z "${ARCHIVE_URL}" ]]; then
@@ -144,12 +192,12 @@ rm -rf "${install_root:?}"/*
 
 if [[ "${ARCHIVE_URL}" == *.zip ]]; then
   archive_path+=".zip"
-  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
-  unzip -oq "${archive_path}" -d "${install_root}"
+  run_with_spinner "Downloading reactserver package" curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  run_with_spinner "Extracting package" unzip -oq "${archive_path}" -d "${install_root}"
 else
   archive_path+=".tar.gz"
-  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
-  tar -xzf "${archive_path}" -C "${install_root}"
+  run_with_spinner "Downloading reactserver package" curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  run_with_spinner "Extracting package" tar -xzf "${archive_path}" -C "${install_root}"
 fi
 
 mkdir -p "${install_root}/server" "${install_root}/client"
@@ -168,7 +216,7 @@ if [[ -f "${install_root}/.env.example" && ! -f "${install_root}/.env" ]]; then
 fi
 
 cd "${install_root}"
-npm ci --omit=dev >/dev/null 2>&1
+run_with_spinner "Installing production dependencies" npm ci --omit=dev
 
 setup_service="$(prompt_yes_no "Setup a systemd service to run ReactServer at startup? [Y/n]: " "yes")"
 
@@ -191,8 +239,8 @@ EnvironmentFile=-/opt/realynx-reactserver/.env
 WantedBy=multi-user.target
 SERVICE
 
-  systemctl daemon-reload >/dev/null 2>&1
-  systemctl enable --now "${service_name}" >/dev/null 2>&1
+  run_with_spinner "Reloading systemd" systemctl daemon-reload
+  run_with_spinner "Starting service" systemctl enable --now "${service_name}"
 else
-  nohup /usr/bin/env npm --prefix "${install_root}" start >/dev/null 2>&1 &
+  run_with_spinner "Starting ReactServer in background" bash -c "nohup /usr/bin/env npm --prefix '${install_root}' start >/dev/null 2>&1 &"
 fi

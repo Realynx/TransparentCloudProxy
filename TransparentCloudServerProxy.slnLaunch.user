@@ -25,7 +25,7 @@
     "Name": "Cli Debug",
     "Projects": [
       {
-        "Path": "TransparentCloudServerProxy.Cli\\TransparentCloudServerProxy.Cli.csproj",
+        "Path": "TransparentCloudServerProxy.Cli\\ServerProxy.csproj",
         "Action": "Start"
       }
     ]
