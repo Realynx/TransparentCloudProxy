@@ -9,7 +9,7 @@ service_file="/etc/systemd/system/${service_name}.service"
 service_wants_link="/etc/systemd/system/multi-user.target.wants/${service_name}.service"
 state_dir="/var/lib/realynx-serverproxy"
 server_binary_path=""
-credentials_wait_seconds="${REALYNX_CREDENTIAL_WAIT_SECONDS:-10}"
+credentials_wait_seconds="${REALYNX_CREDENTIAL_WAIT_SECONDS:-20}"
 
 spinner_chars='|/-\\'
 color_red=''
@@ -147,6 +147,11 @@ extract_onekey() {
   printf '%s\n' "${text}" | sed -n 's/.*OneKey Pass:[[:space:]]*\([^[:space:]]\+\).*/\1/p' | tail -n1
 }
 
+print_service_logs_tail() {
+  echo "Recent service logs (${service_name}):"
+  journalctl -u "${service_name}" -n 120 --no-pager 2>/dev/null || true
+}
+
 print_startup_summary_from_service() {
   local logs=""
   local root_cred=""
@@ -187,8 +192,8 @@ print_startup_summary_from_service() {
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
-    echo "Service started. No startup credentials were detected in logs."
-    echo "This server build may not emit OneKey output."
+    echo "Timed out after ${credentials_wait_seconds}s waiting for startup credentials."
+    print_service_logs_tail
   fi
 }
 
@@ -252,11 +257,14 @@ run_manual_and_print_credentials_only() {
   fi
 
   if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
-    echo "No startup credentials detected from manual startup logs."
+    echo "Timed out after ${credentials_wait_seconds}s waiting for startup credentials."
+    echo "Recent manual startup logs:"
+    tail -n 120 "${manual_log}" || true
   fi
 
   if kill -0 "${server_pid}" >/dev/null 2>&1; then
-    wait "${server_pid}" || true
+    kill "${server_pid}" >/dev/null 2>&1 || true
+    wait "${server_pid}" >/dev/null 2>&1 || true
   fi
 }
 
