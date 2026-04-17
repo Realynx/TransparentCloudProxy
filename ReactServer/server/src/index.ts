@@ -70,6 +70,35 @@ const normalizeReachableAddress = (input: string): string => {
     trimmed = `https://${trimmed}`
   }
 
+  // OneKey payloads can include unbracketed IPv6 literals with optional zone IDs
+  // (for example: https://fe80::be24:11ff:fe57:4d8d%2:45419). URL parsing requires
+  // bracketed hosts and percent-escaped zone delimiters.
+  const schemeMatch = trimmed.match(/^(https?):\/\/(.*)$/i)
+  if (schemeMatch) {
+    const scheme = schemeMatch[1].toLowerCase()
+    const remainder = schemeMatch[2]
+    const pathStart = remainder.search(/[/?#]/)
+    const authority = pathStart === -1 ? remainder : remainder.slice(0, pathStart)
+    const suffix = pathStart === -1 ? '' : remainder.slice(pathStart)
+
+    if (authority.includes(':') && !authority.startsWith('[')) {
+      let hostPart = authority
+      let portPart = ''
+
+      const portMatch = authority.match(/^(.*):(\d+)$/)
+      if (portMatch) {
+        hostPart = portMatch[1]
+        portPart = portMatch[2]
+      }
+
+      if (hostPart.includes(':')) {
+        const escapedZoneHost = hostPart.replace(/%/g, '%25')
+        const bracketedHost = `[${escapedZoneHost}]${portPart ? `:${portPart}` : ''}`
+        trimmed = `${scheme}://${bracketedHost}${suffix}`
+      }
+    }
+  }
+
   let normalized: URL
 
   try {
@@ -102,10 +131,20 @@ const decodeOneKey = (oneKey: string): { credential: string; addresses: string[]
 
   const addressesString = Buffer.from(addressHex, 'hex').toString('utf8')
   const matches = [...addressesString.matchAll(/(https?:\/\/.+?)(?=https?:\/\/|$)/g)]
-  const addresses = matches.map((entry) => normalizeReachableAddress(entry[1]))
+  const addresses: string[] = []
+
+  for (const entry of matches) {
+    try {
+      addresses.push(normalizeReachableAddress(entry[1]))
+    } catch {
+      // Keep scanning OneKey candidates in order. OneKey reliability depends on
+      // trying alternatives when a single address cannot be parsed/reached.
+      continue
+    }
+  }
 
   if (addresses.length === 0) {
-    throw new Error('No reachable addresses were found in OneKey')
+    throw new Error('No valid reachable addresses were found in OneKey')
   }
 
   return { credential: credential.toUpperCase(), addresses }

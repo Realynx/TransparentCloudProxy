@@ -16,6 +16,86 @@ Usage: install-serverproxy.sh [--uninstall|-u]
 USAGE
 }
 
+read_interactive() {
+  local prompt="$1"
+  local response=""
+
+  if [[ -t 0 ]]; then
+    read -r -p "${prompt}" response
+  elif [[ -r /dev/tty ]]; then
+    read -r -p "${prompt}" response </dev/tty
+  else
+    return 1
+  fi
+
+  printf '%s' "${response}"
+  return 0
+}
+
+prompt_yes_no() {
+  local prompt="$1"
+  local default="$2"
+  local response=""
+
+  while true; do
+    if ! response="$(read_interactive "${prompt}")"; then
+      printf '%s' "${default}"
+      return 0
+    fi
+
+    case "${response}" in
+      [yY]|[yY][eE][sS])
+        printf 'yes'
+        return 0
+        ;;
+      [nN]|[nN][oO])
+        printf 'no'
+        return 0
+        ;;
+      "")
+        printf '%s' "${default}"
+        return 0
+        ;;
+      *)
+        echo "Please answer yes or no." >&2
+        ;;
+    esac
+  done
+}
+
+print_startup_summary() {
+  local logs=""
+  local onekey_line=""
+  local rootcred_line=""
+
+  for _ in {1..20}; do
+    logs="$(journalctl -u "${service_name}" -n 200 --no-pager 2>/dev/null || true)"
+    onekey_line="$(printf '%s\n' "${logs}" | grep -F 'OneKey Pass:' | tail -n1 || true)"
+    rootcred_line="$(printf '%s\n' "${logs}" | grep -F 'Root Cred:' | tail -n1 || true)"
+
+    if [[ -n "${onekey_line}" || -n "${rootcred_line}" ]]; then
+      break
+    fi
+
+    sleep 1
+  done
+
+  printf '\nStartup summary:\n\n'
+
+  if [[ -n "${rootcred_line}" ]]; then
+    printf '%s\n' "${rootcred_line}"
+  fi
+
+  if [[ -n "${onekey_line}" ]]; then
+    printf '%s\n' "${onekey_line}"
+  fi
+
+  if [[ -z "${rootcred_line}" && -z "${onekey_line}" ]]; then
+    echo "Could not find credential lines yet."
+    echo "Run: journalctl -u ${service_name} --no-pager | grep -E 'Root Cred:|OneKey Pass:'"
+  fi
+}
+
 if [[ "${EUID}" -ne 0 ]]; then
   echo "Please run as root (use sudo)."
   exit 1
@@ -106,27 +186,7 @@ fi
 
 chmod +x "${bin_dir}/TransparentCloudServerProxy.WebDashboard"
 
-setup_service=""
-if [[ -t 0 ]]; then
-  while true; do
-    read -r -p "Setup a systemd service to run proxy at startup? [y/N]: " response
-    case "${response}" in
-      [yY]|[yY][eE][sS])
-        setup_service="yes"
-        break
-        ;;
-      ""|[nN]|[nN][oO])
-        setup_service="no"
-        break
-        ;;
-      *)
-        echo "Please answer yes or no."
-        ;;
-    esac
-  done
-else
-  setup_service="yes"
-fi
+setup_service="$(prompt_yes_no "Setup a systemd service to run proxy at startup? [Y/n]: " "yes")"
 
 if [[ "${setup_service}" == "yes" ]]; then
   cat >"${service_file}" <<'SERVICE'
@@ -152,9 +212,7 @@ SERVICE
   systemctl enable --now "${service_name}"
 
   echo "Installed and started ${service_name}.service"
-  printf '\nRecent startup logs (look for '\''OneKey Pass'\''):\n\n'
-  sleep 2
-  journalctl -u "${service_name}" -n 80 --no-pager || true
+  print_startup_summary
 else
   echo "Install complete. Systemd service was not configured."
   echo "Run manually: ${bin_dir}/TransparentCloudServerProxy.WebDashboard"
