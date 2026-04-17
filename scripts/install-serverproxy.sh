@@ -6,6 +6,7 @@ bin_dir="${install_root}/bin"
 archive_path="/tmp/serverproxy-linux-x64"
 service_name="realynx-serverproxy"
 service_file="/etc/systemd/system/${service_name}.service"
+server_binary_path=""
 
 spinner_chars='|/-\\'
 color_red=''
@@ -52,9 +53,9 @@ run_with_spinner() {
   local status=$?
 
   if [[ ${status} -eq 0 ]]; then
-    printf '\r%s ${color_green}done${color_reset}\n' "${message}"
+    printf "\r%s ${color_green}done${color_reset}\n" "${message}"
   else
-    printf '\r%s ${color_red}failed${color_reset}\n' "${message}"
+    printf "\r%s ${color_red}failed${color_reset}\n" "${message}"
   fi
 
   return ${status}
@@ -103,6 +104,34 @@ prompt_yes_no() {
         ;;
     esac
   done
+}
+
+detect_server_binary() {
+  local candidates=(
+    "TransparentCloudServerProxy.Server"
+    "TransparentCloudServerProxy.WebDashboard"
+  )
+
+  for candidate in "${candidates[@]}"; do
+    if [[ -f "${bin_dir}/${candidate}" ]]; then
+      server_binary_path="${bin_dir}/${candidate}"
+      return 0
+    fi
+  done
+
+  local discovered
+  discovered="$(find "${bin_dir}" -maxdepth 1 -type f -name 'TransparentCloudServerProxy*' \
+    ! -name '*.dll' \
+    ! -name '*.deps.json' \
+    ! -name '*.runtimeconfig.json' \
+    ! -name '*.pdb' | head -n1 || true)"
+
+  if [[ -n "${discovered}" ]]; then
+    server_binary_path="${discovered}"
+    return 0
+  fi
+
+  return 1
 }
 
 extract_root_cred() {
@@ -167,7 +196,7 @@ run_manual_and_print_credentials_only() {
 
   manual_log="$(mktemp /tmp/realynx-serverproxy-manual.XXXXXX.log)"
 
-  "${bin_dir}/TransparentCloudServerProxy.WebDashboard" >"${manual_log}" 2>&1 &
+  "${server_binary_path}" >"${manual_log}" 2>&1 &
   server_pid="$!"
 
   cleanup_manual() {
@@ -317,12 +346,19 @@ else
   run_with_spinner "Extracting package" tar -xzf "${archive_path}" -C "${bin_dir}"
 fi
 
-chmod +x "${bin_dir}/TransparentCloudServerProxy.WebDashboard"
+if ! detect_server_binary; then
+  echo "Could not find published server executable in ${bin_dir}."
+  echo "Files found:"
+  ls -la "${bin_dir}" || true
+  exit 1
+fi
+
+chmod +x "${server_binary_path}"
 
 setup_service="$(prompt_yes_no "Setup a systemd service to run proxy at startup? [Y/n]: " "yes")"
 
 if [[ "${setup_service}" == "yes" ]]; then
-  cat >"${service_file}" <<'SERVICE'
+  cat >"${service_file}" <<SERVICE
 [Unit]
 Description=Realynx ServerProxy
 After=network.target
@@ -330,7 +366,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/realynx-serverproxy/bin
-ExecStart=/opt/realynx-serverproxy/bin/TransparentCloudServerProxy.WebDashboard
+ExecStart=${server_binary_path}
 Restart=always
 RestartSec=5
 Environment=ASPNETCORE_URLS=http://0.0.0.0:8080
