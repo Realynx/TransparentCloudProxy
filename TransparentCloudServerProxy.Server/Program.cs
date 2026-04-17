@@ -15,7 +15,6 @@ namespace TransparentCloudServerProxy.Server {
 
             var proxyFactory = new ProxyFactory();
             var packetFilterResetService = new PacketFilterResetService();
-            packetFilterResetService.Reset(proxyConfig.Proxies);
 
             var proxies = new List<IProxy>();
             Console.WriteLine($"Adding {proxyConfig.Proxies.Length} proxies from config");
@@ -23,9 +22,24 @@ namespace TransparentCloudServerProxy.Server {
             foreach (var proxy in proxyConfig.Proxies) {
                 Console.WriteLine(proxy);
 
-                var proxyImplementation = proxyFactory.Create(proxy);
-                proxies.Add(proxyImplementation);
-                proxyImplementation.Start();
+                try {
+                    var proxyImplementation = proxyFactory.Create(proxy);
+                    proxies.Add(proxyImplementation);
+                }
+                catch (Exception ex) {
+                    Console.WriteLine($"Skipping proxy {proxy}: {ex.Message}");
+                }
+            }
+
+            packetFilterResetService.Reset(proxies);
+
+            foreach (var proxy in proxies) {
+                try {
+                    proxy.Start();
+                }
+                catch (Exception ex) {
+                    Console.WriteLine($"Failed to start proxy {proxy}: {ex.Message}");
+                }
             }
 
             Console.WriteLine("Proxy is running...");
@@ -44,7 +58,12 @@ namespace TransparentCloudServerProxy.Server {
             }
 
             foreach (var proxy in proxies) {
-                proxy.Stop();
+                try {
+                    proxy.Stop();
+                }
+                catch (Exception ex) {
+                    Console.WriteLine($"Failed to stop proxy {proxy}: {ex.Message}");
+                }
             }
         }
 
