@@ -14,6 +14,9 @@ React + TypeScript + Tailwind CSS admin panel with a Node.js (Express) API serve
 - OneKey decode compatible with the C# client/server flow
 - Reachable address extraction from OneKey payloads
 - Persistent JSON-backed credential storage in `server/data/onekeys.json`
+- Firewall-style NAT/proxy rule management UI
+- Proxy server fleet management with multi-target rule assignment
+- "All servers" alias target mode that automatically includes new servers
 
 ## Project Layout
 
@@ -47,6 +50,12 @@ The backend serves static files from `client/dist` after build.
 - `GET /api/credentials`
 - `POST /api/credentials`
 - `DELETE /api/credentials/:id`
+- `GET /api/proxy-rules/config`
+- `POST /api/proxy-rules`
+- `PUT /api/proxy-rules/:id`
+- `DELETE /api/proxy-rules/:id`
+- `POST /api/proxy-servers`
+- `DELETE /api/proxy-servers/:id`
 
 ## Environment Variables
 
