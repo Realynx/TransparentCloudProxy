@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35514.174
@@ -26,6 +26,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A89DCF8-A9FB-45A9-81D6-709809B62373}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\build-and-publish.yml = .github\workflows\build-and-publish.yml
+		scripts\install-serverproxy.sh = scripts\install-serverproxy.sh
 		TransparentCloudServerProxy.slnLaunch.user = TransparentCloudServerProxy.slnLaunch.user
 	EndProjectSection
 EndProject

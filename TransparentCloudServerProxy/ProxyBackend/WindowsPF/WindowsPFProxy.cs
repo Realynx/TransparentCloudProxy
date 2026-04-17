@@ -11,6 +11,13 @@ namespace TransparentCloudServerProxy.ProxyBackend.WindowsPF {
 
         public ISystemProgram Netsh { get; set; }
 
+        public WindowsPFProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+            : this(Enum.TryParse<PacketEngine>(packetEngine, true, out var parsedPacketEngine)
+                ? parsedPacketEngine
+                : throw new ArgumentException($"Invalid packet engine: '{packetEngine}'.", nameof(packetEngine)),
+                socketType, listenHost, listenPort, targetHost, targetPort) {
+        }
+
         public WindowsPFProxy(PacketEngine packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
             : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             if (socketType != ProxySocketType.Tcp) {

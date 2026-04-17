@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1000px 420px at 20% -10%, rgba(30, 109, 227, 0.32), transparent 72%),
+    radial-gradient(900px 520px at 100% 0%, rgba(255, 138, 31, 0.16), transparent 65%),
+    linear-gradient(135deg, #020a19 0%, #05070d 78%);
+  color: #dbe7ff;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-blue/30 bg-black/55 shadow-panel backdrop-blur-sm;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-blue/30 bg-black/45 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-400 focus:border-orange;
+  }
+}

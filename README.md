@@ -46,6 +46,27 @@ Exposes the proxy library through secure, authenticated endpoints. Supports **On
 
 ---
 
+## 📦 Releases and Updates
+
+GitHub Actions builds and publishes release assets for:
+- `ServerProxy` (`serverproxy-linux-x64.tar.gz`)
+- `Windows Avalonia Client` (`windows-avalonia-client-win-x64.zip`)
+- `ReactServer` (`reactserver.tar.gz`)
+
+For update checks and update downloads, use GitHub Releases metadata:
+- Latest release metadata: `https://api.github.com/repos/Realynx/TransparentCloudProxy/releases/latest`
+- Normalized updater metadata (published per release): `latest.json`
+
+---
+
+## 🐧 Ubuntu / Debian one-line install (ServerProxy)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Realynx/TransparentCloudProxy/master/scripts/install-serverproxy.sh | sudo bash
+```
+
+---
+
 ## 🖼️ Screenshots  
 
 Here’s a preview of the **Local Proxy** management interface:  

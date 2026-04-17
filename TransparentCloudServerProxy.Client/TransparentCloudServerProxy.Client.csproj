@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TransparentCloudServerProxy\TransparentCloudServerProxy.csproj" />
+    <ProjectReference Include="..\TransparentCloudServerProxy.WebDashboard\TransparentCloudServerProxy.WebDashboard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Styles\" />
   </ItemGroup>
@@ -31,10 +36,6 @@
     <PackageReference Include="Polly" Version="8.6.2" />
     <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
     <PackageReference Include="SukiUI" Version="6.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\TransparentCloudServerProxy.WebDashboard\TransparentCloudServerProxy.WebDashboard.csproj" />
   </ItemGroup>
 
   <ItemGroup>

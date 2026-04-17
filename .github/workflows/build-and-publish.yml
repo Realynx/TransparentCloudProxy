@@ -1,0 +1,155 @@
+name: build-and-publish
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  NODE_VERSION: "20"
+
+jobs:
+  build-serverproxy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish ServerProxy (Linux x64)
+        run: >-
+          dotnet publish TransparentCloudServerProxy.WebDashboard/TransparentCloudServerProxy.WebDashboard.csproj
+          -c Release
+          -r linux-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -o ./artifacts/serverproxy
+
+      - name: Upload ServerProxy artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: serverproxy-linux-x64
+          path: artifacts/serverproxy
+          if-no-files-found: error
+
+  build-windows-client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish Avalonia Client (Windows x64)
+        run: >-
+          dotnet publish TransparentCloudServerProxy.Client/TransparentCloudServerProxy.Client.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=false
+          -o ./artifacts/windows-client
+
+      - name: Upload Windows client artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-avalonia-client-win-x64
+          path: artifacts/windows-client
+          if-no-files-found: error
+
+  build-reactserver:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ReactServer
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ReactServer/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build ReactServer
+        run: npm run build
+
+      - name: Collect ReactServer outputs
+        run: |
+          mkdir -p ../artifacts/reactserver
+          cp package.json ../artifacts/reactserver/
+          cp package-lock.json ../artifacts/reactserver/
+          cp .env.example ../artifacts/reactserver/
+          cp -r server/dist ../artifacts/reactserver/server-dist
+          cp -r client/dist ../artifacts/reactserver/client-dist
+
+      - name: Upload ReactServer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: reactserver
+          path: artifacts/reactserver
+          if-no-files-found: error
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs:
+      - build-serverproxy
+      - build-windows-client
+      - build-reactserver
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+
+      - name: Build release bundles
+        run: |
+          mkdir -p dist
+          tar -C release/serverproxy-linux-x64 -czf dist/serverproxy-linux-x64.tar.gz .
+          zip -r dist/windows-avalonia-client-win-x64.zip release/windows-avalonia-client-win-x64/*
+          tar -C release/reactserver -czf dist/reactserver.tar.gz .
+
+      - name: Create checksums + latest metadata
+        run: |
+          sha256sum dist/* > dist/SHA256SUMS.txt
+          tag="${GITHUB_REF_NAME}"
+          repo="${GITHUB_REPOSITORY}"
+          now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          cat > dist/latest.json <<EOF
+          {
+            "version": "${tag}",
+            "publishedAt": "${now}",
+            "assets": {
+              "serverproxy-linux-x64": "https://github.com/${repo}/releases/download/${tag}/serverproxy-linux-x64.tar.gz",
+              "windows-avalonia-client-win-x64": "https://github.com/${repo}/releases/download/${tag}/windows-avalonia-client-win-x64.zip",
+              "reactserver": "https://github.com/${repo}/releases/download/${tag}/reactserver.tar.gz",
+              "sha256": "https://github.com/${repo}/releases/download/${tag}/SHA256SUMS.txt"
+            }
+          }
+          EOF
+
+      - name: Publish GitHub Release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/serverproxy-linux-x64.tar.gz
+            dist/windows-avalonia-client-win-x64.zip
+            dist/reactserver.tar.gz
+            dist/SHA256SUMS.txt
+            dist/latest.json

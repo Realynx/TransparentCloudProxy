@@ -11,6 +11,13 @@ namespace TransparentCloudServerProxy.ProxyBackend.UnixNetfilter {
 
         public ISystemProgram NetFilterProgram { get; set; }
 
+        public NetFilterProxy(string packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
+            : this(Enum.TryParse<PacketEngine>(packetEngine, true, out var parsedPacketEngine)
+                ? parsedPacketEngine
+                : throw new ArgumentException($"Invalid packet engine: '{packetEngine}'.", nameof(packetEngine)),
+                socketType, listenHost, listenPort, targetHost, targetPort) {
+        }
+
         public NetFilterProxy(PacketEngine packetEngine, ProxySocketType socketType, string listenHost, int listenPort, string targetHost, int targetPort)
             : base(packetEngine, socketType, listenHost, listenPort, targetHost, targetPort) {
             NetFilterProgram = new NetFilter();

@@ -1,6 +1,10 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Extensions.Hosting;
+
+using Moq;
 using Moq.AutoMock;
 
+using TransparentCloudServerProxy.WebDashboard.Models;
 using TransparentCloudServerProxy.WebDashboard.Services;
 
 namespace TransparentCloudServerProxy.WebDashboard.Tests {
@@ -13,7 +17,8 @@ namespace TransparentCloudServerProxy.WebDashboard.Tests {
                 .Setup(i => i.CreateClient(It.IsAny<string>()))
                 .Returns(new HttpClient());
 
-            var networkInterfaceService = new NetworkInterfaceService(new PublicAddressService(httpClientMock.Object));
+            var currentKestralServerConfig = new CurrentKestralServerConfig(Mock.Of<IServer>(), Mock.Of<IHostApplicationLifetime>());
+            var networkInterfaceService = new NetworkInterfaceService(new PublicAddressService(httpClientMock.Object), currentKestralServerConfig);
 
             var addressString = await networkInterfaceService.CreateReachableAddressString();
             Console.WriteLine(addressString);
