@@ -20,16 +20,14 @@ read_interactive() {
   local prompt="$1"
   local response=""
 
-  if [[ -t 0 ]]; then
-    read -r -p "${prompt}" response
-  elif [[ -r /dev/tty ]]; then
-    read -r -p "${prompt}" response </dev/tty
-  else
-    return 1
+  if [[ -r /dev/tty ]]; then
+    printf '%s' "${prompt}" >/dev/tty
+    IFS= read -r response </dev/tty
+    printf '%s' "${response}"
+    return 0
   fi
 
-  printf '%s' "${response}"
-  return 0
+  return 1
 }
 
 prompt_yes_no() {
@@ -57,42 +55,104 @@ prompt_yes_no() {
         return 0
         ;;
       *)
-        echo "Please answer yes or no." >&2
+        printf 'Please answer yes or no.\n' >/dev/tty
         ;;
     esac
   done
 }
 
-print_startup_summary() {
+extract_root_cred() {
+  local text="$1"
+  printf '%s\n' "${text}" | sed -n 's/.*Root Cred:[[:space:]]*\([^[:space:]]\+\).*/\1/p' | tail -n1
+}
+
+extract_onekey() {
+  local text="$1"
+  printf '%s\n' "${text}" | sed -n 's/.*OneKey Pass:[[:space:]]*\([^[:space:]]\+\).*/\1/p' | tail -n1
+}
+
+print_startup_summary_from_service() {
   local logs=""
-  local onekey_line=""
-  local rootcred_line=""
+  local root_cred=""
+  local onekey=""
 
-  for _ in {1..20}; do
-    logs="$(journalctl -u "${service_name}" -n 200 --no-pager 2>/dev/null || true)"
-    onekey_line="$(printf '%s\n' "${logs}" | grep -F 'OneKey Pass:' | tail -n1 || true)"
-    rootcred_line="$(printf '%s\n' "${logs}" | grep -F 'Root Cred:' | tail -n1 || true)"
+  for _ in {1..30}; do
+    logs="$(journalctl -u "${service_name}" -n 300 --no-pager 2>/dev/null || true)"
+    root_cred="$(extract_root_cred "${logs}")"
+    onekey="$(extract_onekey "${logs}")"
 
-    if [[ -n "${onekey_line}" || -n "${rootcred_line}" ]]; then
+    if [[ -n "${root_cred}" || -n "${onekey}" ]]; then
       break
     fi
 
     sleep 1
   done
 
-  printf '\nStartup summary:\n\n'
-
-  if [[ -n "${rootcred_line}" ]]; then
-    printf '%s\n' "${rootcred_line}"
+  if [[ -n "${root_cred}" ]]; then
+    echo "RootCredential: ${root_cred}"
   fi
 
-  if [[ -n "${onekey_line}" ]]; then
-    printf '%s\n' "${onekey_line}"
+  if [[ -n "${onekey}" ]]; then
+    echo "OneKey: ${onekey}"
   fi
 
-  if [[ -z "${rootcred_line}" && -z "${onekey_line}" ]]; then
-    echo "Could not find credential lines yet."
+  if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
+    echo "Failed to detect RootCredential/OneKey from service logs."
     echo "Run: journalctl -u ${service_name} --no-pager | grep -E 'Root Cred:|OneKey Pass:'"
+  fi
+}
+
+run_manual_and_print_credentials_only() {
+  local manual_log
+  local server_pid=""
+  local root_cred=""
+  local onekey=""
+
+  manual_log="$(mktemp /tmp/realynx-serverproxy-manual.XXXXXX.log)"
+
+  "${bin_dir}/TransparentCloudServerProxy.WebDashboard" >"${manual_log}" 2>&1 &
+  server_pid="$!"
+
+  cleanup_manual() {
+    if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" >/dev/null 2>&1; then
+      kill "${server_pid}" >/dev/null 2>&1 || true
+      wait "${server_pid}" >/dev/null 2>&1 || true
+    fi
+    rm -f "${manual_log}"
+  }
+  trap cleanup_manual EXIT INT TERM
+
+  for _ in {1..30}; do
+    if [[ -s "${manual_log}" ]]; then
+      root_cred="$(extract_root_cred "$(cat "${manual_log}")")"
+      onekey="$(extract_onekey "$(cat "${manual_log}")")"
+    fi
+
+    if [[ -n "${root_cred}" || -n "${onekey}" ]]; then
+      break
+    fi
+
+    if ! kill -0 "${server_pid}" >/dev/null 2>&1; then
+      break
+    fi
+
+    sleep 1
+  done
+
+  if [[ -n "${root_cred}" ]]; then
+    echo "RootCredential: ${root_cred}"
+  fi
+
+  if [[ -n "${onekey}" ]]; then
+    echo "OneKey: ${onekey}"
+  fi
+
+  if [[ -z "${root_cred}" && -z "${onekey}" ]]; then
+    echo "Failed to detect RootCredential/OneKey from manual startup logs."
+  fi
+
+  if kill -0 "${server_pid}" >/dev/null 2>&1; then
+    wait "${server_pid}" || true
   fi
 }
 
@@ -142,20 +202,19 @@ if [[ "${mode}" == "uninstall" ]]; then
   rm -f "${service_file}"
 
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl daemon-reload || true
+    systemctl daemon-reload >/dev/null 2>&1 || true
     systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
   fi
 
   rm -rf "${install_root}"
   rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
 
-  echo "Uninstalled ${service_name} and removed ${install_root}."
   exit 0
 fi
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then
-  apt-get update -y
-  apt-get install -y curl tar unzip
+  apt-get update -y >/dev/null 2>&1
+  apt-get install -y curl tar unzip >/dev/null 2>&1
 fi
 
 REPO="Realynx/TransparentCloudProxy"
@@ -176,11 +235,11 @@ rm -rf "${bin_dir:?}"/*
 
 if [[ "${ARCHIVE_URL}" == *.zip ]]; then
   archive_path+=".zip"
-  curl -fL "${ARCHIVE_URL}" -o "${archive_path}"
-  unzip -o "${archive_path}" -d "${bin_dir}"
+  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  unzip -oq "${archive_path}" -d "${bin_dir}"
 else
   archive_path+=".tar.gz"
-  curl -fL "${ARCHIVE_URL}" -o "${archive_path}"
+  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
   tar -xzf "${archive_path}" -C "${bin_dir}"
 fi
 
@@ -208,12 +267,10 @@ Environment=Kestrel__Endpoints__Https__Url=http://127.0.0.1:0
 WantedBy=multi-user.target
 SERVICE
 
-  systemctl daemon-reload
-  systemctl enable --now "${service_name}"
+  systemctl daemon-reload >/dev/null 2>&1
+  systemctl enable --now "${service_name}" >/dev/null 2>&1
 
-  echo "Installed and started ${service_name}.service"
-  print_startup_summary
+  print_startup_summary_from_service
 else
-  echo "Install complete. Systemd service was not configured."
-  echo "Run manually: ${bin_dir}/TransparentCloudServerProxy.WebDashboard"
+  run_manual_and_print_credentials_only
 fi

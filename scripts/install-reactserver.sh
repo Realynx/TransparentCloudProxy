@@ -15,6 +15,51 @@ Usage: install-reactserver.sh [--uninstall|-u]
 USAGE
 }
 
+read_interactive() {
+  local prompt="$1"
+  local response=""
+
+  if [[ -r /dev/tty ]]; then
+    printf '%s' "${prompt}" >/dev/tty
+    IFS= read -r response </dev/tty
+    printf '%s' "${response}"
+    return 0
+  fi
+
+  return 1
+}
+
+prompt_yes_no() {
+  local prompt="$1"
+  local default="$2"
+  local response=""
+
+  while true; do
+    if ! response="$(read_interactive "${prompt}")"; then
+      printf '%s' "${default}"
+      return 0
+    fi
+
+    case "${response}" in
+      [yY]|[yY][eE][sS])
+        printf 'yes'
+        return 0
+        ;;
+      [nN]|[nN][oO])
+        printf 'no'
+        return 0
+        ;;
+      "")
+        printf '%s' "${default}"
+        return 0
+        ;;
+      *)
+        printf 'Please answer yes or no.\n' >/dev/tty
+        ;;
+    esac
+  done
+}
+
 if [[ "${EUID}" -ne 0 ]]; then
   echo "Please run as root (use sudo)."
   exit 1
@@ -61,25 +106,24 @@ if [[ "${mode}" == "uninstall" ]]; then
   rm -f "${service_file}"
 
   if command -v systemctl >/dev/null 2>&1; then
-    systemctl daemon-reload || true
+    systemctl daemon-reload >/dev/null 2>&1 || true
     systemctl reset-failed "${service_name}" >/dev/null 2>&1 || true
   fi
 
   rm -rf "${install_root}"
   rm -f "${archive_path}.zip" "${archive_path}.tar.gz"
 
-  echo "Uninstalled ${service_name} and removed ${install_root}."
   exit 0
 fi
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
-  apt-get update -y
-  apt-get install -y curl unzip tar
+  apt-get update -y >/dev/null 2>&1
+  apt-get install -y curl unzip tar >/dev/null 2>&1
 fi
 
 if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-  apt-get update -y
-  apt-get install -y nodejs npm
+  apt-get update -y >/dev/null 2>&1
+  apt-get install -y nodejs npm >/dev/null 2>&1
 fi
 
 REPO="Realynx/TransparentCloudProxy"
@@ -100,11 +144,11 @@ rm -rf "${install_root:?}"/*
 
 if [[ "${ARCHIVE_URL}" == *.zip ]]; then
   archive_path+=".zip"
-  curl -fL "${ARCHIVE_URL}" -o "${archive_path}"
-  unzip -o "${archive_path}" -d "${install_root}"
+  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
+  unzip -oq "${archive_path}" -d "${install_root}"
 else
   archive_path+=".tar.gz"
-  curl -fL "${ARCHIVE_URL}" -o "${archive_path}"
+  curl -fsSL "${ARCHIVE_URL}" -o "${archive_path}"
   tar -xzf "${archive_path}" -C "${install_root}"
 fi
 
@@ -124,29 +168,9 @@ if [[ -f "${install_root}/.env.example" && ! -f "${install_root}/.env" ]]; then
 fi
 
 cd "${install_root}"
-npm ci --omit=dev
+npm ci --omit=dev >/dev/null 2>&1
 
-setup_service=""
-if [[ -t 0 ]]; then
-  while true; do
-    read -r -p "Setup a systemd service to run ReactServer at startup? [y/N]: " response
-    case "${response}" in
-      [yY]|[yY][eE][sS])
-        setup_service="yes"
-        break
-        ;;
-      ""|[nN]|[nN][oO])
-        setup_service="no"
-        break
-        ;;
-      *)
-        echo "Please answer yes or no."
-        ;;
-    esac
-  done
-else
-  setup_service="yes"
-fi
+setup_service="$(prompt_yes_no "Setup a systemd service to run ReactServer at startup? [Y/n]: " "yes")"
 
 if [[ "${setup_service}" == "yes" ]]; then
   cat >"${service_file}" <<'SERVICE'
@@ -167,14 +191,8 @@ EnvironmentFile=-/opt/realynx-reactserver/.env
 WantedBy=multi-user.target
 SERVICE
 
-  systemctl daemon-reload
-  systemctl enable --now "${service_name}"
-
-  echo "Installed and started ${service_name}.service"
-  printf '\nRecent startup logs:\n\n'
-  sleep 2
-  journalctl -u "${service_name}" -n 80 --no-pager || true
+  systemctl daemon-reload >/dev/null 2>&1
+  systemctl enable --now "${service_name}" >/dev/null 2>&1
 else
-  echo "Install complete. Systemd service was not configured."
-  echo "Run manually: cd ${install_root} && npm start"
+  nohup /usr/bin/env npm --prefix "${install_root}" start >/dev/null 2>&1 &
 fi

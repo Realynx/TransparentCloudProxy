@@ -17,6 +17,9 @@ const defaultDraft: SaveOneKeyDraft = {
 const credentialPreview = (credential: string): string =>
   `${credential.slice(0, 8)}...${credential.slice(Math.max(0, credential.length - 8))}`
 
+const formatTriedAddresses = (addresses: string[]): string =>
+  addresses.map((address, index) => `${index + 1}. ${address}`).join('\n')
+
 function App() {
   const [health, setHealth] = useState<Health | null>(null)
   const [credentials, setCredentials] = useState<SavedCredential[]>([])
@@ -82,6 +85,7 @@ function App() {
     event.preventDefault()
     setSubmitting(true)
     setNotice(null)
+    setError(null)
 
     try {
       const result = await saveOneKey(draft)
@@ -100,6 +104,15 @@ function App() {
       }
 
       await loadAll()
+
+      if (result.connectedAddress) {
+        const triedAddresses =
+          result.attemptedAddresses.length > 0
+            ? `\nTried addresses in order:\n${formatTriedAddresses(result.attemptedAddresses)}`
+            : ''
+
+        setError(`Connected via ${result.connectedAddress}.${triedAddresses}`)
+      }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : 'Failed to save OneKey')
     } finally {
@@ -145,7 +158,7 @@ function App() {
         )}
 
         {error && (
-          <div className="animate-rise rounded-xl border border-orange/50 bg-orange/10 p-3 text-sm text-orange" role="alert">
+          <div className="animate-rise whitespace-pre-wrap rounded-xl border border-orange/50 bg-orange/10 p-3 text-sm text-orange" role="alert">
             {error}
           </div>
         )}
