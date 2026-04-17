@@ -125,9 +125,9 @@ jobs:
       - name: Build release bundles
         run: |
           mkdir -p dist
-          tar -C release/serverproxy-linux-x64 -czf dist/serverproxy-linux-x64.tar.gz .
-          zip -r dist/windows-avalonia-client-win-x64.zip release/windows-avalonia-client-win-x64/*
-          tar -C release/reactserver -czf dist/reactserver.tar.gz .
+          (cd release/serverproxy-linux-x64 && zip -r ../../dist/serverproxy-linux-x64.zip .)
+          (cd release/windows-avalonia-client-win-x64 && zip -r ../../dist/windows-avalonia-client-win-x64.zip .)
+          (cd release/reactserver && zip -r ../../dist/reactserver.zip .)
 
       - name: Create checksums + latest metadata
         run: |
@@ -140,9 +140,9 @@ jobs:
             "version": "${tag}",
             "publishedAt": "${now}",
             "assets": {
-              "serverproxy-linux-x64": "https://github.com/${repo}/releases/download/${tag}/serverproxy-linux-x64.tar.gz",
+              "serverproxy-linux-x64": "https://github.com/${repo}/releases/download/${tag}/serverproxy-linux-x64.zip",
               "windows-avalonia-client-win-x64": "https://github.com/${repo}/releases/download/${tag}/windows-avalonia-client-win-x64.zip",
-              "reactserver": "https://github.com/${repo}/releases/download/${tag}/reactserver.tar.gz",
+              "reactserver": "https://github.com/${repo}/releases/download/${tag}/reactserver.zip",
               "sha256": "https://github.com/${repo}/releases/download/${tag}/SHA256SUMS.txt"
             }
           }
@@ -152,8 +152,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/serverproxy-linux-x64.tar.gz
+            dist/serverproxy-linux-x64.zip
             dist/windows-avalonia-client-win-x64.zip
-            dist/reactserver.tar.gz
+            dist/reactserver.zip
             dist/SHA256SUMS.txt
             dist/latest.json
+          generate_release_notes: true
